@@ -1,0 +1,23 @@
+# Production Swarm configuration
+services:
+    jaitoutperdu:
+        build:
+            target: production
+        image: thegobc/jaitoutperdu
+        deploy:
+            replicas: 1
+            restart_policy:
+                condition: on-failure
+        labels:
+            - 'traefik.enable=true'
+            - 'traefik.http.routers.jaitoutperdu.rule=Host(`jaitoutperdu.com`)'
+            - 'traefik.http.routers.jaitoutperdu.entrypoints=websecure'
+            - 'traefik.http.routers.jaitoutperdu.tls.certresolver=myresolver'
+        environment:
+            NODE_ENV: production
+        networks:
+            - webnet
+
+networks:
+    webnet:
+        external: true

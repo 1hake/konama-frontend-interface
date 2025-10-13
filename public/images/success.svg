@@ -1,0 +1,22 @@
+<svg width="400" height="400" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Arrière-plan cercle -->
+  <circle cx="200" cy="200" r="180" fill="#10B981" stroke="#059669" stroke-width="8"/>
+  
+  <!-- Visage heureux -->
+  <circle cx="200" cy="200" r="150" fill="#FBBF24" stroke="#F59E0B" stroke-width="6"/>
+  
+  <!-- Yeux -->
+  <circle cx="160" cy="160" r="12" fill="#1F2937"/>
+  <circle cx="240" cy="160" r="12" fill="#1F2937"/>
+  
+  <!-- Bouche souriante -->
+  <path d="M150 230 Q200 280 250 230" stroke="#1F2937" stroke-width="8" fill="none" stroke-linecap="round"/>
+  
+  <!-- Joues roses -->
+  <circle cx="120" cy="200" r="15" fill="#F87171" opacity="0.6"/>
+  <circle cx="280" cy="200" r="15" fill="#F87171" opacity="0.6"/>
+  
+  <!-- Checkmark -->
+  <path d="M320 120 L350 150 L380 120" stroke="#10B981" stroke-width="12" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M340 150 L370 120" stroke="#10B981" stroke-width="12" fill="none" stroke-linecap="round"/>
+</svg>
