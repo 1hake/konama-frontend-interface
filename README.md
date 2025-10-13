@@ -1,46 +1,47 @@
-# 🆘 J'ai tout perdu...
+# � Image Generation Admin
 
-> Service de récupération de données pour disques durs, clés USB, cartes SD et autres supports de stockage.
+> AI-powered image generation interface with ComfyUI backend integration.
 
-## 📋 À propos
+## 📋 About
 
-**J'ai tout perdu** est un service professionnel de récupération de données qui aide les particuliers et entreprises à récupérer leurs fichiers importants perdus suite à :
+**Image Generation Admin** is a modern web interface for generating AI images using ComfyUI. It provides a clean, user-friendly way to create images with artificial intelligence without needing to understand the complex ComfyUI interface.
 
-- 💽 Panne de disque dur (HDD/SSD)
-- 🔌 Corruption de clé USB
-- 💾 Erreur de carte SD/mémoire
-- 📱 Problème de stockage mobile
+## ✨ Features
 
-## ✨ Fonctionnalités
-
-- **Interface moderne** avec Next.js 14 et Tailwind CSS
-- **Formulaire intelligent** avec sélection visuelle des appareils
-- **EmailJS intégré** pour l'envoi automatique des demandes
-- **Design responsive** compatible mobile et desktop
-- **Mode sombre** automatique
+- **Modern Interface** with Next.js 14 and Tailwind CSS
+- **Real-time Progress** tracking with WebSocket integration
+- **Smart Form** with prompt inputs and quick style selectors
+- **Responsive Design** compatible with mobile and desktop
+- **Modular Architecture** with reusable components and hooks
+- **Environment Configuration** for flexible API deployment
 - **Animations fluides** pour une meilleure expérience utilisateur
 
 ## 🚀 Installation
 
-1. Cloner le repository :
+## 🚀 Quick Setup
+
+1. **Clone the repository:**
 ```bash
-git clone https://github.com/1hake/jaitoutperdu.git
-cd jaitoutperdu
+git clone https://github.com/1hake/image-generation-admin.git
+cd image-generation-admin
 ```
 
-2. Installer les dépendances :
+2. **Install dependencies:**
 ```bash
 npm install
 ```
 
-3. Configurer EmailJS :
-   - Créer un compte sur [EmailJS.com](https://www.emailjs.com/)
-   - Remplacer les IDs dans `app/page.tsx` :
-     - `serviceId`
-     - `templateId`
-     - `publicKey`
+3. **Configure your API endpoint:**
+```bash
+cp .env.example .env.local
+```
 
-4. Lancer le serveur de développement :
+Edit `.env.local` and set your RunPod URL:
+```env
+NEXT_PUBLIC_COMFY_API_URL=https://your-runpod-id.proxy.runpod.net
+```
+
+4. **Start the development server:**
 ```bash
 npm run dev
 ```
