@@ -1,16 +1,25 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { GenerationProgress, GeneratedImage, ImageGenerationHookReturn, FluxGenerationOptions } from '../types';
+import { GenerationProgress, GeneratedImage, ImageGenerationHookReturn, WorkflowGenerationOptions, WorkflowMetadata } from '../types';
+import { workflowManager } from '../lib/workflowManager';
 
 export const useImageGeneration = (): ImageGenerationHookReturn => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [progress, setProgress] = useState<GenerationProgress | null>(null);
     const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [availableWorkflows, setAvailableWorkflows] = useState<WorkflowMetadata[]>([]);
+    const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>('flux-krea-dev');
     const wsRef = useRef<WebSocket | null>(null);
 
     // API configuration from environment variables
     const apiBaseUrl = process.env.NEXT_PUBLIC_COMFY_API_URL || window.location.origin;
+
+    // Load available workflows on mount
+    useEffect(() => {
+        const workflows = workflowManager.getAvailableWorkflows();
+        setAvailableWorkflows(workflows);
+    }, []);
 
     // Helper function to construct API URLs
     const getApiUrl = useCallback((endpoint: string) => {
@@ -149,165 +158,6 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
         };
     }, []);
 
-    const createFluxKreaWorkflow = (positivePrompt: string, negativePrompt: string, options: FluxGenerationOptions = {}) => {
-        const {
-            steps = 20,
-            aspectRatio = '1:1 (Square)',
-            guidance = 3.5,
-            loraName = 'CynthiaArch.safetensors',
-            loraStrength = 1.0
-        } = options;
-        const seed = Math.floor(Math.random() * 1000000000000000);
-
-        return {
-            // DualCLIPLoader for Flux
-            "40": {
-                "inputs": {
-                    "clip_name1": "clip_l.safetensors",
-                    "clip_name2": "t5xxl_fp16.safetensors",
-                    "type": "flux",
-                    "device": "default"
-                },
-                "class_type": "DualCLIPLoader",
-                "_meta": {
-                    "title": "DualCLIPLoader"
-                }
-            },
-            // UNETLoader for Flux Krea Dev model
-            "38": {
-                "inputs": {
-                    "unet_name": "flux1-krea-dev.safetensors",
-                    "weight_dtype": "default"
-                },
-                "class_type": "UNETLoader",
-                "_meta": {
-                    "title": "UNETLoader"
-                }
-            },
-            // VAE Loader
-            "39": {
-                "inputs": {
-                    "vae_name": "ae.safetensors"
-                },
-                "class_type": "VAELoader",
-                "_meta": {
-                    "title": "VAELoader"
-                }
-            },
-            // Flux Resolution Calculator
-            "59": {
-                "inputs": {
-                    "megapixel": "1.0",
-                    "aspect_ratio": aspectRatio,
-                    "divisible_by": "64",
-                    "custom_ratio": false,
-                    "custom_aspect_ratio": "1:1"
-                },
-                "class_type": "FluxResolutionNode",
-                "_meta": {
-                    "title": "FluxResolutionNode"
-                }
-            },
-            // Empty SD3 Latent Image
-            "58": {
-                "inputs": {
-                    "width": ["59", 0],
-                    "height": ["59", 1],
-                    "batch_size": 1
-                },
-                "class_type": "EmptySD3LatentImage",
-                "_meta": {
-                    "title": "EmptySD3LatentImage"
-                }
-            },
-            // LoRA Loader (Optional - will use default if no LoRA specified)
-            "56": {
-                "inputs": {
-                    "model": ["38", 0],
-                    "lora_name": loraName,
-                    "strength_model": loraStrength
-                },
-                "class_type": "LoraLoaderModelOnly",
-                "_meta": {
-                    "title": "LoraLoaderModelOnly"
-                }
-            },
-            // CLIP Text Encode (Positive)
-            "45": {
-                "inputs": {
-                    "text": positivePrompt,
-                    "clip": ["40", 0]
-                },
-                "class_type": "CLIPTextEncode",
-                "_meta": {
-                    "title": "CLIP Text Encode (Prompt Positif)"
-                }
-            },
-            // Conditioning Zero Out (for negative prompt with Flux)
-            "42": {
-                "inputs": {
-                    "conditioning": ["45", 0]
-                },
-                "class_type": "ConditioningZeroOut",
-                "_meta": {
-                    "title": "ConditioningZeroOut"
-                }
-            },
-            // Flux Guidance
-            "65": {
-                "inputs": {
-                    "conditioning": ["45", 0],
-                    "guidance": guidance
-                },
-                "class_type": "FluxGuidance",
-                "_meta": {
-                    "title": "FluxGuidance"
-                }
-            },
-            // KSampler (Main generation)
-            "31": {
-                "inputs": {
-                    "seed": seed,
-                    "steps": steps,
-                    "cfg": 1, // CFG should be 1 for Flux models
-                    "sampler_name": "euler",
-                    "scheduler": "simple",
-                    "denoise": 1,
-                    "model": ["56", 0],
-                    "positive": ["65", 0],
-                    "negative": ["42", 0],
-                    "latent_image": ["58", 0]
-                },
-                "class_type": "KSampler",
-                "_meta": {
-                    "title": "KSampler"
-                }
-            },
-            // VAE Decode
-            "8": {
-                "inputs": {
-                    "samples": ["31", 0],
-                    "vae": ["39", 0]
-                },
-                "class_type": "VAEDecode",
-                "_meta": {
-                    "title": "VAEDecode"
-                }
-            },
-            // Save Image
-            "9": {
-                "inputs": {
-                    "filename_prefix": "flux_krea/flux_krea",
-                    "images": ["8", 0]
-                },
-                "class_type": "SaveImage",
-                "_meta": {
-                    "title": "SaveImage"
-                }
-            }
-        };
-    };
-
     const checkImages = useCallback(async (promptId: string) => {
         try {
             const response = await fetch(getApiUrl(`/history/${promptId}`));
@@ -378,25 +228,30 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
         setTimeout(poll, 2000); // Start polling after 2 seconds
     }, [checkImages, getApiUrl]);
 
-    const generateImage = useCallback(async (prompt: string, negativePrompt: string = '', options: FluxGenerationOptions = {}) => {
-        const { steps = 20 } = options;
+    const generateImage = useCallback(async (prompt: string, negativePrompt: string = '', options: WorkflowGenerationOptions = {}) => {
+        const { steps = 20, workflowId } = options;
         if (!prompt.trim()) {
             setError('Veuillez entrer un prompt');
             return;
         }
+
+        // Determine which workflow to use
+        const activeWorkflowId = workflowId || selectedWorkflow || 'flux-krea-dev';
+        const workflowMetadata = workflowManager.getWorkflowMetadata(activeWorkflowId);
 
         setIsGenerating(true);
         setError(null);
         setGeneratedImages([]);
         setProgress(null);
 
-        toast.info(`🎨 Démarrage génération Flux Krea (${steps} étapes, ${options.aspectRatio}, Guide: ${options.guidance})`, {
+        toast.info(`🎨 Démarrage génération ${workflowMetadata?.name || activeWorkflowId} (${steps} étapes)`, {
             position: 'bottom-right',
             autoClose: 4000,
         });
 
         try {
-            const workflow = createFluxKreaWorkflow(prompt, negativePrompt, options);
+            // Generate workflow JSON using workflow manager
+            const workflow = workflowManager.generateWorkflowJson(activeWorkflowId, prompt, negativePrompt, options);
             const requestBody = {
                 prompt: workflow,
                 client_id: Math.random().toString(36).substring(7)
@@ -464,7 +319,7 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
             setError('Erreur lors de la génération de l\'image');
             setIsGenerating(false);
         }
-    }, [pollForCompletion, getApiUrl]);
+    }, [pollForCompletion, getApiUrl, selectedWorkflow]);
 
     const resetGeneration = useCallback(() => {
         setGeneratedImages([]);
@@ -483,6 +338,9 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
         progress,
         generatedImages,
         error,
+        availableWorkflows,
+        selectedWorkflow,
+        setSelectedWorkflow,
         generateImage,
         resetGeneration,
     };
