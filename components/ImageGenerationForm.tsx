@@ -2,13 +2,11 @@
 
 import { useState } from 'react';
 import { ImageGenerationFormProps } from '../types';
-import { CoreElements } from './CoreElements';
-import { CompositionTechnique } from './CompositionTechnique';
-import { AmbianceDetails } from './AmbianceDetails';
 import { TechnicalParameters } from './TechnicalParameters';
 import { PromptPreview } from './PromptPreview';
 import { ActionButtons } from './ActionButtons';
-import { WorkflowSelector } from './WorkflowSelector';
+import { WorkflowSelectorModal } from './WorkflowSelectorModal';
+import { InlinePromptBuilder } from './InlinePromptBuilder';
 
 interface PromptFields {
     sujet: string;
@@ -35,6 +33,7 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
     selectedWorkflow = null,
     onWorkflowChange
 }) => {
+    const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
     const [fields, setFields] = useState<PromptFields>({
         sujet: '',
         contexte: '',
@@ -140,57 +139,56 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
                     </div>
                 )}
 
-                {/* Form Title */}
+                {/* Form Title with Workflow Button */}
                 <div className="bg-gradient-to-r from-purple-900/40 to-purple-800/40 rounded-xl p-4 border border-purple-500/30 shadow-lg">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div>
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div className="flex-1">
                             <h2 className="text-lg md:text-xl font-bold text-white flex items-center gap-2">
                                 <span>🎨</span>
                                 <span>Générateur d&apos;Images IA</span>
                             </h2>
                             <p className="text-gray-300 text-xs md:text-sm">Interface professionnelle • Flux Krea Dev • LoRA</p>
                         </div>
-                        <div className="text-left sm:text-right">
-                            <span className="inline-block px-3 py-1 bg-purple-600/50 rounded-lg text-xs text-purple-200 font-medium">
-                                Résolution dynamique
-                            </span>
-                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setIsWorkflowModalOpen(true)}
+                            disabled={isGenerating}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                            <span className="hidden sm:inline">Workflow</span>
+                        </button>
                     </div>
                 </div>
 
+                {/* Workflow Selection Modal */}
+                {availableWorkflows.length > 0 && onWorkflowChange && (
+                    <WorkflowSelectorModal
+                        isOpen={isWorkflowModalOpen}
+                        onClose={() => setIsWorkflowModalOpen(false)}
+                        workflows={availableWorkflows}
+                        selectedWorkflow={selectedWorkflow}
+                        onWorkflowChange={onWorkflowChange}
+                    />
+                )}
+
                 {/* Main Content - Scrollable Area */}
                 <div className="flex-1 overflow-y-auto space-y-4 pr-2 custom-scrollbar">
-                    {/* Workflow Selector */}
-                    {availableWorkflows.length > 0 && onWorkflowChange && (
-                        <WorkflowSelector
-                            workflows={availableWorkflows}
-                            selectedWorkflow={selectedWorkflow}
-                            onWorkflowChange={onWorkflowChange}
-                            isGenerating={isGenerating}
-                        />
-                    )}
-
-                    {/* Core Elements */}
-                    <CoreElements
-                        sujet={fields.sujet}
-                        contexte={fields.contexte}
-                        decor={fields.decor}
-                        onFieldChange={handleFieldChange}
-                        isGenerating={isGenerating}
-                    />
-
-                    {/* Composition & Technique */}
-                    <CompositionTechnique
-                        composition={fields.composition}
-                        technique={fields.technique}
-                        onFieldChange={handleFieldChange}
-                        isGenerating={isGenerating}
-                    />
-
-                    {/* Ambiance & Details */}
-                    <AmbianceDetails
-                        ambiance={fields.ambiance}
-                        details={fields.details}
+                    {/* Inline Prompt Builder */}
+                    <InlinePromptBuilder
+                        fields={{
+                            sujet: fields.sujet,
+                            contexte: fields.contexte,
+                            decor: fields.decor,
+                            composition: fields.composition,
+                            technique: fields.technique,
+                            ambiance: fields.ambiance,
+                            details: fields.details,
+                            parametres: fields.parametres
+                        }}
                         onFieldChange={handleFieldChange}
                         isGenerating={isGenerating}
                     />

@@ -11,6 +11,7 @@
 - **Modern Interface** with Next.js 14 and Tailwind CSS
 - **Real-time Progress** tracking with WebSocket integration
 - **Smart Form** with prompt inputs and quick style selectors
+- **Voice Recording** with OpenAI Whisper for prompt creation
 - **Responsive Design** compatible with mobile and desktop
 - **Modular Architecture** with reusable components and hooks
 - **Environment Configuration** for flexible API deployment
@@ -36,9 +37,13 @@ npm install
 cp .env.example .env.local
 ```
 
-Edit `.env.local` and set your RunPod URL:
+Edit `.env.local` and set your configuration:
 ```env
+# ComfyUI API endpoint
 NEXT_PUBLIC_COMFY_API_URL=https://your-runpod-id.proxy.runpod.net
+
+# OpenAI API key for voice transcription (optional)
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 4. **Start the development server:**
@@ -47,6 +52,41 @@ npm run dev
 ```
 
 5. Ouvrir [http://localhost:3000](http://localhost:3000)
+
+## 🎙️ Voice Recording Feature
+
+The application includes a voice recording feature that allows users to create prompts using their voice through OpenAI Whisper:
+
+### Setup
+1. Get an OpenAI API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+2. Add it to your `.env.local` file:
+   ```env
+   OPENAI_API_KEY=your_openai_api_key_here
+   ```
+
+### Usage
+1. Click the **microphone button** (🎙️ "Voix") in the prompt builder
+2. **Allow microphone access** when prompted by your browser
+3. **Speak your image description** in French or English
+4. Click **"Stop"** when finished
+5. The transcribed text will **automatically populate** the appropriate fields
+
+### Features
+- **Real-time recording** with visual feedback
+- **Automatic transcription** using OpenAI Whisper
+- **Intelligent field mapping** based on content analysis
+- **Error handling** with user-friendly messages
+- **Browser microphone permissions** support
+
+### Browser Compatibility
+- Chrome/Chromium (recommended)
+- Firefox
+- Safari
+- Edge
+
+*Note: Requires HTTPS in production for microphone access*
+
+## 🚀 Installation
 
 ## 🛠️ Technologies
 

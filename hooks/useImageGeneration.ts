@@ -58,10 +58,6 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
 
             wsRef.current.onopen = () => {
                 console.log('WebSocket connected');
-                toast.success('🔗 WebSocket connecté au serveur', {
-                    position: 'bottom-right',
-                    autoClose: 3000,
-                });
             };
 
             wsRef.current.onmessage = (event) => {
@@ -69,19 +65,7 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
                     const message = JSON.parse(event.data);
                     console.log('WebSocket message:', message);
 
-                    // Toast notification for all WebSocket events
-                    toast.info(`📡 WS Event: ${message.type}`, {
-                        position: 'bottom-right',
-                        autoClose: 2000,
-                    });
-
                     if (message.type === 'progress') {
-                        const progressValue = Math.round((message.data.value || 0) * 100);
-                        toast.info(`⏳ Progression: ${progressValue}% - Node: ${message.data.node}`, {
-                            position: 'bottom-right',
-                            autoClose: 2000,
-                        });
-
                         setProgress(prev => ({
                             ...prev,
                             progress: message.data.value,
@@ -90,11 +74,6 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
                             status: 'executing'
                         }));
                     } else if (message.type === 'executing') {
-                        toast.info(`🔄 Exécution en cours - Node: ${message.data.node}`, {
-                            position: 'bottom-right',
-                            autoClose: 2000,
-                        });
-
                         setProgress(prev => ({
                             ...prev,
                             promptId: prev?.promptId || '',
@@ -102,50 +81,23 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
                             node: message.data.node
                         }));
                     } else if (message.type === 'executed') {
-                        toast.success(`✅ Génération terminée!`, {
-                            position: 'bottom-right',
-                            autoClose: 3000,
-                        });
-
                         // Generation completed
                         checkImages(progress?.promptId || '');
-                    } else if (message.type === 'status') {
-                        toast.info(`📊 Statut: ${JSON.stringify(message.data)}`, {
-                            position: 'bottom-right',
-                            autoClose: 3000,
-                        });
-                    } else {
-                        // Log any other WebSocket events
-                        toast.info(`🔍 Événement WebSocket: ${message.type} - ${JSON.stringify(message.data).substring(0, 50)}...`, {
-                            position: 'bottom-right',
-                            autoClose: 4000,
-                        });
                     }
                 } catch (error) {
                     console.error('Error parsing WebSocket message:', error);
-                    toast.error(`❌ Erreur WebSocket: ${error}`, {
-                        position: 'bottom-right',
-                        autoClose: 5000,
-                    });
+                    // Only show error if it's critical
                 }
             };
 
             wsRef.current.onclose = () => {
                 console.log('WebSocket disconnected');
-                toast.warning('🔌 WebSocket déconnecté - Reconnexion dans 3s...', {
-                    position: 'bottom-right',
-                    autoClose: 3000,
-                });
                 // Reconnect after 3 seconds
                 setTimeout(connectWebSocket, 3000);
             };
 
             wsRef.current.onerror = (error) => {
                 console.error('WebSocket error:', error);
-                toast.error(`🚨 Erreur WebSocket: ${error}`, {
-                    position: 'bottom-right',
-                    autoClose: 5000,
-                });
             };
         };
 
@@ -174,19 +126,10 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
 
                 setGeneratedImages(images);
 
-                if (images.length > 0) {
-                    toast.success(`🖼️ ${images.length} image(s) générée(s) avec succès!`, {
-                        position: 'bottom-right',
-                        autoClose: 5000,
-                    });
-                }
+                // Images loaded successfully - no toast needed
             }
         } catch (error) {
             console.error('Error checking images:', error);
-            toast.error(`❌ Erreur lors de la vérification des images`, {
-                position: 'bottom-right',
-                autoClose: 5000,
-            });
         }
     }, [getApiUrl]);
 
@@ -220,7 +163,7 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
                 }
             } catch (error) {
                 console.error('Error polling for completion:', error);
-                setError('Erreur lors de la vérification du statut');
+                setError('Generation failed');
                 setIsGenerating(false);
             }
         };
@@ -231,7 +174,7 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
     const generateImage = useCallback(async (prompt: string, negativePrompt: string = '', options: WorkflowGenerationOptions = {}) => {
         const { steps = 20, workflowId } = options;
         if (!prompt.trim()) {
-            setError('Veuillez entrer un prompt');
+            setError('Please enter a prompt');
             return;
         }
 
@@ -244,10 +187,7 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
         setGeneratedImages([]);
         setProgress(null);
 
-        toast.info(`🎨 Démarrage génération ${workflowMetadata?.name || activeWorkflowId} (${steps} étapes)`, {
-            position: 'bottom-right',
-            autoClose: 4000,
-        });
+        // Starting generation - no toast needed
 
         try {
             // Generate workflow JSON using workflow manager
@@ -288,11 +228,6 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
             console.log('=== FRONTEND REQUEST END ===');
 
             if (data.prompt_id) {
-                toast.success(`🎯 Prompt accepté! ID: ${data.prompt_id}`, {
-                    position: 'bottom-right',
-                    autoClose: 3000,
-                });
-
                 setProgress({
                     promptId: data.prompt_id,
                     status: 'queued'
@@ -310,13 +245,7 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
             console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
             console.error('=== END FRONTEND ERROR ===');
 
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            toast.error(`💥 Erreur de génération: ${errorMessage}`, {
-                position: 'bottom-right',
-                autoClose: 8000,
-            });
-
-            setError('Erreur lors de la génération de l\'image');
+            setError('Generation failed');
             setIsGenerating(false);
         }
     }, [pollForCompletion, getApiUrl, selectedWorkflow]);
@@ -327,10 +256,7 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
         setProgress(null);
         setIsGenerating(false);
 
-        toast.info('🔄 Génération réinitialisée', {
-            position: 'bottom-right',
-            autoClose: 2000,
-        });
+        // Reset complete - no toast needed
     }, []);
 
     return {

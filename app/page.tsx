@@ -33,7 +33,7 @@ export default function Home() {
       <header className="container mx-auto px-4 py-6">
         <div className="text-center">
           <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 leading-tight">
-            AI Image <span className="text-purple-400">Generator</span>
+            DIF<span className="text-purple-400">FUSION</span>
           </h1>
           <p className="text-sm md:text-lg text-gray-300">
             Créez des images uniques avec l&apos;intelligence artificielle

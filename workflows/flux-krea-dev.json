@@ -6,10 +6,15 @@
     "category": "flux",
     "author": "Krea AI",
     "version": "1.0.0",
-    "tags": ["flux", "lora", "high-quality", "flexible"],
+    "tags": [
+      "flux",
+      "lora",
+      "high-quality",
+      "flexible"
+    ],
     "supportsNegativePrompt": true,
     "requiredModels": [
-      "flux1-krea-dev.safetensors",
+      "flux1-dev.sft",
       "clip_l.safetensors",
       "t5xxl_fp16.safetensors",
       "ae.safetensors"
