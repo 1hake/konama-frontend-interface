@@ -31,7 +31,8 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
     error,
     availableWorkflows = [],
     selectedWorkflow = null,
-    onWorkflowChange
+    onWorkflowChange,
+    onRefreshWorkflows
 }) => {
     const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
     const [fields, setFields] = useState<PromptFields>({
@@ -172,6 +173,7 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
                         workflows={availableWorkflows}
                         selectedWorkflow={selectedWorkflow}
                         onWorkflowChange={onWorkflowChange}
+                        onRefresh={onRefreshWorkflows}
                     />
                 )}
 

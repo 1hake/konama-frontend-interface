@@ -15,6 +15,7 @@ export default function Home() {
     setSelectedWorkflow,
     generateImage,
     resetGeneration,
+    refreshWorkflows,
   } = useImageGeneration();
 
   // Helper function to generate image URLs
@@ -84,6 +85,7 @@ export default function Home() {
               availableWorkflows={availableWorkflows}
               selectedWorkflow={selectedWorkflow}
               onWorkflowChange={setSelectedWorkflow}
+              onRefreshWorkflows={refreshWorkflows}
             />
           </div>
         </div>

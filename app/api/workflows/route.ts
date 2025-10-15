@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { workflowManager } from '../../../lib/workflowManager';
+import { getAvailableWorkflows } from '../../../lib/workflowManager';
 
 /**
  * GET /api/workflows - Get all available workflows
  */
 export async function GET(request: NextRequest) {
     try {
-        const workflows = workflowManager.getAvailableWorkflows();
+        const workflows = await getAvailableWorkflows();
 
         return NextResponse.json({
             success: true,

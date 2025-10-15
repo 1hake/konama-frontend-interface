@@ -6,10 +6,14 @@
     "category": "stable-diffusion",
     "author": "ComfyUI",
     "version": "1.0.0",
-    "tags": ["sd1.5", "basic", "fast"],
+    "tags": [
+      "sd1.5",
+      "basic",
+      "fast"
+    ],
     "supportsNegativePrompt": true,
     "requiredModels": [
-      "v1-5-pruned-emaonly-fp16.safetensors"
+      "SD1.5/v1-5-pruned-emaonly.ckpt"
     ],
     "parameters": [
       {
@@ -91,7 +95,7 @@
         "name": "checkpoint",
         "label": "Checkpoint",
         "type": "text",
-        "defaultValue": "v1-5-pruned-emaonly-fp16.safetensors",
+        "defaultValue": "SD1.5/v1-5-pruned-emaonly.ckpt",
         "description": "Model checkpoint filename"
       }
     ]

@@ -45,6 +45,9 @@ export interface WorkflowMetadata {
     supportsNegativePrompt?: boolean;
     requiredModels?: string[];
     parameters?: WorkflowParameter[];
+    source?: 'api' | 'local' | 'auto-detected' | 'fallback';
+    availableNodes?: string[];
+    lastFetched?: Date;
 }
 
 export interface ComfyWorkflow {
@@ -68,6 +71,7 @@ export interface ImageGenerationHookReturn {
     setSelectedWorkflow: (workflowId: string) => void;
     generateImage: (prompt: string, negativePrompt?: string, options?: WorkflowGenerationOptions) => Promise<void>;
     resetGeneration: () => void;
+    refreshWorkflows: () => Promise<void>;
 }
 
 export interface ImageGenerationFormProps {
@@ -77,6 +81,7 @@ export interface ImageGenerationFormProps {
     availableWorkflows?: WorkflowMetadata[];
     selectedWorkflow?: string | null;
     onWorkflowChange?: (workflowId: string) => void;
+    onRefreshWorkflows?: () => Promise<void>;
 }
 
 export interface GeneratedImagesDisplayProps {

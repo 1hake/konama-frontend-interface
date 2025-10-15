@@ -1,8 +1,9 @@
 'use client';
 
-import { Fragment } from 'react';
+import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { WorkflowMetadata } from '../types';
+import { refreshWorkflows } from '../lib/workflowManager';
 
 interface WorkflowSelectorModalProps {
     isOpen: boolean;
@@ -10,6 +11,7 @@ interface WorkflowSelectorModalProps {
     workflows: WorkflowMetadata[];
     selectedWorkflow: string | null;
     onWorkflowChange: (workflowId: string) => void;
+    onRefresh?: () => Promise<void>;
 }
 
 export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
@@ -18,10 +20,71 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
     workflows,
     selectedWorkflow,
     onWorkflowChange,
+    onRefresh,
 }) => {
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [expandedWorkflows, setExpandedWorkflows] = useState<Set<string>>(new Set());
+
     const handleSelectWorkflow = (workflowId: string) => {
         onWorkflowChange(workflowId);
         onClose();
+    };
+
+    const handleRefresh = async () => {
+        if (!onRefresh) return;
+        setIsRefreshing(true);
+        try {
+            await onRefresh();
+        } catch (error) {
+            console.error('Failed to refresh workflows:', error);
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
+    const toggleWorkflowDetails = (workflowId: string) => {
+        const newExpanded = new Set(expandedWorkflows);
+        if (newExpanded.has(workflowId)) {
+            newExpanded.delete(workflowId);
+        } else {
+            newExpanded.add(workflowId);
+        }
+        setExpandedWorkflows(newExpanded);
+    };
+
+    const getSourceBadge = (source?: string) => {
+        switch (source) {
+            case 'api':
+                return (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-900/30 text-green-300 text-xs rounded border border-green-500/30">
+                        <span className="w-1.5 h-1.5 bg-green-400 rounded-full"></span>
+                        API
+                    </span>
+                );
+            case 'local':
+                return (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-900/30 text-blue-300 text-xs rounded border border-blue-500/30">
+                        <span className="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
+                        Local
+                    </span>
+                );
+            case 'auto-detected':
+                return (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-yellow-900/30 text-yellow-300 text-xs rounded border border-yellow-500/30">
+                        <span className="w-1.5 h-1.5 bg-yellow-400 rounded-full"></span>
+                        Auto
+                    </span>
+                );
+            case 'fallback':
+                return (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-red-900/30 text-red-300 text-xs rounded border border-red-500/30">
+                        <span className="w-1.5 h-1.5 bg-red-400 rounded-full"></span>
+                        Fallback
+                    </span>
+                );
+            default:
+                return null;
+        }
     };
 
     const selectedWorkflowData = workflows.find(w => w.id === selectedWorkflow);
@@ -63,19 +126,48 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                             <span>🔧</span>
                                             <span>Sélectionner un Workflow ComfyUI</span>
                                         </Dialog.Title>
-                                        <p className="text-gray-400 text-sm mt-1">
-                                            Choisissez le workflow d&apos;IA pour générer vos images
-                                        </p>
+                                        <div className="text-gray-400 text-sm mt-1 space-y-1">
+                                            <p>Choisissez le workflow d&apos;IA pour générer vos images ({workflows.length} disponibles)</p>
+                                            {workflows.length > 0 && (
+                                                <div className="flex items-center gap-2 text-xs">
+                                                    <span>Sources:</span>
+                                                    {workflows.some(w => w.source === 'api') && <span className="text-green-400">● API</span>}
+                                                    {workflows.some(w => w.source === 'local') && <span className="text-blue-400">● Local</span>}
+                                                    {workflows.some(w => w.source === 'auto-detected') && <span className="text-yellow-400">● Auto-détecté</span>}
+                                                    {workflows.some(w => w.source === 'fallback') && <span className="text-red-400">● Fallback</span>}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
-                                    <button
-                                        type="button"
-                                        className="rounded-lg p-2 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
-                                        onClick={onClose}
-                                    >
-                                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
+                                    <div className="flex items-center gap-2">
+                                        {onRefresh && (
+                                            <button
+                                                type="button"
+                                                disabled={isRefreshing}
+                                                onClick={handleRefresh}
+                                                className="rounded-lg p-2 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                                title="Actualiser depuis ComfyUI"
+                                            >
+                                                <svg
+                                                    className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`}
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                </svg>
+                                            </button>
+                                        )}
+                                        <button
+                                            type="button"
+                                            className="rounded-lg p-2 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
+                                            onClick={onClose}
+                                        >
+                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            </svg>
+                                        </button>
+                                    </div>
                                 </div>
 
                                 {/* Current Selection */}
@@ -94,7 +186,42 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
 
                                 {/* Workflows Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                                    {workflows.map((workflow) => (
+                                    {isRefreshing ? (
+                                        /* Loading State */
+                                        <div className="col-span-full flex items-center justify-center py-12">
+                                            <div className="text-center">
+                                                <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-3"></div>
+                                                <p className="text-gray-400 text-sm">Actualisation des workflows...</p>
+                                                <p className="text-gray-500 text-xs mt-1">Connexion à ComfyUI en cours</p>
+                                            </div>
+                                        </div>
+                                    ) : workflows.length === 0 ? (
+                                        /* Empty State */
+                                        <div className="col-span-full text-center py-12">
+                                            <div className="mb-4">
+                                                <svg className="w-16 h-16 text-gray-600 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                </svg>
+                                                <h3 className="text-lg font-semibold text-gray-300 mb-2">Aucun workflow disponible</h3>
+                                                <p className="text-gray-400 text-sm mb-4">
+                                                    Impossible de charger les workflows depuis ComfyUI.
+                                                </p>
+                                                {onRefresh && (
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleRefresh}
+                                                        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
+                                                    >
+                                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                        </svg>
+                                                        Réessayer
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        workflows.map((workflow) => (
                                         <button
                                             key={workflow.id}
                                             type="button"
@@ -109,15 +236,43 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                         >
                                             <div className="flex items-start justify-between gap-3 mb-3">
                                                 <div className="flex-1">
-                                                    <h4 className="font-bold text-white text-lg mb-1 group-hover:text-purple-300 transition-colors">
-                                                        {workflow.name}
-                                                    </h4>
+                                                    <div className="flex items-center gap-2 mb-2">
+                                                        <h4 className="font-bold text-white text-lg group-hover:text-purple-300 transition-colors">
+                                                            {workflow.name}
+                                                        </h4>
+                                                        {getSourceBadge(workflow.source)}
+                                                    </div>
                                                     <p className="text-gray-400 text-sm leading-relaxed">
                                                         {workflow.description}
                                                     </p>
+                                                    {workflow.lastFetched && (
+                                                        <p className="text-xs text-gray-500 mt-1">
+                                                            Dernière mise à jour: {new Date(workflow.lastFetched).toLocaleString('fr-FR')}
+                                                        </p>
+                                                    )}
                                                 </div>
 
-                                                <div className="flex-shrink-0">
+                                                <div className="flex-shrink-0 flex items-center gap-2">
+                                                    {workflow.availableNodes && workflow.availableNodes.length > 0 && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                toggleWorkflowDetails(workflow.id);
+                                                            }}
+                                                            className="p-1 text-gray-400 hover:text-purple-400 transition-colors"
+                                                            title="Voir les détails des nœuds"
+                                                        >
+                                                            <svg
+                                                                className={`w-4 h-4 transition-transform ${expandedWorkflows.has(workflow.id) ? 'rotate-180' : ''}`}
+                                                                fill="none"
+                                                                stroke="currentColor"
+                                                                viewBox="0 0 24 24"
+                                                            >
+                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                            </svg>
+                                                        </button>
+                                                    )}
                                                     {selectedWorkflow === workflow.id ? (
                                                         <div className="w-7 h-7 rounded-full bg-purple-500 flex items-center justify-center shadow-lg">
                                                             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -182,8 +337,33 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                                     </div>
                                                 </div>
                                             )}
+
+                                            {/* Available Nodes - Expandable */}
+                                            {workflow.availableNodes && workflow.availableNodes.length > 0 && expandedWorkflows.has(workflow.id) && (
+                                                <div className="mt-3 pt-3 border-t border-gray-600">
+                                                    <div className="flex items-center justify-between mb-2">
+                                                        <p className="text-xs font-semibold text-gray-300">Nœuds ComfyUI disponibles:</p>
+                                                        <span className="text-xs text-gray-500 bg-gray-700 px-2 py-0.5 rounded">
+                                                            {workflow.availableNodes.length} nœuds
+                                                        </span>
+                                                    </div>
+                                                    <div className="max-h-24 overflow-y-auto space-y-1 custom-scrollbar">
+                                                        {workflow.availableNodes.slice(0, 15).map((node, idx) => (
+                                                            <p key={idx} className="text-xs text-gray-400 font-mono">
+                                                                • {node}
+                                                            </p>
+                                                        ))}
+                                                        {workflow.availableNodes.length > 15 && (
+                                                            <p className="text-xs text-gray-500">
+                                                                +{workflow.availableNodes.length - 15} autres nœuds...
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </button>
-                                    ))}
+                                        ))
+                                    )}
                                 </div>
 
                                 {/* Footer */}

@@ -4,7 +4,9 @@ export async function POST(request: NextRequest) {
     const startTime = Date.now();
     try {
         const body = await request.json();
+        console.log("🚀 ~ POST ~ body:", body)
         const comfyApiUrl = process.env.NEXT_PUBLIC_COMFY_API_URL;
+        console.log("🚀SALUTTTTTT", comfyApiUrl)
 
         console.log('=== PROXY REQUEST START ===');
         console.log('Timestamp:', new Date().toISOString());

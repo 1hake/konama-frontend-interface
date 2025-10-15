@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { toast } from 'react-toastify';
 import { GenerationProgress, GeneratedImage, ImageGenerationHookReturn, WorkflowGenerationOptions, WorkflowMetadata } from '../types';
-import { workflowManager } from '../lib/workflowManager';
+import { getAvailableWorkflows, getWorkflowMetadata, generateWorkflowJson, refreshWorkflows } from '../lib/workflowManager';
 
 export const useImageGeneration = (): ImageGenerationHookReturn => {
     const [isGenerating, setIsGenerating] = useState(false);
@@ -17,8 +17,17 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
 
     // Load available workflows on mount
     useEffect(() => {
-        const workflows = workflowManager.getAvailableWorkflows();
-        setAvailableWorkflows(workflows);
+        const loadWorkflows = async () => {
+            try {
+                const workflows = await getAvailableWorkflows();
+                setAvailableWorkflows(workflows);
+            } catch (error) {
+                console.error('Failed to load workflows:', error);
+                setError('Failed to load available workflows');
+            }
+        };
+
+        loadWorkflows();
     }, []);
 
     // Helper function to construct API URLs
@@ -180,7 +189,6 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
 
         // Determine which workflow to use
         const activeWorkflowId = workflowId || selectedWorkflow || 'flux-krea-dev';
-        const workflowMetadata = workflowManager.getWorkflowMetadata(activeWorkflowId);
 
         setIsGenerating(true);
         setError(null);
@@ -190,8 +198,9 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
         // Starting generation - no toast needed
 
         try {
-            // Generate workflow JSON using workflow manager
-            const workflow = workflowManager.generateWorkflowJson(activeWorkflowId, prompt, negativePrompt, options);
+            // Get workflow metadata and generate workflow JSON using workflow manager
+            const workflowMetadata = await getWorkflowMetadata(activeWorkflowId);
+            const workflow = await generateWorkflowJson(activeWorkflowId, prompt, negativePrompt, options);
             const requestBody = {
                 prompt: workflow,
                 client_id: Math.random().toString(36).substring(7)
@@ -259,6 +268,18 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
         // Reset complete - no toast needed
     }, []);
 
+    const handleRefreshWorkflows = useCallback(async () => {
+        try {
+            await refreshWorkflows();
+            const workflows = await getAvailableWorkflows();
+            setAvailableWorkflows(workflows);
+            console.log('✅ Workflows refreshed successfully');
+        } catch (error) {
+            console.error('Failed to refresh workflows:', error);
+            setError('Failed to refresh workflows');
+        }
+    }, []);
+
     return {
         isGenerating,
         progress,
@@ -269,5 +290,6 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
         setSelectedWorkflow,
         generateImage,
         resetGeneration,
+        refreshWorkflows: handleRefreshWorkflows,
     };
 };

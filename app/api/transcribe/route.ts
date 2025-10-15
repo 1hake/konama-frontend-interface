@@ -49,6 +49,33 @@ export async function POST(request: NextRequest) {
 
         const transcription = await response.json();
 
+        // Filter out common non-speech responses from Whisper
+        const commonNonSpeechResponses = [
+            'sous-titres réalisés par la communauté d\'amara.org',
+            'sous-titres réalisés para la comunidad de amara.org',
+            'sous-titres réalisés para la communauté d\'amara.org',
+            'subtitles by the amara.org community',
+            'merci de votre attention',
+            'merci d\'avoir regardé',
+        ];
+
+        const text = transcription.text?.trim() || '';
+        const lowerText = text.toLowerCase();
+
+        // Check if it's a common non-speech response
+        const isNonSpeech = commonNonSpeechResponses.some(response =>
+            lowerText.includes(response.toLowerCase()) ||
+            lowerText === response.toLowerCase()
+        );
+
+        if (isNonSpeech || text.length < 2) {
+            return NextResponse.json({
+                text: '',
+                success: false,
+                message: 'No clear speech detected'
+            });
+        }
+
         return NextResponse.json({
             text: transcription.text,
             success: true
