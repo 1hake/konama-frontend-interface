@@ -38,14 +38,15 @@ export const useWorkflows = () => {
                     const workflowName = item.content?.name || `Workflow ${index + 1}`;
                     const workflowContent = item.content?.content;
 
-                    // Extract workflow ID from the content if available
-                    const workflowId = workflowContent?.id || `workflow-${index}`;
+                    // Use the filename (without path and extension) as the workflow ID for easier identification
+                    const workflowId = workflowName.replace(/^workflows\//, '').replace(/\.json$/, '');
+                    const displayName = workflowId.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase());
 
                     // Create a metadata object from the workflow file
                     const metadata: WorkflowMetadata = {
                         id: workflowId,
-                        name: workflowName.replace(/^workflows\//, '').replace(/\.json$/, ''), // Clean up the name
-                        description: `Workflow from ${workflowName}`,
+                        name: displayName,
+                        description: `${displayName} workflow`,
                         category: workflowName.includes('flux') ? 'flux' : 'stable-diffusion',
                         version: '1.0.0',
                         supportsNegativePrompt: true,
@@ -60,6 +61,15 @@ export const useWorkflows = () => {
                                 min: 1,
                                 max: 50,
                                 step: 1
+                            },
+                            {
+                                name: 'guidance',
+                                label: 'Guidance',
+                                type: 'slider' as const,
+                                defaultValue: 3.5,
+                                min: 1,
+                                max: 10,
+                                step: 0.1
                             }
                         ]
                     };

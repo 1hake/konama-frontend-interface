@@ -6,12 +6,40 @@ export async function POST(request: NextRequest) {
         const body = await request.json();
         console.log("🚀 ~ POST ~ body:", body)
         const comfyApiUrl = process.env.NEXT_PUBLIC_COMFY_API_URL;
-        console.log("🚀SALUTTTTTT", comfyApiUrl)
+        console.log("🚀 ComfyUI API URL:", comfyApiUrl)
 
         console.log('=== PROXY REQUEST START ===');
         console.log('Timestamp:', new Date().toISOString());
         console.log('ComfyUI API URL:', comfyApiUrl);
         console.log('Request body keys:', Object.keys(body));
+
+        // Detailed workflow validation
+        if (body.prompt && typeof body.prompt === 'object') {
+            const workflow = body.prompt;
+            console.log('📊 Workflow structure:');
+            console.log('  - Has nodes:', !!workflow.nodes);
+            console.log('  - Nodes count:', workflow.nodes?.length || 0);
+
+            if (workflow.nodes && Array.isArray(workflow.nodes)) {
+                // Check for nodes without class_type
+                const nodesWithoutClassType = workflow.nodes.filter((node: any) => !node.class_type);
+                console.log('  - Nodes without class_type:', nodesWithoutClassType.length);
+
+                if (nodesWithoutClassType.length > 0) {
+                    console.error('❌ PROBLEM NODES WITHOUT CLASS_TYPE:');
+                    nodesWithoutClassType.forEach((node: any) => {
+                        console.error(`    Node ID: ${node.id}, type: ${node.type}, class_type: ${node.class_type}`);
+                    });
+                }
+
+                // Show first few nodes for debugging
+                console.log('  - First 3 nodes:');
+                workflow.nodes.slice(0, 3).forEach((node: any, i: number) => {
+                    console.log(`    ${i}: id=${node.id}, class_type=${node.class_type}, type=${node.type}`);
+                });
+            }
+        }
+
         console.log('Full request body:', JSON.stringify(body, null, 2));
 
         if (!comfyApiUrl) {
@@ -36,12 +64,12 @@ export async function POST(request: NextRequest) {
 
         const responseTime = Date.now() - startTime;
         console.log('⏱️  Response time:', responseTime + 'ms');
-        console.log('📊 RunPod response status:', response.status);
-        console.log('📋 RunPod response headers:', Object.fromEntries(response.headers.entries()));
+        console.log('📊 ComfyUI response status:', response.status);
+        console.log('📋 ComfyUI response headers:', Object.fromEntries(response.headers.entries()));
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('❌ RunPod API error details:');
+            console.error('❌ ComfyUI API error details:');
             console.error('   Status:', response.status);
             console.error('   Status Text:', response.statusText);
             console.error('   Error Response:', errorText);
@@ -49,7 +77,7 @@ export async function POST(request: NextRequest) {
 
             return NextResponse.json(
                 {
-                    error: 'RunPod API error',
+                    error: 'ComfyUI API error',
                     status: response.status,
                     statusText: response.statusText,
                     message: errorText,
@@ -68,7 +96,7 @@ export async function POST(request: NextRequest) {
         }
 
         const data = await response.json();
-        console.log('✅ RunPod successful response:');
+        console.log('✅ ComfyUI successful response:');
         console.log('   Response data:', JSON.stringify(data, null, 2));
         console.log('=== PROXY REQUEST END (SUCCESS) ===');
 

@@ -20,28 +20,45 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
 
     // Helper function to construct API URLs
     const getApiUrl = useCallback((endpoint: string) => {
+        console.log('🔗 getApiUrl called with endpoint:', endpoint);
+
+        // Always use proxy for /prompt endpoint to avoid CORS issues
+        if (endpoint === '/prompt') {
+            console.log('✅ Using proxy for /prompt endpoint');
+            return '/api/proxy';
+        }
+
+        // Always use proxy for /history endpoint to avoid CORS issues
+        if (endpoint.startsWith('/history/')) {
+            const promptId = endpoint.replace('/history/', '');
+            console.log('✅ Using proxy for /history endpoint, promptId:', promptId);
+            return `/api/history?prompt_id=${promptId}`;
+        }
+
+        // Always use proxy for /view endpoint to avoid CORS issues
+        if (endpoint.startsWith('/view')) {
+            console.log('✅ Using proxy for /view endpoint');
+            return `/api/view${endpoint.replace('/view', '')}`;
+        }
+
+        // For any other endpoints, use direct ComfyUI URL (rare cases)
         if (config.isExternalApi) {
-            // For external APIs (RunPod), use proxy endpoints to avoid CORS
-            if (endpoint === '/prompt') {
-                return '/api/proxy';
-            } else if (endpoint.startsWith('/history/')) {
-                const promptId = endpoint.replace('/history/', '');
-                return `/api/history?prompt_id=${promptId}`;
-            } else if (endpoint.startsWith('/view')) {
-                return `/api/view${endpoint.replace('/view', '')}`;
-            }
-            // Fallback for other endpoints
+            // Fallback for external APIs
             return endpoint;
         } else {
-            // For local ComfyUI, use direct endpoints with the configured URL
-            return `${config.comfyApiUrl}${endpoint}`;
+            // For local ComfyUI, use direct endpoints for other cases
+            const url = `${config.comfyApiUrl}${endpoint}`;
+            console.log('🏠 Using local ComfyUI endpoint:', url);
+            return url;
         }
     }, []);
 
     // WebSocket connection for real-time updates
     useEffect(() => {
+        // Re-enabled WebSocket connection 
         const connectWebSocket = () => {
             const wsUrl = config.getWebSocketUrl();
+            console.log('🔌 Connecting to WebSocket:', wsUrl);
 
             wsRef.current = new WebSocket(wsUrl);
 
@@ -115,7 +132,10 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
 
                 setGeneratedImages(images);
 
-                // Images loaded successfully - no toast needed
+                // Clear progress after images are loaded
+                setTimeout(() => {
+                    setProgress(null);
+                }, 2000);
             }
         } catch (error) {
             console.error('Error checking images:', error);
@@ -161,9 +181,15 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
     }, [checkImages, getApiUrl]);
 
     const generateImage = useCallback(async (prompt: string, negativePrompt: string = '', options: WorkflowGenerationOptions = {}) => {
-        const { steps = 20, workflowId = 'flux-krea-dev' } = options;
+        const { steps = 20, workflowId } = options;
+
         if (!prompt.trim()) {
             setError('Please enter a prompt');
+            return;
+        }
+
+        if (!workflowId) {
+            setError('Please select a workflow');
             return;
         }
 
@@ -173,8 +199,8 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
         setProgress(null);
 
         try {
-            // Use the workflow service to get the workflow JSON
-            const workflowResponse = await fetch(`${config.workflowApiUrl}/workflows/${workflowId}/generate`, {
+            // Use our API endpoint to get the workflow JSON from the external service
+            const workflowResponse = await fetch(`/api/workflows/${workflowId}/generate`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -200,7 +226,14 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
 
             console.log('=== FRONTEND REQUEST START ===');
             console.log('🎯 Making request to:', url);
+            console.log('🌍 Should be using proxy (not direct ComfyUI)');
             console.log('📤 Request body:', JSON.stringify(requestBody, null, 2));
+
+            // Explicit check to prevent direct ComfyUI calls
+            if (url.includes('8188') || url.includes('localhost:8188')) {
+                console.error('❌ PREVENTING DIRECT COMFYUI CALL!');
+                throw new Error('Direct ComfyUI calls are blocked. Use /api/proxy instead.');
+            }
 
             const response = await fetch(url, {
                 method: 'POST',

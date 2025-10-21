@@ -147,6 +147,18 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
                     </div>
                 )}
 
+                {/* Workflow Selection Warning */}
+                {!selectedWorkflow && availableWorkflows.length > 0 && (
+                    <div className="bg-orange-900/50 border-2 border-orange-500 text-orange-200 px-4 py-3 rounded-xl shadow-lg">
+                        <div className="flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            <span className="font-medium">Veuillez sélectionner un workflow pour commencer</span>
+                        </div>
+                    </div>
+                )}
+
                 {/* Form Title with Workflow Button */}
                 <div className="bg-gradient-to-r from-purple-900/40 to-purple-800/40 rounded-xl p-4 border border-purple-500/30 shadow-lg">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -161,13 +173,21 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
                             type="button"
                             onClick={() => setIsWorkflowModalOpen(true)}
                             disabled={isGenerating}
-                            className="flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className={`
+                                flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-purple-500/50 disabled:opacity-50 disabled:cursor-not-allowed
+                                ${selectedWorkflow
+                                    ? 'bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 text-white'
+                                    : 'bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 text-white animate-pulse'
+                                }
+                            `}
                         >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
-                            <span className="hidden sm:inline">Workflow ({availableWorkflows.length})</span>
+                            <span className="hidden sm:inline">
+                                {selectedWorkflow ? `Workflow (${availableWorkflows.length})` : 'Sélectionner un workflow'}
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -227,7 +247,7 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
                 <div className="pt-2 border-t border-gray-700">
                     <ActionButtons
                         isGenerating={isGenerating}
-                        canGenerate={fields.sujet.trim() !== ''}
+                        canGenerate={fields.sujet.trim() !== '' && selectedWorkflow !== null}
                         hasContent={hasAnyContent}
                         onGenerate={() => { }} // This will be handled by form submission
                         onReset={handleReset}
