@@ -1,41 +1,26 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { toast } from 'react-toastify';
-import { GenerationProgress, GeneratedImage, ImageGenerationHookReturn, WorkflowGenerationOptions, WorkflowMetadata } from '../types';
-import { getAvailableWorkflows, getWorkflowMetadata, generateWorkflowJson, refreshWorkflows } from '../lib/workflowManager';
+import { GenerationProgress, GeneratedImage, WorkflowGenerationOptions } from '../types';
+import { config } from '../lib/config';
 
-export const useImageGeneration = (): ImageGenerationHookReturn => {
+interface SimpleImageGenerationHookReturn {
+    isGenerating: boolean;
+    progress: GenerationProgress | null;
+    generatedImages: GeneratedImage[];
+    error: string | null;
+    generateImage: (prompt: string, negativePrompt?: string, options?: WorkflowGenerationOptions) => Promise<void>;
+    resetGeneration: () => void;
+}
+
+export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [progress, setProgress] = useState<GenerationProgress | null>(null);
     const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
     const [error, setError] = useState<string | null>(null);
-    const [availableWorkflows, setAvailableWorkflows] = useState<WorkflowMetadata[]>([]);
-    const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>('flux-krea-dev');
     const wsRef = useRef<WebSocket | null>(null);
-
-    // API configuration from environment variables
-    const apiBaseUrl = process.env.NEXT_PUBLIC_COMFY_API_URL || window.location.origin;
-
-    // Load available workflows on mount
-    useEffect(() => {
-        const loadWorkflows = async () => {
-            try {
-                const workflows = await getAvailableWorkflows();
-                setAvailableWorkflows(workflows);
-            } catch (error) {
-                console.error('Failed to load workflows:', error);
-                setError('Failed to load available workflows');
-            }
-        };
-
-        loadWorkflows();
-    }, []);
 
     // Helper function to construct API URLs
     const getApiUrl = useCallback((endpoint: string) => {
-        const externalApiUrl = process.env.NEXT_PUBLIC_COMFY_API_URL;
-        const isExternalApi = externalApiUrl && !externalApiUrl.includes('localhost');
-
-        if (isExternalApi) {
+        if (config.isExternalApi) {
             // For external APIs (RunPod), use proxy endpoints to avoid CORS
             if (endpoint === '/prompt') {
                 return '/api/proxy';
@@ -48,20 +33,15 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
             // Fallback for other endpoints
             return endpoint;
         } else {
-            // For local development, use relative paths
-            return endpoint;
+            // For local ComfyUI, use direct endpoints with the configured URL
+            return `${config.comfyApiUrl}${endpoint}`;
         }
     }, []);
 
     // WebSocket connection for real-time updates
     useEffect(() => {
         const connectWebSocket = () => {
-            // Construct WebSocket URL based on API base URL or fallback to current host
-            const externalApiUrl = process.env.NEXT_PUBLIC_COMFY_API_URL;
-            const isExternalApi = externalApiUrl && !externalApiUrl.includes('localhost');
-            const wsUrl = isExternalApi
-                ? externalApiUrl.replace('https://', 'wss://').replace('http://', 'ws://') + '/ws'
-                : `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
+            const wsUrl = config.getWebSocketUrl();
 
             wsRef.current = new WebSocket(wsUrl);
 
@@ -181,26 +161,37 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
     }, [checkImages, getApiUrl]);
 
     const generateImage = useCallback(async (prompt: string, negativePrompt: string = '', options: WorkflowGenerationOptions = {}) => {
-        const { steps = 20, workflowId } = options;
+        const { steps = 20, workflowId = 'flux-krea-dev' } = options;
         if (!prompt.trim()) {
             setError('Please enter a prompt');
             return;
         }
-
-        // Determine which workflow to use
-        const activeWorkflowId = workflowId || selectedWorkflow || 'flux-krea-dev';
 
         setIsGenerating(true);
         setError(null);
         setGeneratedImages([]);
         setProgress(null);
 
-        // Starting generation - no toast needed
-
         try {
-            // Get workflow metadata and generate workflow JSON using workflow manager
-            const workflowMetadata = await getWorkflowMetadata(activeWorkflowId);
-            const workflow = await generateWorkflowJson(activeWorkflowId, prompt, negativePrompt, options);
+            // Use the workflow service to get the workflow JSON
+            const workflowResponse = await fetch(`${config.workflowApiUrl}/workflows/${workflowId}/generate`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    positivePrompt: prompt,
+                    negativePrompt: negativePrompt || 'text, watermark',
+                    options: { steps, ...options }
+                }),
+            });
+
+            if (!workflowResponse.ok) {
+                throw new Error(`Failed to generate workflow: ${workflowResponse.status} ${workflowResponse.statusText}`);
+            }
+
+            const workflow = await workflowResponse.json();
+
             const requestBody = {
                 prompt: workflow,
                 client_id: Math.random().toString(36).substring(7)
@@ -257,27 +248,13 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
             setError('Generation failed');
             setIsGenerating(false);
         }
-    }, [pollForCompletion, getApiUrl, selectedWorkflow]);
+    }, [pollForCompletion, getApiUrl]);
 
     const resetGeneration = useCallback(() => {
         setGeneratedImages([]);
         setError(null);
         setProgress(null);
         setIsGenerating(false);
-
-        // Reset complete - no toast needed
-    }, []);
-
-    const handleRefreshWorkflows = useCallback(async () => {
-        try {
-            await refreshWorkflows();
-            const workflows = await getAvailableWorkflows();
-            setAvailableWorkflows(workflows);
-            console.log('✅ Workflows refreshed successfully');
-        } catch (error) {
-            console.error('Failed to refresh workflows:', error);
-            setError('Failed to refresh workflows');
-        }
     }, []);
 
     return {
@@ -285,11 +262,7 @@ export const useImageGeneration = (): ImageGenerationHookReturn => {
         progress,
         generatedImages,
         error,
-        availableWorkflows,
-        selectedWorkflow,
-        setSelectedWorkflow,
         generateImage,
         resetGeneration,
-        refreshWorkflows: handleRefreshWorkflows,
     };
 };

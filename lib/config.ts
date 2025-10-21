@@ -1,7 +1,10 @@
 // Environment configuration
 export const config = {
-    // ComfyUI API configuration
+    // ComfyUI API configuration for image generation (/prompt endpoint)
     comfyApiUrl: process.env.NEXT_PUBLIC_COMFY_API_URL || '',
+
+    // Workflow service API for retrieving workflows
+    workflowApiUrl: process.env.NEXT_PUBLIC_WORKFLOW_API_URL || 'http://localhost:4000',
 
     // Check if using external API (not localhost)
     isExternalApi: process.env.NEXT_PUBLIC_COMFY_API_URL

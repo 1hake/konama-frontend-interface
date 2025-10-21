@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { config } from '../../../lib/config';
 
 /**
- * GET /api/test-object-info - Test connection to ComfyUI and inspect object_info structure
+ * GET /api/test-object-info - Test connection to ComfyUI directly (no longer uses proxy)
  */
 export async function GET(request: NextRequest) {
     try {
@@ -16,20 +16,19 @@ export async function GET(request: NextRequest) {
             }, { status: 400 });
         }
 
-        console.log('🔍 Testing connection to ComfyUI via proxy');
+        console.log('🔍 Testing direct connection to ComfyUI');
 
-        // Use the proxy endpoint to avoid CORS issues
-        const response = await fetch(`${request.nextUrl.origin}/api/object-info`);
+        // Call ComfyUI API directly
+        const response = await fetch(`${comfyApiUrl}/object_info`);
 
         if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
             return NextResponse.json({
                 success: false,
-                error: `Failed to fetch object info via proxy: ${response.status} ${response.statusText}`,
+                error: `Failed to fetch object info directly: ${response.status} ${response.statusText}`,
                 comfyApiUrl,
                 responseStatus: response.status,
                 responseStatusText: response.statusText,
-                proxyError: errorData
+                note: 'This application now uses local workflows only and does not require ComfyUI object_info for operation'
             }, { status: response.status });
         }
 
@@ -52,6 +51,7 @@ export async function GET(request: NextRequest) {
             success: true,
             comfyApiUrl,
             analysis,
+            note: 'ComfyUI connection successful, but this application now uses local workflows only',
             // Include first few nodes for inspection
             sampleNodes: Object.fromEntries(
                 nodeNames.slice(0, 3).map(name => [name, objectInfo[name]])
@@ -70,7 +70,8 @@ export async function GET(request: NextRequest) {
             success: false,
             error: 'Failed to connect to ComfyUI',
             details: error instanceof Error ? error.message : String(error),
-            comfyApiUrl: config.comfyApiUrl
+            comfyApiUrl: config.comfyApiUrl,
+            note: 'Connection failed, but this application now uses local workflows only and can operate without ComfyUI object_info'
         }, { status: 500 });
     }
 }

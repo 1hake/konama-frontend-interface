@@ -70,7 +70,7 @@ export const TechnicalParameters: React.FC<TechnicalParametersProps> = ({
                     tabIndex={9}
                     placeholder="20"
                     hint="(10-50)"
-                    min={10}
+                    min={1}
                     max={50}
                 />
 

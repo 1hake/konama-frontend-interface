@@ -3,7 +3,6 @@
 import { Fragment, useState } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import { WorkflowMetadata } from '../types';
-import { refreshWorkflows } from '../lib/workflowManager';
 
 interface WorkflowSelectorModalProps {
     isOpen: boolean;

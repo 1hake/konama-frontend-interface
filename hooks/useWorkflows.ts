@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { WorkflowMetadata } from '../types';
+import { config } from '../lib/config';
 
 export const useWorkflows = () => {
     const [workflows, setWorkflows] = useState<WorkflowMetadata[]>([]);
@@ -14,7 +15,7 @@ export const useWorkflows = () => {
             // Try direct connection first
             let response;
             try {
-                response = await fetch('http://localhost:4000/workflows');
+                response = await fetch(`${config.workflowApiUrl}/workflows`);
             } catch (directError) {
                 // If direct connection fails, try through our proxy
                 console.log('Direct connection failed, trying proxy...');
@@ -26,45 +27,55 @@ export const useWorkflows = () => {
             }
 
             const data = await response.json();
+            console.log('Raw workflow data:', data);
 
-            // Handle different response formats and transform workflow files into WorkflowMetadata
+            // Handle the specific structure from workflow service
             let workflowsData: WorkflowMetadata[] = [];
 
-            if (Array.isArray(data)) {
-                // Direct array of workflows
-                workflowsData = data;
-            } else if (data.data && Array.isArray(data.data)) {
-                // Wrapped in 'data' array - contains workflow file objects
-                workflowsData = data.data.map((workflowFile: any) => {
-                    const filename = workflowFile.content?.name || 'unknown';
-                    const workflowContent = workflowFile.content?.content;
+            if (data.data && Array.isArray(data.data)) {
+                // Parse the workflow files from the external service
+                workflowsData = data.data.map((item: any, index: number) => {
+                    const workflowName = item.content?.name || `Workflow ${index + 1}`;
+                    const workflowContent = item.content?.content;
 
-                    // Extract workflow ID from filename (remove .json extension)
-                    const workflowId = filename.replace(/^workflows\//, '').replace(/\.json$/, '');
+                    // Extract workflow ID from the content if available
+                    const workflowId = workflowContent?.id || `workflow-${index}`;
 
-                    // Create WorkflowMetadata from the file
-                    return {
+                    // Create a metadata object from the workflow file
+                    const metadata: WorkflowMetadata = {
                         id: workflowId,
-                        name: workflowId.replace(/-/g, ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
-                        description: `Workflow: ${workflowId}`,
-                        category: 'imported',
+                        name: workflowName.replace(/^workflows\//, '').replace(/\.json$/, ''), // Clean up the name
+                        description: `Workflow from ${workflowName}`,
+                        category: workflowName.includes('flux') ? 'flux' : 'stable-diffusion',
+                        version: '1.0.0',
+                        supportsNegativePrompt: true,
                         source: 'api' as const,
                         lastFetched: new Date(),
-                        supportsNegativePrompt: true,
-                        // You can add more parsing logic here based on workflowContent if needed
-                        tags: [workflowId.includes('flux') ? 'flux' : 'stable-diffusion']
-                    } as WorkflowMetadata;
-                });
+                        parameters: [
+                            {
+                                name: 'steps',
+                                label: 'Steps',
+                                type: 'slider' as const,
+                                defaultValue: 20,
+                                min: 1,
+                                max: 50,
+                                step: 1
+                            }
+                        ]
+                    };
+
+                    return metadata;
+                }).filter(Boolean);
+            } else if (Array.isArray(data)) {
+                // Handle direct array format (fallback)
+                workflowsData = data;
             } else if (data.workflows && Array.isArray(data.workflows)) {
-                // Wrapped in 'workflows' property
+                // Handle wrapped format (proxy)
                 workflowsData = data.workflows;
-            } else {
-                console.warn('Unexpected response format:', data);
-                workflowsData = [];
             }
 
             setWorkflows(workflowsData);
-            console.log(`✅ Successfully loaded ${workflowsData.length} workflows:`, workflowsData);
+            console.log(`✅ Successfully loaded ${workflowsData.length} workflows:`, workflowsData.map(w => w.name));
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Failed to fetch workflows';
             setError(errorMessage);

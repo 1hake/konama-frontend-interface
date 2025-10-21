@@ -1,18 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getAvailableWorkflows } from '../../../lib/workflowManager';
+import { config } from '@/lib/config';
 
 /**
- * GET /api/workflows - Get all available workflows
+ * GET /api/workflows - Proxy to external workflow service
  */
 export async function GET(request: NextRequest) {
     try {
-        const workflows = await getAvailableWorkflows();
+        const response = await fetch(`${config.workflowApiUrl}/workflows`);
 
-        return NextResponse.json({
-            success: true,
-            workflows,
-            count: workflows.length
-        }, {
+        if (!response.ok) {
+            throw new Error(`External service returned ${response.status}: ${response.statusText}`);
+        }
+
+        const workflows = await response.json();
+
+        return NextResponse.json(workflows, {
             status: 200,
             headers: {
                 'Access-Control-Allow-Origin': '*',
