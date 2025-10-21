@@ -13,3 +13,8 @@ export { WorkflowSelectorModal } from './WorkflowSelectorModal';
 export { UnifiedPromptBuilder } from './UnifiedPromptBuilder';
 export { InlinePromptBuilder } from './InlinePromptBuilder';
 export { VoiceRecorder } from './VoiceRecorder';
+export { SuggestionTooltip } from './SuggestionTooltip';
+export { InlineToken } from './InlineToken';
+export { PromptBuilderHeader } from './PromptBuilderHeader';
+export { PromptSentenceBuilder } from './PromptSentenceBuilder';
+export { PromptBuilderActions } from './PromptBuilderActions';
