@@ -1,0 +1,125 @@
+{
+    "client_id": "test-missing-files",
+    "prompt": {
+        "6": {
+            "inputs": {
+                "text": "a beautiful landscape",
+                "clip": [
+                    "11",
+                    0
+                ]
+            },
+            "class_type": "CLIPTextEncode"
+        },
+        "8": {
+            "inputs": {
+                "samples": [
+                    "13",
+                    0
+                ],
+                "vae": [
+                    "10",
+                    0
+                ]
+            },
+            "class_type": "VAEDecode"
+        },
+        "9": {
+            "inputs": {
+                "filename_prefix": "test_output",
+                "images": [
+                    "8",
+                    0
+                ]
+            },
+            "class_type": "SaveImage"
+        },
+        "10": {
+            "inputs": {
+                "vae_name": "ae.safetensors"
+            },
+            "class_type": "VAELoader"
+        },
+        "11": {
+            "inputs": {
+                "clip_name1": "clip_l.safetensors",
+                "clip_name2": "t5xxl_fp16.safetensors",
+                "type": "flux",
+                "device": "default"
+            },
+            "class_type": "DualCLIPLoader"
+        },
+        "12": {
+            "inputs": {
+                "unet_name": "flux1-dev.sft",
+                "weight_dtype": "default"
+            },
+            "class_type": "UNETLoader"
+        },
+        "13": {
+            "inputs": {
+                "seed": 42,
+                "steps": 20,
+                "cfg": 1.0,
+                "sampler_name": "euler",
+                "scheduler": "simple",
+                "denoise": 1.0,
+                "model": [
+                    "56",
+                    0
+                ],
+                "positive": [
+                    "27",
+                    0
+                ],
+                "negative": [
+                    "16",
+                    0
+                ],
+                "latent_image": [
+                    "5",
+                    0
+                ]
+            },
+            "class_type": "KSampler"
+        },
+        "5": {
+            "inputs": {
+                "width": 1024,
+                "height": 1024,
+                "batch_size": 1
+            },
+            "class_type": "EmptyLatentImage"
+        },
+        "16": {
+            "inputs": {
+                "conditioning": [
+                    "6",
+                    0
+                ]
+            },
+            "class_type": "ConditioningZeroOut"
+        },
+        "27": {
+            "inputs": {
+                "guidance": 3.5,
+                "conditioning": [
+                    "6",
+                    0
+                ]
+            },
+            "class_type": "FluxGuidance"
+        },
+        "56": {
+            "inputs": {
+                "model": [
+                    "12",
+                    0
+                ],
+                "lora_name": "nonexistent_lora.safetensors",
+                "strength_model": 1.0
+            },
+            "class_type": "LoraLoaderModelOnly"
+        }
+    }
+}
