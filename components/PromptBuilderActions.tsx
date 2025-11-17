@@ -1,7 +1,5 @@
 'use client';
 
-import { VoiceRecorder } from './VoiceRecorder';
-
 interface PromptBuilderActionsProps {
     isGenerating: boolean;
     isEnhancing: boolean;
@@ -10,7 +8,6 @@ interface PromptBuilderActionsProps {
     error?: string | null;
     onEnhancePrompt: () => void;
     onClearAll: () => void;
-    onTranscriptionComplete: (text: string) => void;
 }
 
 export const PromptBuilderActions: React.FC<PromptBuilderActionsProps> = ({
@@ -20,57 +17,50 @@ export const PromptBuilderActions: React.FC<PromptBuilderActionsProps> = ({
     hasSuggestions,
     error,
     onEnhancePrompt,
-    onClearAll,
-    onTranscriptionComplete
+    onClearAll
 }) => {
     return (
         <>
             {/* Actions */}
-            <div className="mt-6 flex items-center justify-end">
-                <div className="flex items-center gap-3">
-                    {/* Enhance Prompt Button */}
+            <div className="mt-3 flex items-center justify-end">
+                <div className="flex items-center gap-2">
+                    {/* Enhance Prompt Button - Simplified */}
                     <button
                         type="button"
                         onClick={onEnhancePrompt}
                         disabled={isGenerating || isEnhancing}
-                        className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/40 text-purple-300 hover:text-purple-200 hover:bg-gradient-to-r hover:from-purple-500/30 hover:to-pink-500/30 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed hover:border-purple-400/60"
+                        title="Améliorer le prompt avec l'IA"
+                        className="group flex items-center gap-1.5 px-2.5 py-1.5 bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/30 hover:border-purple-500/50 text-purple-300 hover:text-purple-200 rounded-lg text-xs font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {isEnhancing ? (
                             <>
-                                <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3.5 h-3.5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                                 </svg>
-                                <span>Amélioration...</span>
+                                <span>...</span>
                             </>
                         ) : (
                             <>
-                                <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
+                                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM15.657 5.757a1 1 0 00-1.414-1.414l-.707.707a1 1 0 001.414 1.414l.707-.707zM18 10a1 1 0 01-1 1h-1a1 1 0 110-2h1a1 1 0 011 1zM5.05 6.464A1 1 0 106.464 5.05l-.707-.707a1 1 0 00-1.414 1.414l.707.707zM5 10a1 1 0 01-1 1H3a1 1 0 110-2h1a1 1 0 011 1zM8 16v-1h4v1a2 2 0 11-4 0zM12 14c.015-.34.208-.646.477-.859a4 4 0 10-4.954 0c.27.213.462.519.476.859h4.002z" />
                                 </svg>
-                                <span>Améliorer le prompt</span>
+                                <span>Améliorer</span>
                             </>
                         )}
                     </button>
-
-                    {/* Voice Recording Component */}
-                    <div className="relative z-10">
-                        <VoiceRecorder
-                            onTranscriptionComplete={onTranscriptionComplete}
-                            isGenerating={isGenerating}
-                        />
-                    </div>
 
                     {hasContent && (
                         <button
                             type="button"
                             onClick={onClearAll}
                             disabled={isGenerating}
-                            className="group flex items-center gap-2 px-3 py-1.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-red-500/20"
+                            title="Effacer tous les champs"
+                            className="group flex items-center gap-1.5 px-2.5 py-1.5 text-xs text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-red-500/20"
                         >
-                            <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
-                            Tout effacer
+                            Effacer
                         </button>
                     )}
                 </div>

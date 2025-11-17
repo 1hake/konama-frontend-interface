@@ -46,15 +46,15 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
     return (
         <div
             ref={containerRef}
-            className={`bg-gray-950/40 backdrop-blur-sm rounded-xl p-6 border transition-all duration-500 ${isEnhancing
-                ? 'border-purple-400/60 shadow-lg shadow-purple-400/20 animate-pulse bg-gradient-to-r from-purple-900/20 to-pink-900/20'
-                : 'border-gray-700/30'
+            className={`bg-gray-700/50 rounded-lg p-3 border transition-all duration-500 ${isEnhancing
+                ? 'border-purple-400/60 shadow-lg shadow-purple-400/20 animate-pulse'
+                : 'border-gray-600/30'
                 }`}
         >
             {isEnhancing && (
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-purple-500/10 to-pink-500/10 animate-pulse pointer-events-none"></div>
+                <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-purple-500/10 to-pink-500/10 animate-pulse pointer-events-none"></div>
             )}
-            <div className="text-base leading-relaxed text-gray-100 relative z-10">
+            <div className="text-sm leading-relaxed text-gray-100 relative z-10">
                 <div className="flex flex-wrap items-center gap-x-2 gap-y-4">
                     <span>Je veux créer une image de</span>
                     <InlineToken

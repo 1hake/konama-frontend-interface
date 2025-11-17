@@ -26,7 +26,7 @@ export const GeneratedImagesDisplay: React.FC<GeneratedImagesDisplayProps> = ({
     }
 
     return (
-        <div className="w-full space-y-4">
+        <div className="w-full max-w-2xl mx-auto space-y-4">
             {images.map((image, index) => (
                 <div key={index} className="relative group">
                     <div className="relative overflow-hidden rounded-xl shadow-2xl bg-gray-900">

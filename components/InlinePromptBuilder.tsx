@@ -61,39 +61,6 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
         }, 150);
     }, []);
 
-    const handleTranscriptionComplete = (text: string) => {
-        // Simple implementation - you can enhance this with more sophisticated NLP
-        const lowerText = text.toLowerCase();
-
-        // Try to extract subject (first few words typically describe the main subject)
-        if (!fields.sujet) {
-            const words = text.split(' ');
-            const subjectWords = words.slice(0, 3).join(' ');
-            onFieldChange('sujet', subjectWords);
-        }
-
-        // Look for context indicators
-        if (lowerText.includes('dans') || lowerText.includes('sur') || lowerText.includes('sous')) {
-            const contextMatch = text.match(/(dans|sur|sous)\s+([^,\.]+)/i);
-            if (contextMatch && !fields.contexte) {
-                onFieldChange('contexte', contextMatch[0]);
-            }
-        }
-
-        // Look for style/technique indicators
-        if (lowerText.includes('style') || lowerText.includes('peinture') || lowerText.includes('photo')) {
-            const styleMatch = text.match(/(style|peinture|photo)\s+([^,\.]+)/i);
-            if (styleMatch && !fields.technique) {
-                onFieldChange('technique', styleMatch[0]);
-            }
-        }
-
-        // If no specific fields are filled, put everything in subject
-        if (!fields.sujet && !fields.contexte && !fields.technique) {
-            onFieldChange('sujet', text);
-        }
-    };
-
     const handleEnhancePrompt = async () => {
         await enhancePrompt(fields);
     };
@@ -104,9 +71,7 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
     };
 
     return (
-        <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-sm rounded-2xl p-6 border border-gray-700/50 shadow-2xl">
-            <PromptBuilderHeader />
-
+        <div>
             <PromptSentenceBuilder
                 fields={fields}
                 onFieldChange={onFieldChange}
@@ -126,7 +91,6 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
                 error={error}
                 onEnhancePrompt={handleEnhancePrompt}
                 onClearAll={handleClearAll}
-                onTranscriptionComplete={handleTranscriptionComplete}
             />
         </div>
     );
