@@ -121,13 +121,13 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
                     placeholder={field.placeholder}
                     disabled={isGenerating}
                     className={`
-                        inline-block px-3 py-1.5 rounded-lg border-2
+                        inline-block px-4 py-2 rounded-full border
                         ${field.color}
-                        bg-gray-800/90 text-white placeholder-gray-400
-                        focus:outline-none focus:ring-2 focus:ring-blue-400/50
+                        glass-light text-white placeholder-gray-400 font-light
+                        focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50
                         min-w-[120px] max-w-[400px] transition-all
                     `}
-                    style={{ width: `${Math.max(120, (value || field.placeholder).length * 8 + 24)}px` }}
+                    style={{ width: `${Math.max(120, (value || field.placeholder).length * 8 + 32)}px` }}
                 />
             </span>
         );
@@ -144,31 +144,31 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
                 disabled={isGenerating}
                 data-field-index={fieldIndex}
                 className={`
-                    inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-2 transition-all duration-200
+                    inline-flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-300
                     ${field.color}
                     ${isEmpty ? 'border-dashed opacity-75' : 'border-solid'}
-                    ${hasAISuggestions ? 'ring-2 ring-purple-400/30 border-purple-400/60' : ''}
-                    hover:scale-[1.02] hover:shadow-md hover:brightness-110
+                    ${hasAISuggestions ? 'ring-2 ring-blue-400/30 border-blue-400/60' : ''}
+                    hover:scale-[1.03] hover:shadow-lg active:scale-[0.98]
                     cursor-pointer
                     disabled:opacity-50 disabled:cursor-not-allowed
-                    focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400
+                    focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50
                 `}
             >
-                <span className={`font-medium text-sm ${isEmpty ? 'italic opacity-70' : ''}`}>
+                <span className={`font-light text-sm ${isEmpty ? 'italic opacity-70' : ''}`}>
                     {displayValue}
                 </span>
 
                 {hasAISuggestions && (
                     <div className="flex items-center gap-1">
-                        <div className="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
-                        <svg className="w-3 h-3 text-purple-400" fill="currentColor" viewBox="0 0 20 20">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                        <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                         </svg>
                     </div>
                 )}
 
                 {!isEmpty && !hasAISuggestions && (
-                    <svg className="w-3 h-3 opacity-50 group-hover:opacity-70 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-3.5 h-3.5 opacity-40 group-hover:opacity-60 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                 )}
@@ -192,11 +192,11 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
             {/* Simple Example Tooltip */}
             {!hasAISuggestions && showTooltip && !isEditing && (
                 <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 z-30 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-200">
-                    <div className="bg-gray-900/95 backdrop-blur-sm text-white px-4 py-3 rounded-lg shadow-xl border border-gray-700/50 min-w-[320px] max-w-md">
-                        <div className="text-xs font-medium text-gray-300 mb-1.5">
+                    <div className="glass-light text-white px-5 py-3 rounded-2xl shadow-xl border border-white/10 min-w-[320px] max-w-md">
+                        <div className="text-xs font-medium text-gray-400 mb-2">
                             Exemple:
                         </div>
-                        <div className="text-sm italic text-gray-100 leading-relaxed">
+                        <div className="text-sm italic text-gray-100 leading-relaxed font-light">
                             &quot;{field.example}&quot;
                         </div>
                         {/* Arrow */}
@@ -211,7 +211,7 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
             {hasAISuggestions && (
                 <button
                     onClick={handleEdit}
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute -top-1 -right-1 w-6 h-6 glass-light hover:bg-white/20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all border border-white/20 active:scale-90"
                     title="Modifier manuellement"
                 >
                     <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">

@@ -73,27 +73,27 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 pb-[450px]">
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-black pb-[450px]">
       {/* Header */}
-      <header className="container mx-auto px-4 py-6">
+      <header className="container mx-auto px-6 py-8">
         <div className="text-center">
-          <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white mb-2 leading-tight">
-            DIF<span className="text-purple-400">FUSION</span>
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white mb-3 tracking-tight">
+            DIF<span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">FUSION</span>
           </h1>
-          <p className="text-sm md:text-lg text-gray-300">
+          <p className="text-base md:text-xl text-gray-400 font-light">
             Créez des images uniques avec l&apos;intelligence artificielle
           </p>
         </div>
       </header>
 
       {/* Main Content - Centered Images */}
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className="container mx-auto px-6">
+        <div className="max-w-5xl mx-auto space-y-6">
           {/* Progress Display */}
           <GenerationProgress progress={progress} />
 
           {/* Image Display Area - Centered */}
-          <div className="bg-gray-800 rounded-2xl shadow-2xl p-6 min-h-[500px] flex items-center justify-center">
+          <div className="glass rounded-3xl shadow-2xl p-8 min-h-[500px] flex items-center justify-center border border-white/10">
             <GeneratedImagesDisplay
               images={generatedImages}
               getImageUrl={getImageUrl}
@@ -105,7 +105,7 @@ export default function Home() {
             <div className="flex justify-center">
               <button
                 onClick={resetGeneration}
-                className="bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold py-3 px-8 rounded-xl transition-all duration-300 transform hover:scale-[1.02] flex items-center justify-center gap-2"
+                className="glass-light hover:bg-white/15 text-white font-medium py-3.5 px-10 rounded-full transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center gap-2.5 border border-white/20 shadow-lg"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />

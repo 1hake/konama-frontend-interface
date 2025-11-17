@@ -1,10 +1,12 @@
 'use client';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { PromptBuilderHeader } from './PromptBuilderHeader';
 import { PromptSentenceBuilder } from './PromptSentenceBuilder';
 import { PromptBuilderActions } from './PromptBuilderActions';
+import { WorkflowSelectorModal } from './WorkflowSelectorModal';
 import { usePromptEnhancement } from '../hooks/usePromptEnhancement';
+import { WorkflowMetadata } from '../types';
 
 interface InlinePromptBuilderProps {
     fields: {
@@ -17,8 +19,22 @@ interface InlinePromptBuilderProps {
         details: string;
         parametres: string;
     };
-    onFieldChange: (field: string, value: string) => void;
+    technicalFields: {
+        steps: number;
+        guidance: number;
+        aspectRatio: string;
+        loraName: string;
+        loraStrength: number;
+        negatifs: string;
+    };
+    onFieldChange: (field: string, value: string | number) => void;
     isGenerating: boolean;
+    onGenerate: () => void;
+    availableWorkflows?: WorkflowMetadata[];
+    selectedWorkflow?: string | null;
+    onWorkflowChange?: (workflowId: string) => void;
+    onRefreshWorkflows?: () => Promise<void>;
+    error?: string | null;
 }
 
 const inlineFields = [
@@ -34,9 +50,18 @@ const inlineFields = [
 
 export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
     fields,
+    technicalFields,
     onFieldChange,
-    isGenerating
+    isGenerating,
+    onGenerate,
+    availableWorkflows = [],
+    selectedWorkflow = null,
+    onWorkflowChange,
+    onRefreshWorkflows,
+    error: formError
 }) => {
+    const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
+
     const hasContent = Object.values(fields).some(v => v.trim() !== '');
     const {
         enhancePrompt,
@@ -44,7 +69,7 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
         getSuggestionsForField,
         hasSuggestions,
         clearSuggestions,
-        error
+        error: enhancementError
     } = usePromptEnhancement();
 
     const handleNavigate = useCallback((currentIndex: number, direction: 'prev' | 'next') => {
@@ -71,9 +96,25 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
     };
 
     return (
-        <div>
+        <div className="space-y-3">
+            {/* Workflow Selection Modal */}
+            {availableWorkflows.length > 0 && onWorkflowChange && (
+                <WorkflowSelectorModal
+                    isOpen={isWorkflowModalOpen}
+                    onClose={() => setIsWorkflowModalOpen(false)}
+                    workflows={availableWorkflows}
+                    selectedWorkflow={selectedWorkflow}
+                    onWorkflowChange={onWorkflowChange}
+                    onRefresh={onRefreshWorkflows}
+                />
+            )}
+
+
+
+            {/* Prompt Sentence Builder */}
             <PromptSentenceBuilder
                 fields={fields}
+                technicalFields={technicalFields}
                 onFieldChange={onFieldChange}
                 isGenerating={isGenerating}
                 isEnhancing={isEnhancing}
@@ -81,17 +122,37 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
                 getSuggestionsForField={getSuggestionsForField}
                 hasSuggestions={hasSuggestions}
                 onNavigate={handleNavigate}
+                onGenerate={onGenerate}
+                onEnhancePrompt={handleEnhancePrompt}
+                onOpenWorkflowModal={() => setIsWorkflowModalOpen(true)}
+                selectedWorkflow={selectedWorkflow}
+                availableWorkflows={availableWorkflows}
+                error={formError}
+                onClearAll={handleClearAll}
+                hasContent={hasContent}
             />
 
-            <PromptBuilderActions
-                isGenerating={isGenerating}
-                isEnhancing={isEnhancing}
-                hasContent={hasContent}
-                hasSuggestions={hasSuggestions}
-                error={error}
-                onEnhancePrompt={handleEnhancePrompt}
-                onClearAll={handleClearAll}
-            />
+
+
+
+
+            {/* Enhancement Status Messages */}
+            {enhancementError && (
+                <div className="p-3 glass border border-red-400/30 rounded-2xl">
+                    <div className="text-red-300 text-xs">
+                        Erreur lors de l'amélioration: {enhancementError}
+                    </div>
+                </div>
+            )}
+
+            {hasSuggestions && (
+                <div className="p-3 glass border border-blue-400/30 rounded-2xl">
+                    <div className="text-blue-300 text-xs flex items-center gap-2">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                        Suggestions IA disponibles - cliquez sur les champs colorés pour voir les propositions
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
