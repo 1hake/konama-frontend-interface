@@ -83,7 +83,7 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
     };
 
     return (
-        <div className="fixed bottom-6 left-6 right-6  rounded-3xl shadow-2xl z-50 transition-all duration-300">
+        <div className="fixed bottom-6 left-6 right-6  rounded-3xl  z-50 transition-all duration-300">
             <div className="mx-auto px-8 py-6 max-w-6xl">
                 <div className="max-h-[450px] overflow-y-auto custom-scrollbar pr-2">
                     <InlinePromptBuilder

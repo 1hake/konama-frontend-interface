@@ -77,12 +77,16 @@ export default function Home() {
       {/* Header */}
       <header className="container mx-auto px-6 py-8">
         <div className="text-center">
-          <h1 className="text-4xl md:text-6xl lg:text-7xl font-semibold text-white mb-3 tracking-tight">
-            DIF<span className="bg-gradient-to-r from-blue-400 to-purple-500 bg-clip-text text-transparent">FUSION</span>
-          </h1>
-          <p className="text-base md:text-xl text-gray-400 font-light">
-            Créez des images uniques avec l&apos;intelligence artificielle
-          </p>
+          <div className="flex items-center justify-center gap-4 mb-3">
+            <img 
+              src="/images/fuzdi_white.png" 
+              alt="Fuzdi" 
+              className="h-12 md:h-16 lg:h-20 w-auto"
+            />
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-light text-white tracking-tight">
+              studio
+            </h1>
+          </div>
         </div>
       </header>
 
