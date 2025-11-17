@@ -45,6 +45,12 @@ export default function Home() {
 
   // Helper function to generate image URLs
   const getImageUrl = (image: GeneratedImage) => {
+    // Handle mock images
+    if (image.filename.startsWith('mock_')) {
+      // Return a placeholder image URL for mock mode
+      return `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='512' height='512'%3E%3Crect fill='%23a855f7' width='512' height='512'/%3E%3Ctext x='50%25' y='40%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-size='24' fill='%23ffffff'%3E🎭 Mock Image✨%3C/text%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-size='16' fill='%23e9d5ff'%3EMock Generation Complete%3C/text%3E%3Ctext x='50%25' y='70%25' dominant-baseline='middle' text-anchor='middle' font-family='monospace' font-size='12' fill='%23e9d5ff'%3ENo endpoints required%3C/text%3E%3C/svg%3E`;
+    }
+
     const params = new URLSearchParams({
       filename: image.filename,
       type: image.type,
@@ -122,7 +128,7 @@ export default function Home() {
             <ImageGenerationForm
               onGenerate={handleGenerateImage}
               isGenerating={isGenerating}
-              error={error || workflowsError}
+              error={error}
               availableWorkflows={availableWorkflows}
               selectedWorkflow={selectedWorkflow}
               onWorkflowChange={setSelectedWorkflow}

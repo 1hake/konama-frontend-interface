@@ -117,7 +117,7 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                             <Dialog.Panel className="w-full max-w-4xl transform overflow-hidden rounded-2xl bg-gray-800 p-6 text-left align-middle shadow-2xl transition-all border-2 border-purple-500/30">
                                 {/* Header */}
                                 <div className="flex items-center justify-between mb-6">
-                                    <div>
+                                    <div className="flex-1">
                                         <Dialog.Title
                                             as="h3"
                                             className="text-2xl font-bold text-white flex items-center gap-2"

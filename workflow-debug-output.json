@@ -1,0 +1,134 @@
+{
+  "analysis": {
+    "isValid": true,
+    "issues": [],
+    "recommendations": [],
+    "nodeAnalysis": [
+      {
+        "id": 59,
+        "type": "FluxResolutionNode",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 58,
+        "type": "EmptySD3LatentImage",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 39,
+        "type": "VAELoader",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 31,
+        "type": "KSampler",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 53,
+        "type": "UpscaleModelLoader",
+        "mode": 2,
+        "status": "bypassed",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 54,
+        "type": "PreviewImage",
+        "mode": 2,
+        "status": "bypassed",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 52,
+        "type": "UltimateSDUpscale",
+        "mode": 2,
+        "status": "bypassed",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 65,
+        "type": "FluxGuidance",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 8,
+        "type": "VAEDecode",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 42,
+        "type": "ConditioningZeroOut",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 45,
+        "type": "CLIPTextEncode",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 9,
+        "type": "SaveImage",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 56,
+        "type": "LoraLoaderModelOnly",
+        "mode": 4,
+        "status": "muted",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 38,
+        "type": "UNETLoader",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      },
+      {
+        "id": 40,
+        "type": "DualCLIPLoader",
+        "mode": 0,
+        "status": "active",
+        "hasRequiredParams": true
+      }
+    ]
+  },
+  "fixResult": {
+    "fixes": [],
+    "nodeCount": 11
+  },
+  "directConversion": {
+    "nodeCount": 11,
+    "nodeIds": [
+      "8",
+      "9",
+      "31",
+      "38",
+      "39",
+      "40",
+      "42",
+      "45",
+      "58",
+      "59",
+      "65"
+    ]
+  }
+}

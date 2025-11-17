@@ -15,6 +15,7 @@
 - **Responsive Design** compatible with mobile and desktop
 - **Modular Architecture** with reusable components and hooks
 - **Environment Configuration** for flexible API deployment
+- **Mock Mode** for testing without backend endpoints
 - **Animations fluides** pour une meilleure expérience utilisateur
 
 ## 🚀 Installation
@@ -42,9 +43,18 @@ Edit `.env.local` and set your configuration:
 # ComfyUI API endpoint
 NEXT_PUBLIC_COMFY_API_URL=https://your-runpod-id.proxy.runpod.net
 
+# Workflow service API
+NEXT_PUBLIC_WORKFLOW_API_URL=http://localhost:4001
+
 # OpenAI API key for voice transcription (optional)
 OPENAI_API_KEY=your_openai_api_key_here
+
+# Mock Mode (optional - for testing without endpoints)
+NEXT_PUBLIC_MOCK_IMAGE_GENERATION=false
+NEXT_PUBLIC_MOCK_WORKFLOWS=false
 ```
+
+> **💡 Mock Mode**: Enable mock mode to test the interface without backend services. See [MOCK_MODE.md](./MOCK_MODE.md) for details.
 
 4. **Start the development server:**
 ```bash

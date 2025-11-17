@@ -10,6 +10,10 @@ export const config = {
     isExternalApi: process.env.NEXT_PUBLIC_COMFY_API_URL
         && !process.env.NEXT_PUBLIC_COMFY_API_URL.includes('localhost'),
 
+    // Mock mode flags
+    mockImageGeneration: process.env.NEXT_PUBLIC_MOCK_IMAGE_GENERATION === 'true',
+    mockWorkflows: process.env.NEXT_PUBLIC_MOCK_WORKFLOWS === 'true',
+
     // Get the base URL for API calls
     getApiBaseUrl: () => {
         return process.env.NEXT_PUBLIC_COMFY_API_URL || window.location.origin;
