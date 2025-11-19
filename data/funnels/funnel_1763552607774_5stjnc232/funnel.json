@@ -1,0 +1,102 @@
+{
+  "id": "funnel_1763552607774_5stjnc232",
+  "name": "Funnel 19/11/2025, 12:43:27",
+  "config": {
+    "selectedWorkflows": [
+      "flux-dev-mock",
+      "sd15-basic-mock"
+    ],
+    "basePrompt": "chatr",
+    "baseNegativePrompt": "",
+    "baseParameters": {
+      "steps": 20,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1,
+      "uploadedImage": {
+        "file": {},
+        "previewUrl": "blob:http://localhost:3001/32384697-b1f1-482c-b32a-43cc4938d61d"
+      },
+      "promptFields": {
+        "sujet": "chatr",
+        "contexte": "",
+        "decor": "",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 20,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "step_1763552607774_n762p4a4y",
+      "funnelId": "funnel_1763552607774_5stjnc232",
+      "stepIndex": 0,
+      "status": "selecting",
+      "createdAt": "2025-11-19T11:43:27.774Z",
+      "imageCount": 2,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chatr",
+        "contexte": "",
+        "decor": "",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 20,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    },
+    {
+      "id": "step_1763553689211_a857joggr",
+      "funnelId": "funnel_1763552607774_5stjnc232",
+      "stepIndex": 1,
+      "status": "selecting",
+      "createdAt": "2025-11-19T12:01:29.211Z",
+      "parentStepId": "step_1763552607774_n762p4a4y",
+      "imageCount": 1,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chatr",
+        "contexte": "",
+        "decor": "",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 20,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    }
+  ],
+  "currentStepIndex": 1,
+  "status": "active",
+  "createdAt": "2025-11-19T11:43:27.774Z",
+  "updatedAt": "2025-11-19T12:01:33.180Z"
+}

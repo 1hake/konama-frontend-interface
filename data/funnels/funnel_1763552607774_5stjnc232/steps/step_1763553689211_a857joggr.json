@@ -1,0 +1,28 @@
+{
+  "id": "step_1763553689211_a857joggr",
+  "funnelId": "funnel_1763552607774_5stjnc232",
+  "stepIndex": 1,
+  "status": "selecting",
+  "createdAt": "2025-11-19T12:01:29.211Z",
+  "parentStepId": "step_1763552607774_n762p4a4y",
+  "imageCount": 1,
+  "selectedCount": 0,
+  "promptFields": {
+    "sujet": "chatr",
+    "contexte": "",
+    "decor": "",
+    "composition": "",
+    "technique": "",
+    "ambiance": "",
+    "details": "",
+    "parametres": ""
+  },
+  "technicalParameters": {
+    "steps": 20,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "negatifs": ""
+  }
+}

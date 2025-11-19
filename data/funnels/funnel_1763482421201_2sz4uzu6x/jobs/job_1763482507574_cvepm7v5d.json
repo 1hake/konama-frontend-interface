@@ -1,0 +1,18 @@
+{
+  "id": "job_1763482507574_cvepm7v5d",
+  "stepId": "step_1763482507573_dq3t7xibl",
+  "funnelId": "funnel_1763482421201_2sz4uzu6x",
+  "workflowId": "sd15-basic-mock",
+  "prompt": "un chat",
+  "parameters": {
+    "seed": 860428,
+    "parentImageId": "img_1763482471562_neb1wnzlg"
+  },
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-11-18T16:15:07.574Z",
+  "completedAt": "2025-11-18T16:15:11.017Z",
+  "resultImageIds": [
+    "img_1763482511015_8xjt0ai63"
+  ]
+}

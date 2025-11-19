@@ -1,9 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { PromptBuilderHeader } from './PromptBuilderHeader';
 import { PromptSentenceBuilder } from './PromptSentenceBuilder';
-import { PromptBuilderActions } from './PromptBuilderActions';
 import { WorkflowSelectorModal } from './WorkflowSelectorModal';
 import { usePromptEnhancement } from '../hooks/usePromptEnhancement';
 import { WorkflowMetadata } from '../types';
@@ -35,6 +33,13 @@ interface InlinePromptBuilderProps {
     onWorkflowChange?: (workflowId: string) => void;
     onRefreshWorkflows?: () => Promise<void>;
     error?: string | null;
+    isFunnelMode?: boolean;
+    selectedWorkflows?: string[];
+    onSelectedWorkflowsChange?: (workflowIds: string[]) => void;
+    isViewingPastStep?: boolean;
+    uploadedImage?: { file: File; previewUrl: string } | null;
+    onImageUpload?: (file: File, previewUrl: string) => void;
+    onImageRemove?: () => void;
 }
 
 const inlineFields = [
@@ -58,7 +63,14 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
     selectedWorkflow = null,
     onWorkflowChange,
     onRefreshWorkflows,
-    error: formError
+    error: formError,
+    isFunnelMode = false,
+    selectedWorkflows = [],
+    onSelectedWorkflowsChange,
+    isViewingPastStep = false,
+    uploadedImage,
+    onImageUpload,
+    onImageRemove
 }) => {
     const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
 
@@ -104,7 +116,9 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
                     onClose={() => setIsWorkflowModalOpen(false)}
                     workflows={availableWorkflows}
                     selectedWorkflow={selectedWorkflow}
+                    selectedWorkflows={selectedWorkflows}
                     onWorkflowChange={onWorkflowChange}
+                    onWorkflowsChange={onSelectedWorkflowsChange || (() => { })}
                     onRefresh={onRefreshWorkflows}
                 />
             )}
@@ -130,6 +144,13 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
                 error={formError}
                 onClearAll={handleClearAll}
                 hasContent={hasContent}
+                isFunnelMode={isFunnelMode}
+                selectedWorkflows={selectedWorkflows}
+                onSelectedWorkflowsChange={onSelectedWorkflowsChange}
+                isViewingPastStep={isViewingPastStep}
+                uploadedImage={uploadedImage}
+                onImageUpload={onImageUpload}
+                onImageRemove={onImageRemove}
             />
 
 
@@ -140,7 +161,7 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
             {enhancementError && (
                 <div className="p-3 glass border border-red-400/30 rounded-2xl">
                     <div className="text-red-300 text-xs">
-                        Erreur lors de l'amélioration: {enhancementError}
+                        Erreur lors de l&apos;amélioration: {enhancementError}
                     </div>
                 </div>
             )}

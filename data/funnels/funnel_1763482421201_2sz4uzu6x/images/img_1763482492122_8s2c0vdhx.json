@@ -1,0 +1,18 @@
+{
+  "id": "img_1763482492122_8s2c0vdhx",
+  "stepId": "step_1763482488654_s4a94zq1t",
+  "funnelId": "funnel_1763482421201_2sz4uzu6x",
+  "filename": "mock_funnel_sd15-basic-mock_860428_1763482492122.png",
+  "type": "output",
+  "subfolder": "funnel",
+  "workflowId": "sd15-basic-mock",
+  "seed": 860428,
+  "parameters": {
+    "seed": 860428,
+    "parentImageId": "img_1763482471562_neb1wnzlg"
+  },
+  "prompt": "un chat",
+  "selected": false,
+  "generatedAt": "2025-11-18T16:14:52.122Z",
+  "jobId": "job_1763482488655_wces9irei"
+}

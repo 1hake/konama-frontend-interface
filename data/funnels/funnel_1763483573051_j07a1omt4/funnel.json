@@ -1,0 +1,34 @@
+{
+  "id": "funnel_1763483573051_j07a1omt4",
+  "name": "Funnel 18/11/2025, 17:32:52",
+  "config": {
+    "selectedWorkflows": [
+      "sd15-basic-mock",
+      "sdxl-turbo-mock"
+    ],
+    "basePrompt": "chat",
+    "baseNegativePrompt": "",
+    "baseParameters": {
+      "steps": 20,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1
+    }
+  },
+  "steps": [
+    {
+      "id": "step_1763483573051_6foljbch1",
+      "funnelId": "funnel_1763483573051_j07a1omt4",
+      "stepIndex": 0,
+      "status": "selecting",
+      "createdAt": "2025-11-18T16:32:53.051Z",
+      "imageCount": 2,
+      "selectedCount": 0
+    }
+  ],
+  "currentStepIndex": 0,
+  "status": "active",
+  "createdAt": "2025-11-18T16:32:53.051Z",
+  "updatedAt": "2025-11-18T16:32:56.856Z"
+}

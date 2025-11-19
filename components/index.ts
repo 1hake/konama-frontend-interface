@@ -18,3 +18,4 @@ export { InlineToken } from './InlineToken';
 export { PromptBuilderHeader } from './PromptBuilderHeader';
 export { PromptSentenceBuilder } from './PromptSentenceBuilder';
 export { PromptBuilderActions } from './PromptBuilderActions';
+export { ImageDropzone } from './ImageDropzone';

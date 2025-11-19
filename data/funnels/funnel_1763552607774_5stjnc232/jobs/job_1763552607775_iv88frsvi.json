@@ -1,0 +1,45 @@
+{
+  "id": "job_1763552607775_iv88frsvi",
+  "stepId": "step_1763552607774_n762p4a4y",
+  "funnelId": "funnel_1763552607774_5stjnc232",
+  "workflowId": "sd15-basic-mock",
+  "prompt": "chatr",
+  "negativePrompt": "",
+  "parameters": {
+    "steps": 20,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "uploadedImage": {
+      "file": {},
+      "previewUrl": "blob:http://localhost:3001/32384697-b1f1-482c-b32a-43cc4938d61d"
+    },
+    "promptFields": {
+      "sujet": "chatr",
+      "contexte": "",
+      "decor": "",
+      "composition": "",
+      "technique": "",
+      "ambiance": "",
+      "details": "",
+      "parametres": ""
+    },
+    "technicalParameters": {
+      "steps": 20,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1,
+      "negatifs": ""
+    },
+    "seed": 363951
+  },
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-11-19T11:43:27.775Z",
+  "completedAt": "2025-11-19T11:43:31.585Z",
+  "resultImageIds": [
+    "img_1763552611583_fbjjh8828"
+  ]
+}

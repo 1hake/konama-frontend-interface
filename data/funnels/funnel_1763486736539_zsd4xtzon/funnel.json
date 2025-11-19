@@ -1,0 +1,136 @@
+{
+  "id": "funnel_1763486736539_zsd4xtzon",
+  "name": "Funnel 18/11/2025, 18:25:36",
+  "config": {
+    "selectedWorkflows": [
+      "flux-dev-mock",
+      "sd15-basic-mock"
+    ],
+    "basePrompt": "chat",
+    "baseNegativePrompt": "",
+    "baseParameters": {
+      "steps": 20,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "",
+        "decor": "",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 20,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "step_1763486736539_jljt7isc5",
+      "funnelId": "funnel_1763486736539_zsd4xtzon",
+      "stepIndex": 0,
+      "status": "selecting",
+      "createdAt": "2025-11-18T17:25:36.539Z",
+      "imageCount": 2,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "",
+        "decor": "",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 20,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    },
+    {
+      "id": "step_1763486784993_gj8jmgpo0",
+      "funnelId": "funnel_1763486736539_zsd4xtzon",
+      "stepIndex": 1,
+      "status": "selecting",
+      "createdAt": "2025-11-18T17:26:24.993Z",
+      "parentStepId": "step_1763486736539_jljt7isc5",
+      "imageCount": 1,
+      "selectedCount": 0
+    },
+    {
+      "id": "step_1763486824143_ml9vho7if",
+      "funnelId": "funnel_1763486736539_zsd4xtzon",
+      "stepIndex": 2,
+      "status": "selecting",
+      "createdAt": "2025-11-18T17:27:04.143Z",
+      "parentStepId": "step_1763486736539_jljt7isc5",
+      "imageCount": 2,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "dans un cuinei",
+        "decor": "fleurs",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 26,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    },
+    {
+      "id": "step_1763487800255_welk4u1pl",
+      "funnelId": "funnel_1763486736539_zsd4xtzon",
+      "stepIndex": 3,
+      "status": "selecting",
+      "createdAt": "2025-11-18T17:43:20.255Z",
+      "parentStepId": "step_1763486736539_jljt7isc5",
+      "imageCount": 2,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "dans un cuinei",
+        "decor": "fleurs",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 26,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    }
+  ],
+  "currentStepIndex": 3,
+  "status": "active",
+  "createdAt": "2025-11-18T17:25:36.539Z",
+  "updatedAt": "2025-11-18T17:43:24.230Z"
+}

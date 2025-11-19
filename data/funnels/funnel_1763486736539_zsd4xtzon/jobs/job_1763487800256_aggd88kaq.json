@@ -1,0 +1,42 @@
+{
+  "id": "job_1763487800256_aggd88kaq",
+  "stepId": "step_1763487800255_welk4u1pl",
+  "funnelId": "funnel_1763486736539_zsd4xtzon",
+  "workflowId": "flux-dev-mock",
+  "prompt": "chat, dans un cuinei, fleurs",
+  "negativePrompt": "",
+  "parameters": {
+    "steps": 26,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "promptFields": {
+      "sujet": "chat",
+      "contexte": "dans un cuinei",
+      "decor": "fleurs",
+      "composition": "",
+      "technique": "",
+      "ambiance": "",
+      "details": "",
+      "parametres": ""
+    },
+    "technicalParameters": {
+      "steps": 26,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1,
+      "negatifs": ""
+    },
+    "seed": 579956,
+    "parentImageId": "img_1763486788912_vka890q1j"
+  },
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-11-18T17:43:20.256Z",
+  "completedAt": "2025-11-18T17:43:23.991Z",
+  "resultImageIds": [
+    "img_1763487803988_xvyfmkh84"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "id": "img_1763553693176_0qas7gzzk",
+  "stepId": "step_1763553689211_a857joggr",
+  "funnelId": "funnel_1763552607774_5stjnc232",
+  "filename": "mock_funnel_flux-dev-mock_833428_1763553693176.png",
+  "type": "output",
+  "subfolder": "funnel",
+  "workflowId": "flux-dev-mock",
+  "seed": 833428,
+  "parameters": {
+    "steps": 20,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "uploadedImage": {
+      "file": {},
+      "previewUrl": "blob:http://localhost:3001/32384697-b1f1-482c-b32a-43cc4938d61d"
+    },
+    "promptFields": {
+      "sujet": "chatr",
+      "contexte": "",
+      "decor": "",
+      "composition": "",
+      "technique": "",
+      "ambiance": "",
+      "details": "",
+      "parametres": ""
+    },
+    "technicalParameters": {
+      "steps": 20,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1,
+      "negatifs": ""
+    },
+    "seed": 833428,
+    "parentImageId": "img_1763552611676_hmhlz1rud"
+  },
+  "prompt": "chatr",
+  "negativePrompt": "",
+  "selected": false,
+  "generatedAt": "2025-11-19T12:01:33.176Z",
+  "jobId": "job_1763553689211_dosq13w4h"
+}

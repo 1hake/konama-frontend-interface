@@ -82,9 +82,21 @@ export interface ImageGenerationFormProps {
     selectedWorkflow?: string | null;
     onWorkflowChange?: (workflowId: string) => void;
     onRefreshWorkflows?: () => Promise<void>;
+    isFunnelMode?: boolean;
+    selectedWorkflows?: string[];
+    onSelectedWorkflowsChange?: (workflowIds: string[]) => void;
+    // Funnel editing support
+    viewStepIndex?: number;
+    currentStepIndex?: number;
+    editingPromptFields?: any;
+    editingTechnicalFields?: any;
+    onEditingFieldsChange?: (promptFields: any, technicalFields: any) => void;
 }
 
 export interface GeneratedImagesDisplayProps {
     images: GeneratedImage[];
     getImageUrl: (image: GeneratedImage) => string;
 }
+
+// Export funnel types
+export * from './funnel';

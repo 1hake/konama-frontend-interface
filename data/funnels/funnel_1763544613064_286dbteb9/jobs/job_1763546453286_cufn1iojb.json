@@ -1,0 +1,42 @@
+{
+  "id": "job_1763546453286_cufn1iojb",
+  "stepId": "step_1763546453286_674qbloxw",
+  "funnelId": "funnel_1763544613064_286dbteb9",
+  "workflowId": "flux-dev-mock",
+  "prompt": "chat",
+  "negativePrompt": "",
+  "parameters": {
+    "steps": 20,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "promptFields": {
+      "sujet": "chat",
+      "contexte": "",
+      "decor": "",
+      "composition": "",
+      "technique": "",
+      "ambiance": "",
+      "details": "",
+      "parametres": ""
+    },
+    "technicalParameters": {
+      "steps": 20,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1,
+      "negatifs": ""
+    },
+    "seed": 138120,
+    "parentImageId": "img_1763544616317_kxi8phjy7"
+  },
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-11-19T10:00:53.286Z",
+  "completedAt": "2025-11-19T10:00:57.245Z",
+  "resultImageIds": [
+    "img_1763546457243_hxk9513nn"
+  ]
+}

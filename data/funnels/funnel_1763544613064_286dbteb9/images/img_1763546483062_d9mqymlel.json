@@ -1,0 +1,42 @@
+{
+  "id": "img_1763546483062_d9mqymlel",
+  "stepId": "step_1763546479258_ek5u0crz6",
+  "funnelId": "funnel_1763544613064_286dbteb9",
+  "filename": "mock_funnel_sd15-basic-mock_668931_1763546483062.png",
+  "type": "output",
+  "subfolder": "funnel",
+  "workflowId": "sd15-basic-mock",
+  "seed": 668931,
+  "parameters": {
+    "steps": 20,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "promptFields": {
+      "sujet": "chat",
+      "contexte": "",
+      "decor": "",
+      "composition": "",
+      "technique": "",
+      "ambiance": "",
+      "details": "",
+      "parametres": ""
+    },
+    "technicalParameters": {
+      "steps": 20,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1,
+      "negatifs": ""
+    },
+    "seed": 668931,
+    "parentImageId": "img_1763544616767_sjk340rlk"
+  },
+  "prompt": "chat",
+  "negativePrompt": "",
+  "selected": true,
+  "generatedAt": "2025-11-19T10:01:23.062Z",
+  "jobId": "job_1763546479258_1h57rdstl"
+}

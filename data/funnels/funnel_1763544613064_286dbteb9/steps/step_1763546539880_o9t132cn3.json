@@ -1,0 +1,29 @@
+{
+  "id": "step_1763546539880_o9t132cn3",
+  "funnelId": "funnel_1763544613064_286dbteb9",
+  "stepIndex": 4,
+  "status": "completed",
+  "createdAt": "2025-11-19T10:02:19.880Z",
+  "parentStepId": "step_1763544613064_93c92m00h",
+  "imageCount": 6,
+  "selectedCount": 8,
+  "promptFields": {
+    "sujet": "chat",
+    "contexte": "dans une cuisine",
+    "decor": "ddasfsd",
+    "composition": "",
+    "technique": "",
+    "ambiance": "",
+    "details": "",
+    "parametres": ""
+  },
+  "technicalParameters": {
+    "steps": 24,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 4.4,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "negatifs": ""
+  },
+  "completedAt": "2025-11-19T10:05:41.840Z"
+}

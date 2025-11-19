@@ -1,0 +1,23 @@
+{
+  "id": "job_1763485877530_4ch9lq0w7",
+  "stepId": "step_1763485877530_8pz5rhf8n",
+  "funnelId": "funnel_1763485877530_cr06wkft1",
+  "workflowId": "flux-dev-mock",
+  "prompt": "chat",
+  "negativePrompt": "",
+  "parameters": {
+    "steps": 20,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "seed": 373733
+  },
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-11-18T17:11:17.531Z",
+  "completedAt": "2025-11-18T17:11:21.254Z",
+  "resultImageIds": [
+    "img_1763485881254_zvh2jh0mv"
+  ]
+}

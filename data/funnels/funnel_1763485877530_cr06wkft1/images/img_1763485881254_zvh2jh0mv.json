@@ -1,0 +1,23 @@
+{
+  "id": "img_1763485881254_zvh2jh0mv",
+  "stepId": "step_1763485877530_8pz5rhf8n",
+  "funnelId": "funnel_1763485877530_cr06wkft1",
+  "filename": "mock_funnel_flux-dev-mock_373733_1763485881254.png",
+  "type": "output",
+  "subfolder": "funnel",
+  "workflowId": "flux-dev-mock",
+  "seed": 373733,
+  "parameters": {
+    "steps": 20,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "seed": 373733
+  },
+  "prompt": "chat",
+  "negativePrompt": "",
+  "selected": false,
+  "generatedAt": "2025-11-18T17:11:21.254Z",
+  "jobId": "job_1763485877530_4ch9lq0w7"
+}

@@ -1,0 +1,182 @@
+{
+  "id": "funnel_1763544613064_286dbteb9",
+  "name": "Funnel 19/11/2025, 10:30:12",
+  "config": {
+    "selectedWorkflows": [
+      "flux-dev-mock",
+      "sd15-basic-mock"
+    ],
+    "basePrompt": "chat",
+    "baseNegativePrompt": "",
+    "baseParameters": {
+      "steps": 20,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "",
+        "decor": "",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 20,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    }
+  },
+  "steps": [
+    {
+      "id": "step_1763544613064_93c92m00h",
+      "funnelId": "funnel_1763544613064_286dbteb9",
+      "stepIndex": 0,
+      "status": "selecting",
+      "createdAt": "2025-11-19T09:30:13.064Z",
+      "imageCount": 2,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "",
+        "decor": "",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 20,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    },
+    {
+      "id": "step_1763546453286_674qbloxw",
+      "funnelId": "funnel_1763544613064_286dbteb9",
+      "stepIndex": 1,
+      "status": "selecting",
+      "createdAt": "2025-11-19T10:00:53.286Z",
+      "parentStepId": "step_1763544613064_93c92m00h",
+      "imageCount": 2,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "dans une cuisine",
+        "decor": "",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 24,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.5,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    },
+    {
+      "id": "step_1763546466549_u0cwhrg8n",
+      "funnelId": "funnel_1763544613064_286dbteb9",
+      "stepIndex": 2,
+      "status": "selecting",
+      "createdAt": "2025-11-19T10:01:06.549Z",
+      "parentStepId": "step_1763544613064_93c92m00h",
+      "imageCount": 2,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "dans une cuisine",
+        "decor": "ddasfsd",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 24,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.7,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    },
+    {
+      "id": "step_1763546479258_ek5u0crz6",
+      "funnelId": "funnel_1763544613064_286dbteb9",
+      "stepIndex": 3,
+      "status": "selecting",
+      "createdAt": "2025-11-19T10:01:19.258Z",
+      "parentStepId": "step_1763544613064_93c92m00h",
+      "imageCount": 3,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "dans une cuisine",
+        "decor": "ddasfsd",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 24,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 3.7,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    },
+    {
+      "id": "step_1763546539880_o9t132cn3",
+      "funnelId": "funnel_1763544613064_286dbteb9",
+      "stepIndex": 4,
+      "status": "selecting",
+      "createdAt": "2025-11-19T10:02:19.880Z",
+      "parentStepId": "step_1763544613064_93c92m00h",
+      "imageCount": 6,
+      "selectedCount": 0,
+      "promptFields": {
+        "sujet": "chat",
+        "contexte": "dans une cuisine",
+        "decor": "ddasfsd",
+        "composition": "",
+        "technique": "",
+        "ambiance": "",
+        "details": "",
+        "parametres": ""
+      },
+      "technicalParameters": {
+        "steps": 24,
+        "aspectRatio": "1:1 (Square)",
+        "guidance": 4.4,
+        "loraName": "CynthiaArch.safetensors",
+        "loraStrength": 1,
+        "negatifs": ""
+      }
+    }
+  ],
+  "currentStepIndex": 4,
+  "status": "active",
+  "createdAt": "2025-11-19T09:30:13.064Z",
+  "updatedAt": "2025-11-19T10:05:41.840Z"
+}

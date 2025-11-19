@@ -28,7 +28,15 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
     availableWorkflows = [],
     selectedWorkflow = null,
     onWorkflowChange,
-    onRefreshWorkflows
+    onRefreshWorkflows,
+    isFunnelMode = false,
+    selectedWorkflows = [],
+    onSelectedWorkflowsChange,
+    viewStepIndex,
+    currentStepIndex,
+    editingPromptFields,
+    editingTechnicalFields,
+    onEditingFieldsChange
 }) => {
     const [fields, setFields] = useState<PromptFields>({
         sujet: '',
@@ -47,12 +55,49 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
         loraStrength: 1.0
     });
 
+    const [uploadedImage, setUploadedImage] = useState<{ file: File; previewUrl: string } | null>(null);
+
+    // In funnel mode, show editing fields when viewing a past step
+    const isViewingPastStep = isFunnelMode && viewStepIndex !== undefined && currentStepIndex !== undefined && viewStepIndex !== currentStepIndex;
+    const displayFields = isViewingPastStep && editingPromptFields ? editingPromptFields : {
+        sujet: fields.sujet,
+        contexte: fields.contexte,
+        decor: fields.decor,
+        composition: fields.composition,
+        technique: fields.technique,
+        ambiance: fields.ambiance,
+        details: fields.details,
+        parametres: fields.parametres
+    };
+    const displayTechnicalFields = isViewingPastStep && editingTechnicalFields ? editingTechnicalFields : {
+        steps: fields.steps,
+        aspectRatio: fields.aspectRatio,
+        guidance: fields.guidance,
+        loraName: fields.loraName,
+        loraStrength: fields.loraStrength,
+        negatifs: fields.negatifs
+    };
+
     const updateField = (field: keyof PromptFields, value: string | number) => {
         setFields(prev => ({ ...prev, [field]: value as any }));
     };
 
     const handleFieldChange = (field: string, value: string | number) => {
         updateField(field as keyof PromptFields, value);
+
+        // If editing in funnel mode, update the editing fields
+        if (isViewingPastStep && onEditingFieldsChange) {
+            const promptFieldNames = ['sujet', 'contexte', 'decor', 'composition', 'technique', 'ambiance', 'details', 'parametres'];
+            const technicalFieldNames = ['steps', 'guidance', 'aspectRatio', 'loraName', 'loraStrength', 'negatifs'];
+
+            if (promptFieldNames.includes(field)) {
+                const updatedPromptFields = { ...editingPromptFields, [field]: value };
+                onEditingFieldsChange(updatedPromptFields, editingTechnicalFields);
+            } else if (technicalFieldNames.includes(field)) {
+                const updatedTechnicalFields = { ...editingTechnicalFields, [field]: value };
+                onEditingFieldsChange(editingPromptFields, updatedTechnicalFields);
+            }
+        }
     };
 
     const constructPrompt = (): string => {
@@ -73,13 +118,55 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
     const handleSubmit = async (e?: React.FormEvent) => {
         if (e) e.preventDefault();
         const constructedPrompt = constructPrompt();
-        await onGenerate(constructedPrompt, fields.negatifs, {
+
+        // In funnel mode, include the prompt and technical fields for storage
+        const extendedOptions = isFunnelMode ? {
             steps: fields.steps,
             aspectRatio: fields.aspectRatio,
             guidance: fields.guidance,
             loraName: fields.loraName,
-            loraStrength: fields.loraStrength
-        });
+            loraStrength: fields.loraStrength,
+            uploadedImage: uploadedImage,
+            // Include the prompt fields for storage in funnel step
+            promptFields: {
+                sujet: fields.sujet,
+                contexte: fields.contexte,
+                decor: fields.decor,
+                composition: fields.composition,
+                technique: fields.technique,
+                ambiance: fields.ambiance,
+                details: fields.details,
+                parametres: fields.parametres,
+            },
+            technicalParameters: {
+                steps: fields.steps,
+                aspectRatio: fields.aspectRatio,
+                guidance: fields.guidance,
+                loraName: fields.loraName,
+                loraStrength: fields.loraStrength,
+                negatifs: fields.negatifs,
+            }
+        } : {
+            steps: fields.steps,
+            aspectRatio: fields.aspectRatio,
+            guidance: fields.guidance,
+            loraName: fields.loraName,
+            loraStrength: fields.loraStrength,
+            uploadedImage: uploadedImage
+        };
+
+        await onGenerate(constructedPrompt, fields.negatifs, extendedOptions);
+    };
+
+    const handleImageUpload = (file: File, previewUrl: string) => {
+        setUploadedImage({ file, previewUrl });
+    };
+
+    const handleImageRemove = () => {
+        if (uploadedImage) {
+            URL.revokeObjectURL(uploadedImage.previewUrl);
+        }
+        setUploadedImage(null);
     };
 
     return (
@@ -87,24 +174,8 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
             <div className="mx-auto px-8 py-6 max-w-6xl">
                 <div className="max-h-[450px] overflow-y-auto custom-scrollbar pr-2">
                     <InlinePromptBuilder
-                        fields={{
-                            sujet: fields.sujet,
-                            contexte: fields.contexte,
-                            decor: fields.decor,
-                            composition: fields.composition,
-                            technique: fields.technique,
-                            ambiance: fields.ambiance,
-                            details: fields.details,
-                            parametres: fields.parametres
-                        }}
-                        technicalFields={{
-                            steps: fields.steps,
-                            guidance: fields.guidance,
-                            aspectRatio: fields.aspectRatio,
-                            loraName: fields.loraName,
-                            loraStrength: fields.loraStrength,
-                            negatifs: fields.negatifs
-                        }}
+                        fields={displayFields}
+                        technicalFields={displayTechnicalFields}
                         onFieldChange={handleFieldChange}
                         isGenerating={isGenerating}
                         onGenerate={handleSubmit}
@@ -113,6 +184,13 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
                         onWorkflowChange={onWorkflowChange}
                         onRefreshWorkflows={onRefreshWorkflows}
                         error={error}
+                        isFunnelMode={isFunnelMode}
+                        selectedWorkflows={selectedWorkflows}
+                        onSelectedWorkflowsChange={onSelectedWorkflowsChange}
+                        isViewingPastStep={isViewingPastStep}
+                        uploadedImage={uploadedImage}
+                        onImageUpload={handleImageUpload}
+                        onImageRemove={handleImageRemove}
                     />
                 </div>
             </div>

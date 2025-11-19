@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect } from 'react';
 import { InlineToken } from './InlineToken';
 import { TechnicalParameters } from './TechnicalParameters';
+import { ImageDropzone } from './ImageDropzone';
 
 interface InlineField {
     name: string;
@@ -48,6 +49,15 @@ interface PromptSentenceBuilderProps {
     // Clear functionality
     onClearAll: () => void;
     hasContent: boolean;
+    // Funnel mode props
+    isFunnelMode?: boolean;
+    selectedWorkflows?: string[];
+    onSelectedWorkflowsChange?: (workflowIds: string[]) => void;
+    isViewingPastStep?: boolean;
+    // Image upload props
+    uploadedImage?: { file: File; previewUrl: string } | null;
+    onImageUpload?: (file: File, previewUrl: string) => void;
+    onImageRemove?: () => void;
 }
 
 export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
@@ -67,11 +77,19 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
     availableWorkflows = [],
     error,
     onClearAll,
-    hasContent
+    hasContent,
+    isFunnelMode = false,
+    selectedWorkflows = [],
+    onSelectedWorkflowsChange: _onSelectedWorkflowsChange,
+    isViewingPastStep = false,
+    uploadedImage,
+    onImageUpload,
+    onImageRemove
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [showParameters, setShowParameters] = useState(false);
     const [isExpanded, setIsExpanded] = useState(true);
+    const lastScrollYRef = useRef(0);
 
     // Auto-fold when generation starts
     useEffect(() => {
@@ -80,45 +98,38 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
         }
     }, [isGenerating]);
 
-    // Handle scroll-based expand/collapse
+    // Handle scroll-based expand/collapse based on scroll direction
     useEffect(() => {
+        const handleWheel = (e: WheelEvent) => {
+            // deltaY > 0 means scrolling down, < 0 means scrolling up
+            if (e.deltaY > 0) {
+                // Scrolling down - expand
+                setIsExpanded(true);
+            } else if (e.deltaY < 0) {
+                // Scrolling up - collapse
+                setIsExpanded(false);
+            }
+        };
+
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
-            const windowHeight = window.innerHeight;
-            const documentHeight = document.documentElement.scrollHeight;
-            
-            // Check if we're at the top (within 50px of top)
-            const isAtTop = currentScrollY <= 50;
-            
-            // Check if we're at the bottom (within 50px of bottom)
-            const isAtBottom = currentScrollY + windowHeight >= documentHeight - 50;
-            
-            if (isAtTop) {
-                // At top - collapse
-                setIsExpanded(false);
-            } else if (isAtBottom) {
-                // At bottom - expand
+            const scrollDiff = currentScrollY - lastScrollYRef.current;
+
+            if (scrollDiff > 5) {
                 setIsExpanded(true);
+            } else if (scrollDiff < -5) {
+                setIsExpanded(false);
             }
-            // Don't change state when in the middle
+
+            lastScrollYRef.current = currentScrollY;
         };
 
-        // Throttle scroll events for performance
-        let ticking = false;
-        const throttledHandleScroll = () => {
-            if (!ticking) {
-                requestAnimationFrame(() => {
-                    handleScroll();
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        };
-
-        window.addEventListener('scroll', throttledHandleScroll, { passive: true });
+        window.addEventListener('wheel', handleWheel, { passive: true });
+        window.addEventListener('scroll', handleScroll, { passive: true });
 
         return () => {
-            window.removeEventListener('scroll', throttledHandleScroll);
+            window.removeEventListener('wheel', handleWheel);
+            window.removeEventListener('scroll', handleScroll);
         };
     }, []);
 
@@ -133,6 +144,16 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
         >
             {isEnhancing && (
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 animate-pulse pointer-events-none"></div>
+            )}
+
+            {/* Info Banner when viewing past step */}
+            {isViewingPastStep && (
+                <div className="mb-3 p-3 glass-light border border-blue-400/30 rounded-xl flex items-center gap-2 text-blue-300 text-sm">
+                    <svg className="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+                    </svg>
+                    <span>Viewing previous step parameters. Edit to refine for next generation.</span>
+                </div>
             )}
 
             {/* Action Bar */}
@@ -160,19 +181,26 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                     type="button"
                     onClick={onOpenWorkflowModal}
                     disabled={isGenerating}
-                    title="Sélectionner un workflow"
+                    title={isFunnelMode ? "Select workflows (Funnel Mode)" : "Select workflow"}
                     className={`
                         flex-shrink-0 p-2.5 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border active:scale-95
-                        ${selectedWorkflow
-                            ? 'bg-blue-500/20 hover:bg-blue-500/30 text-white border-blue-400/30 hover:border-blue-400/50'
-                            : 'bg-orange-500/20 hover:bg-orange-500/30 text-white border-orange-400/30 hover:border-orange-400/50 animate-pulse'
+                        ${isFunnelMode
+                            ? 'bg-purple-500/20 hover:bg-purple-500/30 text-white border-purple-400/30 hover:border-purple-400/50'
+                            : selectedWorkflow
+                                ? 'bg-blue-500/20 hover:bg-blue-500/30 text-white border-blue-400/30 hover:border-blue-400/50'
+                                : 'bg-orange-500/20 hover:bg-orange-500/30 text-white border-orange-400/30 hover:border-orange-400/50 animate-pulse'
                         }
                     `}
                 >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
+                    <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        </svg>
+                        {selectedWorkflows && selectedWorkflows.length > 0 && (
+                            <span className="text-sm font-semibold">{selectedWorkflows.length}</span>
+                        )}
+                    </div>
                 </button>
 
                 {/* Error/Warning Messages - Only show when expanded or if critical */}
@@ -185,12 +213,20 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                             {isExpanded && <span className="font-medium">{error}</span>}
                         </div>
                     )}
-                    {!selectedWorkflow && availableWorkflows.length > 0 && !error && isExpanded && (
+                    {!isFunnelMode && !selectedWorkflow && availableWorkflows.length > 0 && !error && isExpanded && (
                         <div className="bg-orange-500/10 border border-orange-500/30 text-orange-300 px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 backdrop-blur-sm">
                             <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                             </svg>
                             <span>Sélectionnez un workflow</span>
+                        </div>
+                    )}
+                    {isFunnelMode && (!selectedWorkflows || selectedWorkflows.length === 0) && availableWorkflows.length > 0 && !error && isExpanded && (
+                        <div className="bg-orange-500/10 border border-orange-500/30 text-orange-300 px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 backdrop-blur-sm">
+                            <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                            <span>Sélectionnez des workflows pour le mode funnel</span>
                         </div>
                     )}
                 </div>
@@ -224,7 +260,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                 <button
                     type="button"
                     onClick={onGenerate}
-                    disabled={isGenerating || fields.sujet.trim() === '' || !selectedWorkflow}
+                    disabled={isGenerating || fields.sujet.trim() === '' || (isFunnelMode ? selectedWorkflows.length === 0 : !selectedWorkflow)}
                     className="flex-shrink-0 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium px-6 py-2.5 rounded-full transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg active:scale-95 disabled:opacity-50 text-sm"
                 >
                     {isGenerating ? (
@@ -237,7 +273,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                             <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
                             </svg>
-                            {isExpanded && <span>Générer</span>}
+                            {isExpanded && <span>{isFunnelMode ? 'Generate next step' : 'Générer'}</span>}
                         </>
                     )}
                 </button>
@@ -344,6 +380,17 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                         <span>.</span>
                     </div>
                 </div>
+
+                {/* Image Upload Dropzone */}
+                {onImageUpload && onImageRemove && (
+                    <div className="mt-4 relative z-10">
+                        <ImageDropzone
+                            uploadedImage={uploadedImage}
+                            onImageUpload={onImageUpload}
+                            onImageRemove={onImageRemove}
+                        />
+                    </div>
+                )}
 
                 {/* Technical Parameters - Collapsible */}
                 <div className="space-y-2 relative z-10 mt-4">

@@ -1,0 +1,23 @@
+{
+  "id": "job_1763483573051_kvgk3txoy",
+  "stepId": "step_1763483573051_6foljbch1",
+  "funnelId": "funnel_1763483573051_j07a1omt4",
+  "workflowId": "sdxl-turbo-mock",
+  "prompt": "chat",
+  "negativePrompt": "",
+  "parameters": {
+    "steps": 20,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "seed": 678925
+  },
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-11-18T16:32:53.052Z",
+  "completedAt": "2025-11-18T16:32:56.670Z",
+  "resultImageIds": [
+    "img_1763483576669_ondm981da"
+  ]
+}

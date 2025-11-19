@@ -1,0 +1,18 @@
+{
+  "id": "job_1763482488655_4pim9mu5p",
+  "stepId": "step_1763482488654_s4a94zq1t",
+  "funnelId": "funnel_1763482421201_2sz4uzu6x",
+  "workflowId": "sdxl-turbo-mock",
+  "prompt": "un chat",
+  "parameters": {
+    "seed": 987549,
+    "parentImageId": "img_1763482424583_5jiip4ws5"
+  },
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-11-18T16:14:48.655Z",
+  "completedAt": "2025-11-18T16:14:52.445Z",
+  "resultImageIds": [
+    "img_1763482492444_fa4plck99"
+  ]
+}

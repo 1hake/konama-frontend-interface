@@ -1,0 +1,41 @@
+{
+  "id": "job_1763486736540_fvtbmftau",
+  "stepId": "step_1763486736539_jljt7isc5",
+  "funnelId": "funnel_1763486736539_zsd4xtzon",
+  "workflowId": "sd15-basic-mock",
+  "prompt": "chat",
+  "negativePrompt": "",
+  "parameters": {
+    "steps": 20,
+    "aspectRatio": "1:1 (Square)",
+    "guidance": 3.5,
+    "loraName": "CynthiaArch.safetensors",
+    "loraStrength": 1,
+    "promptFields": {
+      "sujet": "chat",
+      "contexte": "",
+      "decor": "",
+      "composition": "",
+      "technique": "",
+      "ambiance": "",
+      "details": "",
+      "parametres": ""
+    },
+    "technicalParameters": {
+      "steps": 20,
+      "aspectRatio": "1:1 (Square)",
+      "guidance": 3.5,
+      "loraName": "CynthiaArch.safetensors",
+      "loraStrength": 1,
+      "negatifs": ""
+    },
+    "seed": 566784
+  },
+  "status": "completed",
+  "progress": 100,
+  "startedAt": "2025-11-18T17:25:36.540Z",
+  "completedAt": "2025-11-18T17:25:40.752Z",
+  "resultImageIds": [
+    "img_1763486740750_ggm8noxco"
+  ]
+}
