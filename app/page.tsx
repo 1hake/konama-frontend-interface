@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useImageGeneration } from '../hooks';
 import { useWorkflows } from '../hooks/useWorkflows';
 import { useFunnel } from '../hooks/useFunnel';
-import { ImageGenerationForm, GeneratedImagesDisplay, GenerationProgress } from '../components';
+import { ImageGenerationForm, GeneratedImagesDisplay } from '../components';
 
 import { FunnelTimeline, FunnelStepViewer } from '../components/Funnel';
 import { GeneratedImage, FunnelRefinement } from '../types';
@@ -48,12 +48,18 @@ export default function Home() {
   const [selectedWorkflow, setSelectedWorkflow] = useState<string | null>(null);
   const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [selectedImageIds, setSelectedImageIds] = useState<string[]>([]);
-  const [refinements, setRefinements] = useState<FunnelRefinement[]>([]);
   const [viewStepIndex, setViewStepIndex] = useState(0);
 
-  // Store current prompt/parameters being edited (for refinement)
-  const [editingPromptFields, setEditingPromptFields] = useState<any>(null);
-  const [editingTechnicalFields, setEditingTechnicalFields] = useState<any>(null);
+  // Unified refinement state for cleaner state management
+  const [refinementState, setRefinementState] = useState<{
+    promptFields: any | null;
+    technicalFields: any | null;
+    imageRefinements: FunnelRefinement[];
+  }>({
+    promptFields: null,
+    technicalFields: null,
+    imageRefinements: [],
+  });
 
   // Auto-select the first workflow when workflows are loaded
   useEffect(() => {
@@ -66,25 +72,12 @@ export default function Home() {
 
   // Auto-switch to funnel mode when 2+ workflows selected
   useEffect(() => {
-    if (selectedWorkflows.length >= 2 && !isFunnelMode) {
-      setIsFunnelMode(true);
-      console.log('Auto-switched to funnel mode:', selectedWorkflows.length, 'workflows');
-    } else if (selectedWorkflows.length < 2 && isFunnelMode) {
-      setIsFunnelMode(false);
-      console.log('Auto-switched to normal mode');
+    const shouldBeFunnelMode = selectedWorkflows.length >= 2;
+    if (shouldBeFunnelMode !== isFunnelMode) {
+      setIsFunnelMode(shouldBeFunnelMode);
+      console.log(`Auto-switched to ${shouldBeFunnelMode ? 'funnel' : 'normal'} mode:`, selectedWorkflows.length, 'workflows');
     }
-  }, [selectedWorkflows.length]);
-
-  // Auto-switch to funnel mode when 2+ workflows selected
-  useEffect(() => {
-    if (selectedWorkflows.length >= 2 && !isFunnelMode) {
-      setIsFunnelMode(true);
-      console.log('Auto-switched to funnel mode:', selectedWorkflows.length, 'workflows');
-    } else if (selectedWorkflows.length < 2 && isFunnelMode) {
-      setIsFunnelMode(false);
-      console.log('Auto-switched to normal mode');
-    }
-  }, [selectedWorkflows.length]);
+  }, [selectedWorkflows.length, isFunnelMode]);
 
   // Update view when funnel changes
   useEffect(() => {
@@ -97,14 +90,23 @@ export default function Home() {
   const handleStepClick = (stepIndex: number) => {
     setViewStepIndex(stepIndex);
     const step = steps[stepIndex];
+
+    // Clear selections when changing steps
+    setSelectedImageIds([]);
+
+    // Load step data or clear if no step exists
     if (step) {
-      // Load the step's prompt and parameters into the editing state
-      if (step.promptFields) {
-        setEditingPromptFields(step.promptFields);
-      }
-      if (step.technicalParameters) {
-        setEditingTechnicalFields(step.technicalParameters);
-      }
+      setRefinementState({
+        promptFields: step.promptFields || null,
+        technicalFields: step.technicalParameters || null,
+        imageRefinements: [],
+      });
+    } else {
+      setRefinementState({
+        promptFields: null,
+        technicalFields: null,
+        imageRefinements: [],
+      });
     }
   };
 
@@ -177,21 +179,29 @@ export default function Home() {
           return;
         }
         try {
-          // Build refinements from editing fields if available, otherwise use stored refinements
-          const stepRefinements = editingPromptFields && editingTechnicalFields ?
-            selectedImageIds.map(imageId => ({
+          // Use unified refinement state - prioritize imageRefinements if set
+          const stepRefinements = refinementState.imageRefinements.length > 0
+            ? refinementState.imageRefinements
+            : selectedImageIds.map(imageId => ({
               imageId,
               prompt,
               negativePrompt,
               parameters: options,
-            })) :
-            (refinements.length > 0 ? refinements : undefined);
+            }));
 
-          await createNextStep(stepRefinements, options?.promptFields, options?.technicalParameters);
+          await createNextStep(
+            stepRefinements,
+            refinementState.promptFields || options?.promptFields,
+            refinementState.technicalFields || options?.technicalParameters
+          );
+
+          // Reset refinement state after step creation
           setSelectedImageIds([]);
-          setRefinements([]);
-          setEditingPromptFields(null);
-          setEditingTechnicalFields(null);
+          setRefinementState({
+            promptFields: null,
+            technicalFields: null,
+            imageRefinements: [],
+          });
         } catch (err) {
           console.error('Error creating next step:', err);
         }
@@ -231,18 +241,15 @@ export default function Home() {
           </div>
           <div className="mt-4 flex items-center justify-center gap-3">
             {/* Mode Indicator */}
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium ${isFunnelMode
-              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30'
-              : 'glass-light border border-white/20 text-white/80'
+            <div className={`px-3 py-1.5 rounded-lg text-xs font-medium ${isFunnelMode
+              ? 'bg-purple-600/20 text-purple-300 border border-purple-500/30'
+              : 'bg-white/5 text-white/60 border border-white/10'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
-              {isFunnelMode ? `🎯 Funnel Mode (${selectedWorkflows.length} workflows)` : '⚡ Single Generation'}
+              {isFunnelMode ? `Funnel (${selectedWorkflows.length})` : 'Single'}
             </div>
             {isFunnelMode && funnel && (
-              <div className="glass-light border border-purple-500/30 text-purple-300 px-3 py-1.5 rounded-lg text-xs">
+              <div className="bg-white/5 border border-white/10 text-white/60 px-3 py-1.5 rounded-lg text-xs">
                 {funnel.name} • Step {funnel.currentStepIndex + 1}/{steps.length}
               </div>
             )}
@@ -324,14 +331,13 @@ export default function Home() {
           ) : (
             // NORMAL MODE
             <>
-              {/* Progress Display */}
-              <GenerationProgress progress={progress} />
-
-              {/* Image Display Area - Centered */}
+              {/* Image Display Area with Integrated Progress - Centered */}
               <div className="glass rounded-3xl shadow-2xl p-8 min-h-[500px] flex items-center justify-center border border-white/10">
                 <GeneratedImagesDisplay
                   images={generatedImages}
                   getImageUrl={getImageUrl}
+                  progress={progress}
+                  isGenerating={isGenerating}
                 />
               </div>
 
@@ -368,11 +374,14 @@ export default function Home() {
         onSelectedWorkflowsChange={setSelectedWorkflows}
         viewStepIndex={viewStepIndex}
         currentStepIndex={funnel?.currentStepIndex}
-        editingPromptFields={editingPromptFields}
-        editingTechnicalFields={editingTechnicalFields}
+        editingPromptFields={refinementState.promptFields}
+        editingTechnicalFields={refinementState.technicalFields}
         onEditingFieldsChange={(promptFields, technicalFields) => {
-          setEditingPromptFields(promptFields);
-          setEditingTechnicalFields(technicalFields);
+          setRefinementState(prev => ({
+            ...prev,
+            promptFields,
+            technicalFields,
+          }));
         }}
       />
     </div>

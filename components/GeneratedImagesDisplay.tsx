@@ -1,12 +1,65 @@
 'use client';
 
 import Image from 'next/image';
-import { GeneratedImagesDisplayProps } from '../types';
+import { GeneratedImagesDisplayProps, GenerationProgress } from '../types';
 
-export const GeneratedImagesDisplay: React.FC<GeneratedImagesDisplayProps> = ({
+interface ExtendedGeneratedImagesDisplayProps extends GeneratedImagesDisplayProps {
+    progress?: GenerationProgress | null;
+    isGenerating?: boolean;
+}
+
+export const GeneratedImagesDisplay: React.FC<ExtendedGeneratedImagesDisplayProps> = ({
     images,
-    getImageUrl
+    getImageUrl,
+    progress,
+    isGenerating
 }) => {
+    // Show progress if generating and no images yet
+    if (isGenerating && images.length === 0 && progress) {
+        return (
+            <div className="relative w-full h-full flex flex-col items-center justify-center py-12 space-y-6">
+                <div className="text-center space-y-4 max-w-md">
+                    <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center border-4 border-blue-500/30 animate-pulse">
+                        <svg className="w-16 h-16 text-blue-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                    </div>
+
+                    <div className="space-y-2">
+                        <p className="text-white text-lg font-semibold">
+                            {progress.status === 'queued' && '⏳ En attente dans la file...'}
+                            {progress.status === 'executing' && `🎨 Génération en cours${progress.node ? ` (${progress.node})` : ''}...`}
+                            {progress.status === 'completed' && '✅ Génération terminée !'}
+                            {progress.status === 'error' && '❌ Erreur lors de la génération'}
+                        </p>
+                        {progress.progress !== undefined && (
+                            <p className="text-blue-300 text-sm font-medium">
+                                {Math.round(progress.progress)}%
+                            </p>
+                        )}
+                    </div>
+
+                    {progress.progress !== undefined && (
+                        <div className="w-full max-w-xs mx-auto">
+                            <div className="w-full bg-gray-700/50 rounded-full h-3 overflow-hidden border border-blue-500/30">
+                                <div
+                                    className="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full transition-all duration-300 shadow-lg shadow-blue-500/50"
+                                    style={{ width: `${progress.progress}%` }}
+                                ></div>
+                            </div>
+                        </div>
+                    )}
+
+                    {progress.error && (
+                        <div className="mt-4 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
+                            <p className="text-red-300 text-sm">⚠️ {progress.error}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
     if (images.length === 0) {
         return (
             <div className="relative w-full h-full flex flex-col items-center justify-center py-8">
