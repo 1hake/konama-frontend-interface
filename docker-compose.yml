@@ -1,9 +1,19 @@
 services:
-    jaitoutperdu:
+    image-generation-admin:
         build:
             context: .
             dockerfile: Dockerfile
             target: production
         environment:
             NODE_ENV: production
-            NEXT_PUBLIC_API_URL: https://jaitoutperdu.com
+            NEXT_PUBLIC_API_URL: https://your-domain.com
+            # Add other environment variables as needed
+            OPENAI_API_KEY: ${OPENAI_API_KEY}
+        ports:
+            - "3000:3000"
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s

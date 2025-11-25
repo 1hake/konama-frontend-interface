@@ -6,7 +6,16 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "npx serve@latest out",
-    "lint": "next lint"
+    "start:node": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "test": "echo \"No tests configured\" && exit 0",
+    "docker:build": "docker build -t image-generation-admin .",
+    "docker:build-dev": "docker build --target development -t image-generation-admin:dev .",
+    "docker:run": "docker run -p 3000:80 image-generation-admin",
+    "docker:run-dev": "docker run -p 3001:3000 -v $(pwd):/app image-generation-admin:dev",
+    "deploy:staging": "echo 'Deploying to staging...'",
+    "deploy:production": "echo 'Deploying to production...'"
   },
   "dependencies": {
     "@emailjs/browser": "^4.4.1",

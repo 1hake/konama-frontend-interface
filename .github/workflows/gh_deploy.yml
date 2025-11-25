@@ -1,57 +1,156 @@
-# name: CI/CD Pipeline
+name: CI/CD Pipeline
 
-# on:
-#     push:
-#         branches:
-#             - main
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
 
-# jobs:
-#     build_and_deploy:
-#         runs-on: ubuntu-latest
+env:
+    REGISTRY: docker.io
+    IMAGE_NAME: thegobc/image-generation-admin
 
-#         steps:
-#             - name: Checkout code
-#               uses: actions/checkout@v2
+jobs:
+    # Test job for pull requests and main branch pushes
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-#             - name: Set up Docker Buildx
-#               uses: docker/setup-buildx-action@v1
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '18'
+                  cache: 'npm'
 
-#             - name: Login to Docker Hub
-#               uses: docker/login-action@v1
-#               with:
-#                   username: ${{ secrets.DOCKER_USERNAME }}
-#                   password: ${{ secrets.DOCKER_PASSWORD }}
+            - name: Install dependencies
+              run: npm ci
 
-#             - name: Build and push Docker image
-#               uses: docker/build-push-action@v2
-#               with:
-#                   context: ./
-#                   push: true
-#                   tags: thegobc/jaitoutperdu:latest
+            - name: Run type checking
+              run: npm run type-check || npx tsc --noEmit
 
-#             - name: Copy docker-compose files to server
-#               uses: appleboy/scp-action@v0.1.7
-#               with:
-#                   host: '92.113.25.5'
-#                   username: 'root'
-#                   key: ${{ secrets.SSH_PRIVATE_KEY_NOPW }}
-#                   source: './docker-compose.yml,./docker-compose.swarm.yml'
-#                   target: './jaitoutperdu'
+            - name: Run linting
+              run: npm run lint || npx next lint
 
-#             - name: SSH and update Docker Swarm service
-#               uses: appleboy/ssh-action@v0.1.6
-#               with:
-#                   host: '92.113.25.5'
-#                   username: 'root'
-#                   key: ${{ secrets.SSH_PRIVATE_KEY_NOPW }}
-#                   script: |
-#                       cd jaitoutperdu
+            # Uncomment if you have tests
+            # - name: Run tests
+            #   run: npm test
+
+    # Build and deploy job (only on main branch pushes)
+    build_and_deploy:
+        needs: test
+        runs-on: ubuntu-latest
+        if: github.ref == 'refs/heads/main'
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Extract metadata
+              id: meta
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.IMAGE_NAME }}
+                  tags: |
+                      type=ref,event=branch
+                      type=sha,prefix={{branch}}-
+                      type=raw,value=latest,enable={{is_default_branch}}
+
+            - name: Build and push Docker image
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  platforms: linux/amd64,linux/arm64
+                  push: true
+                  tags: ${{ steps.meta.outputs.tags }}
+                  labels: ${{ steps.meta.outputs.labels }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  build-args: |
+                      BUILDTIME=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.created'] }}
+                      VERSION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+                      REVISION=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.revision'] }}
+
+            - name: Copy deployment files to server
+              uses: appleboy/scp-action@v0.1.7
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY_NOPW }}
+                  source: |
+                      ./docker-compose.yml
+                      ./docker-compose.swarm.yml
+                      ./nginx.conf
+                  target: ./image-generation-admin
+
+            - name: Deploy to production server
+              uses: appleboy/ssh-action@v0.1.6
+              with:
+                  host: ${{ secrets.SERVER_HOST }}
+                  username: ${{ secrets.SERVER_USER }}
+                  key: ${{ secrets.SSH_PRIVATE_KEY_NOPW }}
+                  script: |
+                      cd image-generation-admin
                       
-#                       # Deploy or update the stack (use only swarm config for production)
-#                       docker stack deploy -c docker-compose.swarm.yml jaitoutperdu-stack
+                      # Pull the latest image
+                      docker pull thegobc/image-generation-admin:latest
                       
-#                       # Wait a moment for deployment to process
-#                       sleep 5
+                      # Deploy or update the stack
+                      docker stack deploy -c docker-compose.swarm.yml image-generation-admin-stack
                       
-#                       # Force update to pull the new image
-#                       docker service update --image thegobc/jaitoutperdu:latest --force jaitoutperdu-stack_jaitoutperdu
+                      # Wait for deployment to process
+                      sleep 10
+                      
+                      # Force service update to ensure new image is used
+                      docker service update --image thegobc/image-generation-admin:latest --force image-generation-admin-stack_image-generation-admin
+                      
+                      # Clean up old images to save space
+                      docker image prune -f
+
+    # Staging deployment job (optional - deploy to staging on feature branches)
+    deploy_staging:
+        needs: test
+        runs-on: ubuntu-latest
+        if: github.event_name == 'pull_request'
+        environment: staging
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Login to Docker Hub
+              uses: docker/login-action@v3
+              with:
+                  username: ${{ secrets.DOCKER_USERNAME }}
+                  password: ${{ secrets.DOCKER_PASSWORD }}
+
+            - name: Build and push staging image
+              uses: docker/build-push-action@v5
+              with:
+                  context: .
+                  platforms: linux/amd64
+                  push: true
+                  tags: thegobc/image-generation-admin:staging-${{ github.event.number }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+
+            # Add staging deployment steps here if you have a staging server
+            - name: Deploy to staging
+              run: |
+                  echo "Deploying to staging environment..."
+                  echo "Image: thegobc/image-generation-admin:staging-${{ github.event.number }}"

@@ -1,22 +1,44 @@
 # Production Swarm configuration
 services:
-    jaitoutperdu:
+    image-generation-admin:
         build:
             target: production
-        image: thegobc/jaitoutperdu
+        image: thegobc/image-generation-admin
         deploy:
             replicas: 1
             restart_policy:
                 condition: on-failure
+            resources:
+                limits:
+                    memory: 1G
+                    cpus: '0.5'
+                reservations:
+                    memory: 512M
+                    cpus: '0.25'
         labels:
             - 'traefik.enable=true'
-            - 'traefik.http.routers.jaitoutperdu.rule=Host(`jaitoutperdu.com`)'
-            - 'traefik.http.routers.jaitoutperdu.entrypoints=websecure'
-            - 'traefik.http.routers.jaitoutperdu.tls.certresolver=myresolver'
+            - 'traefik.http.routers.image-generation-admin.rule=Host(`your-domain.com`)'
+            - 'traefik.http.routers.image-generation-admin.entrypoints=websecure'
+            - 'traefik.http.routers.image-generation-admin.tls.certresolver=myresolver'
+            - 'traefik.http.services.image-generation-admin.loadbalancer.server.port=3000'
         environment:
             NODE_ENV: production
+            NEXT_PUBLIC_API_URL: https://your-domain.com
+        secrets:
+            - konama_client_openai_api_key
         networks:
             - webnet
+        healthcheck:
+            test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+            interval: 30s
+            timeout: 10s
+            retries: 3
+            start_period: 40s
+
+secrets:
+    konama_client_openai_api_key:
+        external: true
+        name: konama_client_openai_api_key
 
 networks:
     webnet:
