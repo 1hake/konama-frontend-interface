@@ -16,10 +16,10 @@ export interface NormalWorkflowNode {
     type: string;
     links?: number[];
   }>;
-  widgets_values?: any[];
+  widgets_values?: unknown[];
   mode?: number; // 0 = normal, 2 = bypass, 4 = muted
   title?: string;
-  properties?: Record<string, any>;
+  properties?: Record<string, unknown>;
 }
 
 export interface NormalWorkflow {
@@ -28,7 +28,7 @@ export interface NormalWorkflow {
 }
 
 export interface ApiWorkflowNode {
-  inputs: Record<string, any>;
+  inputs: Record<string, unknown>;
   class_type: string;
   _meta?: {
     title?: string;
@@ -59,9 +59,9 @@ export function convertWorkflowToApi(normalWorkflow: NormalWorkflow): ApiWorkflo
   // Process each node
   for (const node of normalWorkflow.nodes) {
     // Extract node type from various possible sources
-    const nodeType = node.type || (node as any).class_type || (node.properties && node.properties['Node name for S&R']);
+    const nodeType = node.type || (node as unknown as Record<string, unknown>).class_type || (node.properties && node.properties['Node name for S&R']);
 
-    if (!nodeType) {
+    if (!nodeType || typeof nodeType !== 'string') {
       console.log(`⚠️  Skipping node ${node.id} - no type information found`);
       continue;
     }
@@ -81,7 +81,8 @@ export function convertWorkflowToApi(normalWorkflow: NormalWorkflow): ApiWorkflo
 
     // Special debugging for CLIPTextEncode nodes to ensure prompts are preserved
     if (nodeType === 'CLIPTextEncode' && node.widgets_values && node.widgets_values[0]) {
-      console.log(`🎯 CLIPTextEncode node ${node.id} prompt text: "${node.widgets_values[0].slice(0, 50)}..."`);
+      const promptText = String(node.widgets_values[0]);
+      console.log(`🎯 CLIPTextEncode node ${node.id} prompt text: "${promptText.slice(0, 50)}..."`);
     }
 
     const apiNode: ApiWorkflowNode = {
@@ -477,7 +478,7 @@ function inferWidgetMappingFromNode(nodeType: string): string[] {
 /**
  * Handles special cases for specific node types
  */
-function handleSpecialNodeCases(node: NormalWorkflowNode, apiNode: ApiWorkflowNode, widgetValues: any[] = []): void {
+function handleSpecialNodeCases(node: NormalWorkflowNode, apiNode: ApiWorkflowNode, widgetValues: unknown[] = []): void {
   // Handle nodes with special widget ordering
   switch (node.type) {
     case 'KSampler':
@@ -499,7 +500,7 @@ function handleSpecialNodeCases(node: NormalWorkflowNode, apiNode: ApiWorkflowNo
         apiNode.inputs.sampler_name = samplerName;
 
         // Fix scheduler - map to valid values
-        let scheduler = widgetValues[5];
+        let scheduler = String(widgetValues[5]);
         if (scheduler === 'euler') {
           scheduler = 'simple'; // Map euler to simple which is valid
         }
@@ -680,9 +681,9 @@ function detectInputParameters(node: NormalWorkflowNode): string[] {
 /**
  * Enhanced workflow processing with better error handling and debugging
  */
-function processNodeInputs(node: NormalWorkflowNode, apiNode: ApiWorkflowNode, linkMap: Map<number, any>, nodeType?: string): void {
+function processNodeInputs(node: NormalWorkflowNode, apiNode: ApiWorkflowNode, linkMap: Map<number, { sourceNodeId: number; sourceOutputIndex: number; targetType: string }>, nodeType?: string): void {
   const widgetValues = node.widgets_values || [];
-  const extractedNodeType = nodeType || node.type || (node as any).class_type || (node.properties && node.properties['Node name for S&R']);
+  const extractedNodeType = String(nodeType || node.type || (node as unknown as Record<string, unknown>).class_type || (node.properties && node.properties['Node name for S&R']) || 'unknown');
   const inputNames = detectInputParameters(node);
 
   // Process connected inputs first
@@ -716,7 +717,7 @@ function processNodeInputs(node: NormalWorkflowNode, apiNode: ApiWorkflowNode, l
         if (paramName && !apiNode.inputs[paramName] && widgetValues[i] !== undefined) {
           // Skip control values like "randomize", "fixed"
           if (typeof widgetValues[i] === 'string' &&
-            ['randomize', 'fixed', 'increment', 'decrement'].includes(widgetValues[i])) {
+            ['randomize', 'fixed', 'increment', 'decrement'].includes(String(widgetValues[i]))) {
             continue;
           }
           apiNode.inputs[paramName] = widgetValues[i];
@@ -734,7 +735,7 @@ function processNodeInputs(node: NormalWorkflowNode, apiNode: ApiWorkflowNode, l
       // Fallback: use generic parameter names
       for (let i = 0; i < widgetValues.length; i++) {
         if (widgetValues[i] !== undefined &&
-          !['randomize', 'fixed', 'increment', 'decrement'].includes(widgetValues[i])) {
+          !['randomize', 'fixed', 'increment', 'decrement'].includes(String(widgetValues[i]))) {
           apiNode.inputs[`param_${i}`] = widgetValues[i];
         }
       }
@@ -745,7 +746,7 @@ function processNodeInputs(node: NormalWorkflowNode, apiNode: ApiWorkflowNode, l
 /**
  * Normalizes workflow input to ensure consistent structure
  */
-function normalizeWorkflowInput(workflow: any): NormalWorkflow | null {
+function normalizeWorkflowInput(workflow: unknown): NormalWorkflow | null {
   // Handle different input formats
   if (!workflow) {
     console.error('❌ Workflow is null or undefined');
@@ -753,12 +754,17 @@ function normalizeWorkflowInput(workflow: any): NormalWorkflow | null {
   }
 
   // If it's already an API workflow, we can't convert it
-  if (!workflow.nodes && !workflow.links && typeof workflow === 'object') {
+  const workflowObj = workflow as Record<string, unknown>;
+  if (!workflowObj.nodes && !workflowObj.links && typeof workflow === 'object') {
     // Check if it looks like an API workflow (has numbered keys with class_type)
-    const keys = Object.keys(workflow);
-    if (keys.length > 0 && workflow[keys[0]]?.class_type) {
-      console.warn('⚠️  Input appears to be already in API format');
-      return null;
+    const keys = Object.keys(workflow as object);
+    if (keys.length > 0) {
+      const firstKey = keys[0];
+      const firstNode = (workflow as Record<string, unknown>)[firstKey] as Record<string, unknown>;
+      if (firstNode && typeof firstNode === 'object' && 'class_type' in firstNode) {
+        console.warn('⚠️  Input appears to be already in API format');
+        return null;
+      }
     }
   }
 
@@ -772,28 +778,30 @@ function normalizeWorkflowInput(workflow: any): NormalWorkflow | null {
     }
   }
 
+  const workflowTyped = workflow as Record<string, unknown>;
+
   // Ensure we have nodes and links arrays
-  if (!workflow.nodes || !Array.isArray(workflow.nodes)) {
+  if (!workflowTyped.nodes || !Array.isArray(workflowTyped.nodes)) {
     console.error('❌ Workflow missing or invalid nodes array');
     return null;
   }
 
-  if (!workflow.links) {
-    workflow.links = [];
+  if (!workflowTyped.links) {
+    workflowTyped.links = [];
   }
 
-  if (!Array.isArray(workflow.links)) {
+  if (!Array.isArray(workflowTyped.links)) {
     console.warn('⚠️  Workflow links is not an array, using empty array');
-    workflow.links = [];
+    workflowTyped.links = [];
   }
 
-  return workflow as NormalWorkflow;
+  return workflowTyped as unknown as NormalWorkflow;
 }
 
 /**
  * Main function to convert and validate a workflow
  */
-export function processWorkflow(input: any): ApiWorkflow | null {
+export function processWorkflow(input: unknown): ApiWorkflow | null {
   try {
     console.log('🔄 Processing workflow conversion...');
 
@@ -833,17 +841,17 @@ export function processWorkflow(input: any): ApiWorkflow | null {
     // Fix broken connections to filtered nodes
     console.log('🔗 Fixing connections to filtered nodes...');
     const filteredNodeIds = normalWorkflow.nodes
-      .filter((node: any) => {
-        const nodeType = node.type || (node as any).class_type || (node.properties && node.properties['Node name for S&R']);
-        return node.mode === 4 || isUIOnlyNode(nodeType);
+      .filter((node: NormalWorkflowNode) => {
+        const nodeType = node.type || (node as unknown as Record<string, unknown>).class_type || (node.properties as Record<string, unknown>)?.['Node name for S&R'];
+        return node.mode === 4 || isUIOnlyNode(nodeType as string);
       })
-      .map((node: any) => node.id.toString());
+      .map((node: NormalWorkflowNode) => node.id.toString());
 
     console.log('🚫 Filtered node IDs:', filteredNodeIds);
 
     for (const [nodeId, nodeData] of Object.entries(apiWorkflow)) {
-      const node = nodeData as any;
-      for (const [inputName, inputValue] of Object.entries(node.inputs)) {
+      const node = nodeData as unknown as Record<string, unknown>;
+      for (const [inputName, inputValue] of Object.entries(node.inputs as Record<string, unknown>)) {
         if (Array.isArray(inputValue) && inputValue.length >= 2) {
           const sourceNodeId = inputValue[0].toString();
           if (filteredNodeIds.includes(sourceNodeId)) {

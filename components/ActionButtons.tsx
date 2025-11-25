@@ -2,7 +2,6 @@ interface ActionButtonsProps {
     isGenerating: boolean;
     canGenerate: boolean;
     hasContent: boolean;
-    onGenerate: () => void | Promise<void>;
     onReset: () => void;
 }
 
@@ -10,7 +9,6 @@ export const ActionButtons: React.FC<ActionButtonsProps> = ({
     isGenerating,
     canGenerate,
     hasContent,
-    onGenerate,
     onReset
 }) => {
     return (

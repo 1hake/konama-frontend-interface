@@ -1,6 +1,9 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 
-export async function GET(request: NextRequest) {
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
     try {
         // Basic health check
         const health = {
@@ -17,7 +20,7 @@ export async function GET(request: NextRequest) {
         }
 
         return NextResponse.json(health, { status: 200 })
-    } catch (error) {
+    } catch {
         return NextResponse.json(
             {
                 status: 'error',
@@ -35,7 +38,7 @@ async function checkDatabase(): Promise<string> {
         // For example, if using Prisma:
         // const result = await prisma.$queryRaw`SELECT 1`
         return 'ok'
-    } catch (error) {
+    } catch {
         return 'error'
     }
 }
@@ -45,7 +48,7 @@ async function checkAIService(): Promise<string> {
         // Add your AI service health check here
         // For example, check if OpenAI API key is configured:
         return process.env.OPENAI_API_KEY ? 'ok' : 'not_configured'
-    } catch (error) {
+    } catch {
         return 'error'
     }
 }

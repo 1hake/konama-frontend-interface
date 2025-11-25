@@ -8,12 +8,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { SelectImagesRequest } from '@/types/funnel';
 import { funnelStorage } from '@/lib/funnelStorage';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   request: NextRequest,
-  { params }: { params: { funnelId: string; stepId: string } }
+  { params }: { params: Promise<{ funnelId: string; stepId: string }> }
 ) {
   try {
-    const { funnelId, stepId } = params;
+    const { funnelId, stepId } = await params;
     const body: SelectImagesRequest = await request.json();
 
     if (!body.imageIds || !Array.isArray(body.imageIds)) {

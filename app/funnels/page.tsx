@@ -7,15 +7,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { Funnel } from '@/types/funnel';
+import { Funnel, FunnelConfig } from '@/types/funnel';
 import { useWorkflows } from '@/hooks/useWorkflows';
 import { useFunnel } from '@/hooks/useFunnel';
 import { FunnelCreationModal } from '@/components/Funnel/FunnelCreationModal';
 import Link from 'next/link';
 
 export default function FunnelsPage() {
-  const router = useRouter();
   const { workflows } = useWorkflows();
   const { createFunnel } = useFunnel();
   const [funnels, setFunnels] = useState<Funnel[]>([]);
@@ -40,7 +38,7 @@ export default function FunnelsPage() {
   };
 
   const handleCreateFunnel = async (
-    config: any,
+    config: FunnelConfig,
     name: string,
     description?: string
   ) => {

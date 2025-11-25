@@ -79,7 +79,7 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
     };
 
     const updateField = (field: keyof PromptFields, value: string | number) => {
-        setFields(prev => ({ ...prev, [field]: value as any }));
+        setFields(prev => ({ ...prev, [field]: value }));
     };
 
     const handleFieldChange = (field: string, value: string | number) => {

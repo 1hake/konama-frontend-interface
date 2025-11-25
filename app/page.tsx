@@ -23,14 +23,12 @@ export default function Home() {
   // Use the workflows hook instead of inline management
   const {
     workflows: availableWorkflows,
-    loading: workflowsLoading,
-    error: workflowsError,
     refreshWorkflows
   } = useWorkflows();
 
   // Funnel mode state and hooks
   const [isFunnelMode, setIsFunnelMode] = useState(false);
-  const [activeFunnelId, setActiveFunnelId] = useState<string | null>(null);
+  const [activeFunnelId] = useState<string | null>(null);
   const {
     funnel,
     currentStep,
@@ -39,7 +37,6 @@ export default function Home() {
     selectedImages: funnelSelectedImages,
     isGenerating: isFunnelGenerating,
     createFunnel,
-    loadFunnel,
     selectImages: selectFunnelImages,
     createNextStep,
     error: funnelError,
@@ -52,8 +49,8 @@ export default function Home() {
 
   // Unified refinement state for cleaner state management
   const [refinementState, setRefinementState] = useState<{
-    promptFields: any | null;
-    technicalFields: any | null;
+    promptFields: Record<string, unknown> | null;
+    technicalFields: Record<string, unknown> | null;
     imageRefinements: FunnelRefinement[];
   }>({
     promptFields: null,
@@ -68,7 +65,7 @@ export default function Home() {
       setSelectedWorkflows([availableWorkflows[0].id]);
       console.log('Auto-selected first workflow:', availableWorkflows[0].id);
     }
-  }, [availableWorkflows, selectedWorkflow]);
+  }, [availableWorkflows, selectedWorkflow, selectedWorkflows.length]);
 
   // Auto-switch to funnel mode when 2+ workflows selected
   useEffect(() => {
@@ -84,7 +81,7 @@ export default function Home() {
     if (funnel) {
       setViewStepIndex(funnel.currentStepIndex);
     }
-  }, [funnel?.currentStepIndex]);
+  }, [funnel]);
 
   // Load step parameters when viewing a different step
   const handleStepClick = (stepIndex: number) => {

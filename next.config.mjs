@@ -6,8 +6,8 @@ const __dirname = dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Only use static export for production builds
-    ...(process.env.NODE_ENV === 'production' && { output: 'export' }),
+    // Disable static export for now since we have many dynamic API routes
+    // If you need static export, consider moving API routes to a separate service
     trailingSlash: true,
     images: {
         unoptimized: true,

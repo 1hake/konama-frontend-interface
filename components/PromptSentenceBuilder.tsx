@@ -4,6 +4,7 @@ import { useRef, useState, useEffect } from 'react';
 import { InlineToken } from './InlineToken';
 import { TechnicalParameters } from './TechnicalParameters';
 import { ImageDropzone } from './ImageDropzone';
+import { WorkflowMetadata } from '../types';
 
 interface InlineField {
     name: string;
@@ -44,7 +45,7 @@ interface PromptSentenceBuilderProps {
     onEnhancePrompt: () => void;
     onOpenWorkflowModal: () => void;
     selectedWorkflow?: string | null;
-    availableWorkflows?: any[];
+    availableWorkflows?: WorkflowMetadata[];
     error?: string | null;
     // Clear functionality
     onClearAll: () => void;
@@ -80,7 +81,6 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
     hasContent,
     isFunnelMode = false,
     selectedWorkflows = [],
-    onSelectedWorkflowsChange: _onSelectedWorkflowsChange,
     isViewingPastStep = false,
     uploadedImage,
     onImageUpload,

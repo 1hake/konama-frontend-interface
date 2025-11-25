@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
     const startTime = Date.now();
     try {
@@ -22,19 +25,19 @@ export async function POST(request: NextRequest) {
 
             if (workflow.nodes && Array.isArray(workflow.nodes)) {
                 // Check for nodes without class_type
-                const nodesWithoutClassType = workflow.nodes.filter((node: any) => !node.class_type);
+                const nodesWithoutClassType = workflow.nodes.filter((node: Record<string, unknown>) => !node.class_type);
                 console.log('  - Nodes without class_type:', nodesWithoutClassType.length);
 
                 if (nodesWithoutClassType.length > 0) {
                     console.error('❌ PROBLEM NODES WITHOUT CLASS_TYPE:');
-                    nodesWithoutClassType.forEach((node: any) => {
+                    nodesWithoutClassType.forEach((node: Record<string, unknown>) => {
                         console.error(`    Node ID: ${node.id}, type: ${node.type}, class_type: ${node.class_type}`);
                     });
                 }
 
                 // Show first few nodes for debugging
                 console.log('  - First 3 nodes:');
-                workflow.nodes.slice(0, 3).forEach((node: any, i: number) => {
+                workflow.nodes.slice(0, 3).forEach((node: Record<string, unknown>, i: number) => {
                     console.log(`    ${i}: id=${node.id}, class_type=${node.class_type}, type=${node.type}`);
                 });
             }
@@ -126,7 +129,7 @@ export async function POST(request: NextRequest) {
 }
 
 // Handle preflight OPTIONS requests
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
     return new Response(null, {
         status: 200,
         headers: {

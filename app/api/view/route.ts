@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
     try {
         const { searchParams } = new URL(request.url);
@@ -62,7 +64,7 @@ export async function GET(request: NextRequest) {
 }
 
 // Handle preflight OPTIONS requests
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
     return new Response(null, {
         status: 200,
         headers: {

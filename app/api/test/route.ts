@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
     const comfyApiUrl = process.env.NEXT_PUBLIC_COMFY_API_URL;
 

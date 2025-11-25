@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { config } from '../lib/config';
 
 export const WorkflowDebugger = () => {
-    const [response, setResponse] = useState<any>(null);
+    const [response, setResponse] = useState<Record<string, unknown> | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 

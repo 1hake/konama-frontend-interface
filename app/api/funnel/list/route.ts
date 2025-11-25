@@ -4,10 +4,12 @@
  * Lists all funnels
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { funnelStorage } from '@/lib/funnelStorage';
 
-export async function GET(request: NextRequest) {
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
   try {
     const funnels = await funnelStorage.listFunnels();
 

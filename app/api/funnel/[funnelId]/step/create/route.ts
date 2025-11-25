@@ -9,12 +9,14 @@ import { CreateNextStepRequest, FunnelStep } from '@/types/funnel';
 import { funnelStorage } from '@/lib/funnelStorage';
 import { generationQueue } from '@/lib/generationQueue';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(
   request: NextRequest,
-  { params }: { params: { funnelId: string } }
+  { params }: { params: Promise<{ funnelId: string }> }
 ) {
   try {
-    const { funnelId } = params;
+    const { funnelId } = await params;
     const body: CreateNextStepRequest = await request.json();
 
     if (!body.selectedImageIds || body.selectedImageIds.length === 0) {

@@ -29,7 +29,7 @@ export const PromptBuilderActions: React.FC<PromptBuilderActionsProps> = ({
                         type="button"
                         onClick={onEnhancePrompt}
                         disabled={isGenerating || isEnhancing}
-                        title="Améliorer le prompt avec l'IA"
+                        title="Améliorer le prompt avec l&apos;IA"
                         className="group flex items-center gap-2 px-4 py-2 bg-blue-500/20 hover:bg-blue-500/30 border border-blue-400/30 hover:border-blue-400/50 text-blue-300 hover:text-blue-200 rounded-full text-sm font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                     >
                         {isEnhancing ? (
@@ -70,7 +70,7 @@ export const PromptBuilderActions: React.FC<PromptBuilderActionsProps> = ({
             {error && (
                 <div className="mt-4 p-4 glass border border-red-400/30 rounded-2xl">
                     <div className="text-red-300 text-sm font-light">
-                        Erreur lors de l'amélioration: {error}
+                        Erreur lors de l&apos;amélioration: {error}
                     </div>
                 </div>
             )}

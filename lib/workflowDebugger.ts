@@ -2,12 +2,12 @@
  * Workflow debugging and fixing utilities
  */
 
-import { processWorkflow, ApiWorkflow } from './workflowConverter';
+import { processWorkflow, ApiWorkflow, NormalWorkflow } from './workflowConverter';
 
 /**
  * Analyzes a workflow and provides detailed information about potential issues
  */
-export function analyzeWorkflow(workflow: any): {
+export function analyzeWorkflow(workflow: NormalWorkflow | Record<string, unknown>): {
     isValid: boolean;
     issues: string[];
     recommendations: string[];
@@ -22,9 +22,16 @@ export function analyzeWorkflow(workflow: any): {
 } {
     const issues: string[] = [];
     const recommendations: string[] = [];
-    const nodeAnalysis: any[] = [];
+    const nodeAnalysis: Array<{
+        id: number;
+        type: string;
+        mode: number;
+        status: 'active' | 'bypassed' | 'muted' | 'ui-only';
+        hasRequiredParams: boolean;
+        missingParams?: string[];
+    }> = [];
 
-    if (!workflow || !workflow.nodes) {
+    if (!workflow || !(workflow as NormalWorkflow).nodes) {
         return {
             isValid: false,
             issues: ['Workflow is missing or has no nodes'],
@@ -45,7 +52,7 @@ export function analyzeWorkflow(workflow: any): {
     };
 
     // Analyze each node
-    for (const node of workflow.nodes) {
+    for (const node of (workflow as NormalWorkflow).nodes) {
         const mode = node.mode || 0;
         let status: 'active' | 'bypassed' | 'muted' | 'ui-only' = 'active';
         let hasRequiredParams = true;
@@ -94,7 +101,7 @@ export function analyzeWorkflow(workflow: any): {
     }, {} as Record<string, number>);
 
     console.log('📊 Workflow Analysis:', {
-        totalNodes: workflow.nodes.length,
+        totalNodes: (workflow as NormalWorkflow).nodes.length,
         statusCounts,
         issuesFound: issues.length
     });
@@ -110,8 +117,8 @@ export function analyzeWorkflow(workflow: any): {
 /**
  * Automatically fixes common workflow issues
  */
-export function autoFixWorkflow(workflow: any): {
-    fixed: any;
+export function autoFixWorkflow(workflow: Record<string, unknown>): {
+    fixed: Record<string, unknown>;
     changes: string[];
 } {
     const changes: string[] = [];
@@ -165,11 +172,23 @@ function isUIOnlyNodeType(nodeType: string): boolean {
 /**
  * Comprehensive workflow validation and fixing
  */
-export function validateAndFixWorkflow(workflow: any): {
+export function validateAndFixWorkflow(workflow: Record<string, unknown>): {
     success: boolean;
-    workflow: any;
+    workflow: Record<string, unknown>;
     apiWorkflow: ApiWorkflow | null;
-    analysis: any;
+    analysis: {
+        isValid: boolean;
+        issues: string[];
+        recommendations: string[];
+        nodeAnalysis: Array<{
+            id: number;
+            type: string;
+            mode: number;
+            status: 'active' | 'bypassed' | 'muted' | 'ui-only';
+            hasRequiredParams: boolean;
+            missingParams?: string[];
+        }>;
+    };
     fixes: string[];
 } {
     console.log('🔧 Starting workflow validation and fixing...');
@@ -205,7 +224,7 @@ export function validateAndFixWorkflow(workflow: any): {
 /**
  * Quick fix for the most common issue: bypass problematic upscale nodes
  */
-export function quickFixBypassUpscaleNodes(workflow: any): any {
+export function quickFixBypassUpscaleNodes(workflow: Record<string, unknown>): Record<string, unknown> {
     const fixed = JSON.parse(JSON.stringify(workflow));
 
     if (!fixed.nodes) return fixed;

@@ -1,9 +1,8 @@
 import { WorkflowMetadata, WorkflowGenerationOptions } from '../types';
-import { config } from './config';
 
 // Cache for workflows and templates
-const workflowsCache = new Map<string, any>();
-const workflowTemplatesCache = new Map<string, any>();
+const workflowsCache = new Map<string, Record<string, unknown>>();
+const workflowTemplatesCache = new Map<string, Record<string, unknown>>();
 let lastFetchTime = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
@@ -49,11 +48,12 @@ async function loadFallbackWorkflows(): Promise<void> {
 
         // Handle flux-krea-dev workflow
         if (workflowImports[0].status === 'fulfilled') {
-            const workflowData = workflowImports[0].value.default;
+            const workflowData = workflowImports[0].value.default as Record<string, unknown>;
             // Add source information to metadata
-            if (workflowData.metadata) {
-                (workflowData.metadata as any).source = 'local';
-                (workflowData.metadata as any).lastFetched = new Date();
+            if (workflowData.metadata && typeof workflowData.metadata === 'object') {
+                const metadata = workflowData.metadata as Record<string, unknown>;
+                metadata.source = 'local';
+                metadata.lastFetched = new Date();
             }
             workflowsCache.set('flux-krea-dev', workflowData);
             console.log('✅ Loaded flux-krea-dev workflow');
@@ -61,11 +61,12 @@ async function loadFallbackWorkflows(): Promise<void> {
 
         // Handle sd15-basic workflow
         if (workflowImports[1].status === 'fulfilled') {
-            const workflowData = workflowImports[1].value.default;
+            const workflowData = workflowImports[1].value.default as Record<string, unknown>;
             // Add source information to metadata
-            if (workflowData.metadata) {
-                (workflowData.metadata as any).source = 'local';
-                (workflowData.metadata as any).lastFetched = new Date();
+            if (workflowData.metadata && typeof workflowData.metadata === 'object') {
+                const metadata = workflowData.metadata as Record<string, unknown>;
+                metadata.source = 'local';
+                metadata.lastFetched = new Date();
             }
             workflowsCache.set('sd15-basic', workflowData);
             console.log('✅ Loaded sd15-basic workflow');
@@ -140,7 +141,7 @@ async function loadFallbackWorkflows(): Promise<void> {
  */
 export async function getAvailableWorkflows(): Promise<WorkflowMetadata[]> {
     await loadWorkflowsFromApi();
-    return Array.from(workflowsCache.values()).map((w: any) => w.metadata as WorkflowMetadata);
+    return Array.from(workflowsCache.values()).map((w: Record<string, unknown>) => w.metadata as WorkflowMetadata);
 }
 
 /**
@@ -160,7 +161,7 @@ export async function generateWorkflowJson(
     positivePrompt: string,
     negativePrompt: string = '',
     options: WorkflowGenerationOptions = {}
-): Promise<any> {
+): Promise<Record<string, unknown>> {
     await loadWorkflowsFromApi();
 
     const workflow = workflowsCache.get(workflowId);
@@ -168,27 +169,27 @@ export async function generateWorkflowJson(
         throw new Error(`Workflow ${workflowId} not found`);
     }
 
-    const templateName = workflow.workflowTemplate;
+    const templateName = workflow.workflowTemplate as string;
     const template = workflowTemplatesCache.get(templateName);
     if (!template) {
         throw new Error(`Workflow template ${templateName} not found`);
     }
 
-    return generateWorkflowFromTemplate(template, positivePrompt, negativePrompt, options, workflow.metadata);
+    return generateWorkflowFromTemplate(template, positivePrompt, negativePrompt, options, workflow.metadata as WorkflowMetadata);
 }
 
 /**
  * Generate workflow from template by replacing placeholders
  */
 function generateWorkflowFromTemplate(
-    template: any,
+    template: Record<string, unknown>,
     positivePrompt: string,
     negativePrompt: string,
     options: WorkflowGenerationOptions,
     metadata: WorkflowMetadata
-): any {
+): Record<string, unknown> {
     // Get default values from metadata parameters
-    const defaults: Record<string, any> = {};
+    const defaults: Record<string, unknown> = {};
     if (metadata.parameters) {
         metadata.parameters.forEach(param => {
             defaults[param.name] = param.defaultValue;
@@ -227,7 +228,7 @@ function generateWorkflowFromTemplate(
 /**
  * Register a custom workflow
  */
-export function registerWorkflow(workflowId: string, workflowData: any): void {
+export function registerWorkflow(workflowId: string, workflowData: Record<string, unknown>): void {
     workflowsCache.set(workflowId, workflowData);
 }
 
@@ -250,7 +251,7 @@ export async function refreshWorkflows(): Promise<void> {
 }
 
 // Export individual functions as default for backwards compatibility
-export default {
+const workflowManager = {
     getAvailableWorkflows,
     getWorkflowMetadata,
     generateWorkflowJson,
@@ -258,3 +259,5 @@ export default {
     unregisterWorkflow,
     refreshWorkflows
 };
+
+export default workflowManager;

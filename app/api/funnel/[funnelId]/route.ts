@@ -7,12 +7,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { funnelStorage } from '@/lib/funnelStorage';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(
   request: NextRequest,
-  { params }: { params: { funnelId: string } }
+  { params }: { params: Promise<{ funnelId: string }> }
 ) {
   try {
-    const { funnelId } = params;
+    const { funnelId } = await params;
 
     // Load funnel
     const funnel = await funnelStorage.loadFunnel(funnelId);
@@ -62,10 +64,10 @@ export async function GET(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { funnelId: string } }
+  { params }: { params: Promise<{ funnelId: string }> }
 ) {
   try {
-    const { funnelId } = params;
+    const { funnelId } = await params;
 
     await funnelStorage.deleteFunnel(funnelId);
 

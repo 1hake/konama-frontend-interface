@@ -56,7 +56,7 @@ export function testWorkflowConversion() {
 /**
  * Validate a workflow structure
  */
-export function validateWorkflowStructure(workflow: any): { isValid: boolean; errors: string[] } {
+export function validateWorkflowStructure(workflow: unknown): { isValid: boolean; errors: string[] } {
   const errors: string[] = [];
 
   if (!workflow) {
@@ -69,13 +69,15 @@ export function validateWorkflowStructure(workflow: any): { isValid: boolean; er
     return { isValid: false, errors };
   }
 
+  const workflowObj = workflow as Record<string, unknown>;
+
   // Check if it's a normal format workflow
-  if (workflow.nodes && Array.isArray(workflow.nodes) && workflow.links && Array.isArray(workflow.links)) {
+  if (workflowObj.nodes && Array.isArray(workflowObj.nodes) && workflowObj.links && Array.isArray(workflowObj.links)) {
     console.log('📋 Detected normal format workflow');
 
     // Validate nodes structure
-    for (let i = 0; i < workflow.nodes.length; i++) {
-      const node = workflow.nodes[i];
+    for (let i = 0; i < workflowObj.nodes.length; i++) {
+      const node = workflowObj.nodes[i] as Record<string, unknown>;
       if (!node.id || (!node.type && !node.class_type)) {
         errors.push(`Node ${i} missing id or type/class_type`);
       }
@@ -89,8 +91,8 @@ export function validateWorkflowStructure(workflow: any): { isValid: boolean; er
     }
 
     // Validate links structure
-    for (let i = 0; i < workflow.links.length; i++) {
-      const link = workflow.links[i];
+    for (let i = 0; i < workflowObj.links.length; i++) {
+      const link = workflowObj.links[i];
       if (!Array.isArray(link) || link.length !== 6) {
         errors.push(`Link ${i} must be an array of 6 elements`);
       }

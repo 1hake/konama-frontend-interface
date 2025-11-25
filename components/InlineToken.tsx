@@ -179,12 +179,10 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
                 <SuggestionTooltip
                     suggestions={suggestions}
                     currentValue={value}
-                    placeholder={field.placeholder}
                     example={field.example}
                     onSelect={handleSuggestionSelect}
                     isVisible={showSuggestions}
                     onClose={() => setShowSuggestions(false)}
-                    fieldColor={field.color}
                     fieldLabel={field.label}
                 />
             )}

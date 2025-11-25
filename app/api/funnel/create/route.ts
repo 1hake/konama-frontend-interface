@@ -9,6 +9,8 @@ import { CreateFunnelRequest, Funnel, FunnelStep } from '@/types/funnel';
 import { funnelStorage } from '@/lib/funnelStorage';
 import { generationQueue } from '@/lib/generationQueue';
 
+export const dynamic = 'force-dynamic';
+
 export async function POST(request: NextRequest) {
   try {
     const body: CreateFunnelRequest = await request.json();

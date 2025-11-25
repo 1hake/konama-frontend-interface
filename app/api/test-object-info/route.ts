@@ -1,10 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { config } from '../../../lib/config';
+
+export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/test-object-info - Test connection to ComfyUI directly (no longer uses proxy)
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         const comfyApiUrl = config.comfyApiUrl;
 
@@ -79,7 +81,7 @@ export async function GET(request: NextRequest) {
 /**
  * Handle preflight OPTIONS requests
  */
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
     return new Response(null, {
         status: 200,
         headers: {

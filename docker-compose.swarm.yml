@@ -17,10 +17,10 @@ services:
                     cpus: '0.25'
         labels:
             - 'traefik.enable=true'
-            - 'traefik.http.routers.image-generation-admin.rule=Host(`studio.fuzdi.fr`)'
-            - 'traefik.http.routers.image-generation-admin.entrypoints=websecure'
-            - 'traefik.http.routers.image-generation-admin.tls.certresolver=myresolver'
-            - 'traefik.http.services.image-generation-admin.loadbalancer.server.port=3000'
+            - 'traefik.https.routers.image-generation-admin.rule=Host(`studio.fuzdi.fr`)'
+            - 'traefik.https.routers.image-generation-admin.entrypoints=websecure'
+            - 'traefik.https.routers.image-generation-admin.tls.certresolver=myresolver'
+            - 'traefik.https.services.image-generation-admin.loadbalancer.server.port=3000'
         environment:
             NODE_ENV: production
             NEXT_PUBLIC_API_URL: https://studio.fuzdi.fr

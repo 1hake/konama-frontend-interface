@@ -2,14 +2,14 @@
  * Utility functions for workflow conversion
  */
 
-import { processWorkflow, ApiWorkflow } from './workflowConverter';
+import { processWorkflow, ApiWorkflow, ApiWorkflowNode } from './workflowConverter';
 
 /**
  * Converts any workflow input to API format with error handling
  * @param input - Workflow in normal format, JSON string, or file path
  * @returns Promise<ApiWorkflow | null>
  */
-export async function convertToApiFormat(input: any): Promise<ApiWorkflow | null> {
+export async function convertToApiFormat(input: unknown): Promise<ApiWorkflow | null> {
     try {
         // Handle different input types
         let workflow = input;
@@ -37,14 +37,16 @@ export async function convertToApiFormat(input: any): Promise<ApiWorkflow | null
  * @param workflow - Workflow object to check
  * @returns boolean - true if it's normal format, false if API format
  */
-export function isNormalFormat(workflow: any): boolean {
+export function isNormalFormat(workflow: unknown): boolean {
     if (!workflow || typeof workflow !== 'object') {
         return false;
     }
 
+    const workflowObj = workflow as Record<string, unknown>;
+
     // Normal format has nodes and links arrays
-    if (workflow.nodes && Array.isArray(workflow.nodes) &&
-        workflow.links && Array.isArray(workflow.links)) {
+    if (workflowObj.nodes && Array.isArray(workflowObj.nodes) &&
+        workflowObj.links && Array.isArray(workflowObj.links)) {
         return true;
     }
 
@@ -63,7 +65,7 @@ export function isNormalFormat(workflow: any): boolean {
  * @param workflow - Workflow in any format
  * @returns Promise<ApiWorkflow | null>
  */
-export async function ensureApiFormat(workflow: any): Promise<ApiWorkflow | null> {
+export async function ensureApiFormat(workflow: Record<string, unknown>): Promise<ApiWorkflow | null> {
     if (!workflow) {
         return null;
     }
@@ -84,7 +86,7 @@ export async function ensureApiFormat(workflow: any): Promise<ApiWorkflow | null
  * @returns Promise<object | null> - Ready to send to /prompt endpoint
  */
 export async function createComfyPayload(
-    workflow: any,
+    workflow: Record<string, unknown>,
     clientId?: string
 ): Promise<{ prompt: ApiWorkflow; client_id?: string } | null> {
 
@@ -117,7 +119,7 @@ export function extractPrompts(apiWorkflow: ApiWorkflow): {
     const positive: string[] = [];
     const negative: string[] = [];
 
-    for (const [nodeId, node] of Object.entries(apiWorkflow)) {
+    for (const [, node] of Object.entries(apiWorkflow)) {
         if (node.class_type === 'CLIPTextEncode') {
             const text = node.inputs.text;
             if (typeof text === 'string') {
@@ -171,9 +173,9 @@ export function updatePrompts(
 export function findNodesByType(
     apiWorkflow: ApiWorkflow,
     nodeType: string
-): Array<[string, any]> {
+): Array<[string, ApiWorkflowNode]> {
     return Object.entries(apiWorkflow).filter(
-        ([_, node]) => node.class_type === nodeType
+        ([, node]) => node.class_type === nodeType
     );
 }
 
@@ -187,7 +189,7 @@ export function findNodesByType(
 export function updateNodeParams(
     apiWorkflow: ApiWorkflow,
     nodeType: string,
-    updates: Record<string, any>
+    updates: Record<string, unknown>
 ): ApiWorkflow {
     const modified = { ...apiWorkflow };
 

@@ -1,10 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { config } from '@/lib/config';
+
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
 
 /**
  * GET /api/workflows - Proxy to external workflow service
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
     try {
         const response = await fetch(`${config.workflowApiUrl}/workflows`);
 
@@ -38,7 +41,7 @@ export async function GET(request: NextRequest) {
 /**
  * Handle preflight OPTIONS requests
  */
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
     return new Response(null, {
         status: 200,
         headers: {

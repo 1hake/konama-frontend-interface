@@ -23,14 +23,12 @@ export default function FunnelEditorPage() {
 
   const {
     funnel,
-    currentStep,
     steps,
     images: allImages,
     selectedImages: initialSelectedImages,
     loading,
     error,
     isGenerating,
-    loadFunnel,
     selectImages,
     createNextStep,
     deleteFunnel,
@@ -56,7 +54,7 @@ export default function FunnelEditorPage() {
     if (funnel) {
       setViewStepIndex(funnel.currentStepIndex);
     }
-  }, [funnel?.currentStepIndex]);
+  }, [funnel]);
 
   // Load selected images from API
   useEffect(() => {

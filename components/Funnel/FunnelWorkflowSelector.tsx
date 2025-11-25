@@ -45,11 +45,6 @@ export function FunnelWorkflowSelector({
     onChange([]);
   };
 
-  const getWorkflowName = (id: string) => {
-    const workflow = workflows.find(w => w.id === id);
-    return workflow?.name || id;
-  };
-
   return (
     <>
       {/* Trigger Button */}
@@ -165,8 +160,8 @@ export function FunnelWorkflowSelector({
                             type="button"
                             onClick={() => toggleWorkflow(workflow.id)}
                             className={`text-left p-4 rounded-xl border-2 transition-all ${isSelected
-                                ? 'border-purple-500 bg-purple-900/30 shadow-lg shadow-purple-500/20'
-                                : 'border-gray-700 bg-gray-800/50 hover:border-purple-400 hover:bg-gray-700/70'
+                              ? 'border-purple-500 bg-purple-900/30 shadow-lg shadow-purple-500/20'
+                              : 'border-gray-700 bg-gray-800/50 hover:border-purple-400 hover:bg-gray-700/70'
                               }`}
                           >
                             <div className="flex items-start justify-between gap-3">

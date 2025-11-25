@@ -13,7 +13,6 @@ interface FunnelStepViewerProps {
   selectedImageIds: string[];
   onSelectionChange: (imageIds: string[]) => void;
   getImageUrl: (image: FunnelImage) => string;
-  onImageClick?: (image: FunnelImage) => void;
 }
 
 export function FunnelStepViewer({
@@ -21,7 +20,6 @@ export function FunnelStepViewer({
   selectedImageIds,
   onSelectionChange,
   getImageUrl,
-  onImageClick,
 }: FunnelStepViewerProps) {
   const toggleImage = (imageId: string) => {
     if (selectedImageIds.includes(imageId)) {
@@ -83,8 +81,8 @@ export function FunnelStepViewer({
             <div
               key={image.id}
               className={`relative group bg-white/[0.03] backdrop-blur-xl rounded-2xl overflow-hidden border transition-all duration-200 ${isSelected
-                  ? 'border-blue-500 shadow-lg shadow-blue-500/20 scale-[0.98]'
-                  : 'border-white/[0.08] hover:border-white/20 hover:shadow-xl'
+                ? 'border-blue-500 shadow-lg shadow-blue-500/20 scale-[0.98]'
+                : 'border-white/[0.08] hover:border-white/20 hover:shadow-xl'
                 }`}
             >
               {/* Image - Click to toggle selection */}
@@ -103,8 +101,8 @@ export function FunnelStepViewer({
               <div className="absolute top-3 left-3 z-10 pointer-events-none">
                 <div
                   className={`w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 ${isSelected
-                      ? 'bg-blue-500 shadow-lg shadow-blue-500/40 scale-110'
-                      : 'bg-black/40 backdrop-blur-md border border-white/30'
+                    ? 'bg-blue-500 shadow-lg shadow-blue-500/40 scale-110'
+                    : 'bg-black/40 backdrop-blur-md border border-white/30'
                     }`}
                 >
                   {isSelected && (

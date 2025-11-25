@@ -4,7 +4,9 @@ import { processWorkflow } from '@/lib/workflowConverter';
 import normalWorkflow from '../proxy/example-normal.json';
 import apiWorkflow from '../proxy/example-api.json';
 
-export async function GET(request: NextRequest) {
+export const dynamic = 'force-dynamic';
+
+export async function GET() {
   try {
     console.log('🧪 Running workflow conversion test...');
 
@@ -25,7 +27,7 @@ export async function GET(request: NextRequest) {
     // Check if key nodes are present
     const keyNodes = ['31', '38', '39', '40', '45', '8', '9'];
     const presentNodes = keyNodes.filter(nodeId =>
-      (apiWorkflow as any)[nodeId] && convertedWorkflow[nodeId]
+      (apiWorkflow as Record<string, unknown>)[nodeId] && convertedWorkflow[nodeId]
     );
 
     return NextResponse.json({

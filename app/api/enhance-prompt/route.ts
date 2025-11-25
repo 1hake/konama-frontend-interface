@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Force dynamic rendering for this API route
+export const dynamic = 'force-dynamic';
+
 interface FieldSuggestions {
     sujet: string[];
     contexte: string[];
@@ -69,7 +72,7 @@ Réponds uniquement avec le JSON, sans autre texte.`;
         let suggestions: FieldSuggestions;
         try {
             suggestions = JSON.parse(content);
-        } catch (parseError) {
+        } catch {
             // If JSON parsing fails, try to extract JSON from the response
             const jsonMatch = content.match(/\{[\s\S]*\}/);
             if (jsonMatch) {

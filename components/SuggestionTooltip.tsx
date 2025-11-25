@@ -5,24 +5,20 @@ import { useState, useRef, useEffect } from 'react';
 interface SuggestionTooltipProps {
     suggestions: string[];
     currentValue: string;
-    placeholder: string;
     example: string;
     onSelect: (value: string) => void;
     isVisible: boolean;
     onClose: () => void;
-    fieldColor: string;
     fieldLabel: string;
 }
 
 export const SuggestionTooltip: React.FC<SuggestionTooltipProps> = ({
     suggestions,
     currentValue,
-    placeholder,
     example,
     onSelect,
     isVisible,
     onClose,
-    fieldColor,
     fieldLabel,
 }) => {
     const [hoveredIndex, setHoveredIndex] = useState<number>(-1);
