@@ -10,7 +10,7 @@ services:
             # Add other environment variables as needed
             OPENAI_API_KEY: ${OPENAI_API_KEY}
         ports:
-            - "3000:3000"
+            - "3001:3000"
         healthcheck:
             test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
             interval: 30s
