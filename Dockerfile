@@ -50,47 +50,37 @@ ENV REVISION=$REVISION
 # Build the application (static export)
 RUN npm run build
 
-# Production stage with nginx
-FROM nginx:alpine AS production
+# Production stage with Node.js
+FROM node:21-alpine AS production
 
-# Install additional packages for health checks and debugging
-RUN apk add --no-cache curl wget
+WORKDIR /app
 
-# Remove default nginx configuration
-RUN rm -rf /etc/nginx/conf.d/default.conf /var/www/html/*
+# Install system dependencies for health checks
+RUN apk add --no-cache curl
 
-# Create custom nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Install production dependencies only
+COPY package*.json ./
+RUN npm ci --only=production && npm cache clean --force
 
-# Copy built static files from builder stage
-COPY --from=builder /app/out /usr/share/nginx/html
+# Copy built application from builder
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
-# Create health check endpoint
-RUN mkdir -p /usr/share/nginx/html/health && \
-    echo '<!DOCTYPE html><html><head><title>Health Check</title></head><body><h1>OK</h1></body></html>' > /usr/share/nginx/html/health/index.html
-
-# Copy and setup entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+# Create non-root user for security
+RUN addgroup --system --gid 1001 nodejs && \
+    adduser --system --uid 1001 nextjs
 
 # Set proper permissions
-RUN chmod -R 755 /usr/share/nginx/html && \
-    chown -R nginx:nginx /usr/share/nginx/html && \
-    chown -R nginx:nginx /var/cache/nginx && \
-    chown -R nginx:nginx /var/log/nginx && \
-    mkdir -p /var/cache/nginx/client_temp && \
-    chown -R nginx:nginx /var/cache/nginx/client_temp
+RUN chown -R nextjs:nodejs /app
+USER nextjs
 
-# Create nginx user directories with proper permissions
-RUN mkdir -p /var/run/nginx && \
-    chown nginx:nginx /var/run/nginx
-
-# Expose port 80 for nginx
-EXPOSE 80
+# Expose port 3000
+EXPOSE 3000
 
 # Health check for container orchestration
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost/health || exit 1
+    CMD curl -f http://localhost:3000/api/health || exit 1
 
 # Add build information as labels
 LABEL org.opencontainers.image.title="Image Generation Admin"
@@ -99,11 +89,8 @@ LABEL org.opencontainers.image.version="$VERSION"
 LABEL org.opencontainers.image.created="$BUILDTIME"
 LABEL org.opencontainers.image.revision="$REVISION"
 
-# Use custom entrypoint
-ENTRYPOINT ["docker-entrypoint.sh"]
-
-# Start nginx (runs as root in container which is acceptable)
-CMD ["nginx", "-g", "daemon off;"]
+# Start the Next.js application
+CMD ["node", "server.js"]
 
 # Alternative Node.js production stage (uncomment if you need server-side rendering)
 # FROM node:21-alpine AS node-production

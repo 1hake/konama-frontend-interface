@@ -6,8 +6,8 @@ const __dirname = dirname(__filename);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-    // Disable static export for now since we have many dynamic API routes
-    // If you need static export, consider moving API routes to a separate service
+    // Use standalone output for production deployment with Node.js
+    output: 'standalone',
     trailingSlash: true,
     images: {
         unoptimized: true,
@@ -25,7 +25,6 @@ const nextConfig = {
     devIndicators: {
         autoPrerender: false,
     },
-    distDir: 'out',
     outputFileTracingRoot: __dirname,
 };
 
