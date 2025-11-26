@@ -101,6 +101,20 @@ jobs:
                   script: |
                       cd image-generation-admin
                       
+                      # Create Docker secret if it doesn't exist
+                      if ! docker secret inspect konama_client_openai_api_key >/dev/null 2>&1; then
+                          echo "Creating konama_client_openai_api_key secret..."
+                          echo "${{ secrets.OPENAI_API_KEY }}" | docker secret create konama_client_openai_api_key -
+                      else
+                          echo "Secret konama_client_openai_api_key already exists"
+                      fi
+                      
+                      # Ensure webnet network exists
+                      if ! docker network inspect webnet >/dev/null 2>&1; then
+                          echo "Creating webnet network..."
+                          docker network create --driver overlay webnet
+                      fi
+                      
                       # Pull the latest image
                       docker pull thegobc/image-generation-admin:latest
                       
