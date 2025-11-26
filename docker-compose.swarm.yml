@@ -1,45 +1,24 @@
 # Production Swarm configuration
 services:
-    image-generation-admin:
+    champdavoine:
         build:
-            context: .
-            dockerfile: Dockerfile
             target: production
-            args:
-                BUILDTIME: "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-                VERSION: "1.0.0"
-                REVISION: "${CI_COMMIT_SHA:-unknown}"
         image: thegobc/image-generation-admin
         deploy:
             replicas: 1
             restart_policy:
                 condition: on-failure
-            resources:
-                limits:
-                    memory: 1G
-                    cpus: '0.5'
-                reservations:
-                    memory: 512M
-                    cpus: '0.25'
         labels:
             - 'traefik.enable=true'
             - 'traefik.https.routers.image-generation-admin.rule=Host(`studio.fuzdi.fr`)'
             - 'traefik.https.routers.image-generation-admin.entrypoints=websecure'
             - 'traefik.https.routers.image-generation-admin.tls.certresolver=myresolver'
-            - 'traefik.https.services.image-generation-admin.loadbalancer.server.port=3000'
         environment:
             NODE_ENV: production
-            NEXT_PUBLIC_API_URL: https://studio.fuzdi.fr
         secrets:
             - konama_client_openai_api_key
         networks:
             - webnet
-        healthcheck:
-            test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
-            interval: 30s
-            timeout: 10s
-            retries: 3
-            start_period: 40s
 
 secrets:
     konama_client_openai_api_key:
