@@ -1,6 +1,6 @@
 # Production Swarm configuration
 services:
-    champdavoine:
+    image-generation-admin:
         build:
             target: production
         image: thegobc/image-generation-admin
@@ -10,9 +10,9 @@ services:
                 condition: on-failure
         labels:
             - 'traefik.enable=true'
-            - 'traefik.https.routers.image-generation-admin.rule=Host(`studio.fuzdi.fr`)'
-            - 'traefik.https.routers.image-generation-admin.entrypoints=websecure'
-            - 'traefik.https.routers.image-generation-admin.tls.certresolver=myresolver'
+            - 'traefik.http.routers.champdavoine.rule=Host(`champdavoine.com`)'
+            - 'traefik.http.routers.champdavoine.entrypoints=websecure'
+            - 'traefik.http.routers.champdavoine.tls.certresolver=myresolver'
         environment:
             NODE_ENV: production
         secrets:
