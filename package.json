@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "NODE_ENV=production next build",
+    "build": "next build",
+    "build:safe": "NODE_OPTIONS='--max-old-space-size=4096' next build",
     "start": "npx serve@latest out",
     "start:node": "next start",
     "lint": "next lint",

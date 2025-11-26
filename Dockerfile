@@ -47,12 +47,13 @@ COPY . .
 # Set build environment for optimized production build
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 ENV BUILDTIME=$BUILDTIME
 ENV VERSION=$VERSION
 ENV REVISION=$REVISION
 
-# Optimize build process
-RUN npm run build
+# Build with timeout and safer script to prevent hanging
+RUN timeout 600 npm run build:safe || (echo "Build timed out after 10 minutes" && exit 1)
 
 # Production stage with Node.js
 FROM node:21-alpine AS production
