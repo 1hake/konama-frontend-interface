@@ -72,6 +72,10 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
+# Copy startup script
+COPY start.sh ./
+RUN chmod +x start.sh
+
 # Create non-root user for security
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
@@ -84,7 +88,7 @@ USER nextjs
 EXPOSE 3000
 
 # Health check for container orchestration
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:3000/api/health || exit 1
 
 # Add build information as labels  
@@ -94,7 +98,7 @@ LABEL org.opencontainers.image.version="latest"
 LABEL org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
 LABEL org.opencontainers.image.revision="unknown"
 
-# Start the Next.js application
-CMD ["node", "server.js"]
+# Start the Next.js application with startup script
+CMD ["./start.sh"]
 
 

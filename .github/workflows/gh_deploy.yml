@@ -43,6 +43,29 @@ jobs:
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY_NOPW }}
                   script: |
+                      set -e
+                      
+                      echo "=== System Resources Check ==="
+                      df -h
+                      free -h
+                      docker system df
+                      
+                      echo "=== Cleaning up previous failed deployments ==="
+                      # Remove the existing service if it exists
+                      if docker service inspect image-generation-admin_image-generation-admin >/dev/null 2>&1; then
+                          echo "Removing existing service..."
+                          docker service rm image-generation-admin_image-generation-admin || true
+                          sleep 10
+                      fi
+                      
+                      # Remove the stack if it exists
+                      if docker stack ls | grep -q image-generation-admin; then
+                          echo "Removing existing stack..."
+                          docker stack rm image-generation-admin || true
+                          sleep 30
+                      fi
+                      
+                      echo "=== Setting up prerequisites ==="
                       # Ensure webnet network exists
                       if ! docker network inspect webnet >/dev/null 2>&1; then
                           echo "Creating webnet network..."
@@ -55,13 +78,54 @@ jobs:
                           echo "${{ secrets.OPENAI_API_KEY }}" | docker secret create konama_client_openai_api_key -
                       fi
                       
-                      # Pull the latest image
+                      echo "=== Pulling latest image ==="
                       docker pull thegobc/image-generation-admin:latest
                       
-                      # Deploy the stack
+                      echo "=== Testing container locally ==="
+                      # Test the container can start
+                      docker run --rm -d --name test-container \
+                          -e NODE_ENV=production \
+                          thegobc/image-generation-admin:latest > container_id.txt
+                      
+                      sleep 20
+                      
+                      echo "Container logs:"
+                      docker logs $(cat container_id.txt) || true
+                      
+                      echo "Container status:"
+                      docker ps -a --filter name=test-container
+                      
+                      # Clean up test container
+                      docker stop $(cat container_id.txt) || true
+                      docker rm $(cat container_id.txt) || true
+                      rm container_id.txt
+                      
+                      echo "=== Deploying stack ==="
                       docker stack deploy -c docker-compose.swarm.yml image-generation-admin
                       
-                      # Update service with latest image
-                      docker service update --image thegobc/image-generation-admin:latest --force image-generation-admin_image-generation-admin
+                      echo "=== Monitoring deployment ==="
+                      # Wait for service to be running
+                      timeout=300
+                      elapsed=0
+                      while [ $elapsed -lt $timeout ]; do
+                          running_tasks=$(docker service ps image-generation-admin_image-generation-admin --filter desired-state=running --format "{{.CurrentState}}" 2>/dev/null | grep -c "Running" || echo "0")
+                          if [ "$running_tasks" -gt "0" ]; then
+                              echo "Service is running successfully!"
+                              break
+                          fi
+                          echo "Waiting for service to start... ($elapsed/$timeout seconds)"
+                          sleep 10
+                          elapsed=$((elapsed + 10))
+                      done
+                      
+                      echo "=== Final Service Status ==="
+                      docker service ls
+                      docker service ps image-generation-admin_image-generation-admin
+                      
+                      if [ "$running_tasks" -eq "0" ]; then
+                          echo "=== Service Failed to Start - Logs ==="
+                          docker service logs image-generation-admin_image-generation-admin --tail 50
+                          exit 1
+                      fi
 
     
