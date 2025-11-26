@@ -39,7 +39,7 @@ const nextConfig = {
     webpack: (config, { isServer }) => {
         // Optimize for faster builds
         config.optimization.minimize = process.env.NODE_ENV === 'production';
-        
+
         // Reduce bundle size in production
         if (!isServer && process.env.NODE_ENV === 'production') {
             config.resolve.fallback = {
@@ -49,7 +49,7 @@ const nextConfig = {
                 os: false,
             };
         }
-        
+
         return config;
     },
     outputFileTracingRoot: __dirname,
