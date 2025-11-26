@@ -44,14 +44,14 @@ RUN npm ci --prefer-offline --no-audit --no-fund
 # Copy source code
 COPY . .
 
-# Set build environment
+# Set build environment for optimized production build
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV BUILDTIME=$BUILDTIME
 ENV VERSION=$VERSION
 ENV REVISION=$REVISION
 
-# Build the application (static export)
+# Optimize build process
 RUN npm run build
 
 # Production stage with Node.js

@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",
-    "build": "next build",
+    "build": "NODE_ENV=production next build",
     "start": "npx serve@latest out",
     "start:node": "next start",
     "lint": "next lint",
@@ -39,6 +39,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.4.21",
+    "baseline-browser-mapping": "^2.8.31",
     "eslint": "^8",
     "eslint-config-next": "14.2.32",
     "postcss": "^8",

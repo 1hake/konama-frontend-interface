@@ -2,7 +2,13 @@
 services:
     image-generation-admin:
         build:
+            context: .
+            dockerfile: Dockerfile
             target: production
+            args:
+                BUILDTIME: "$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+                VERSION: "1.0.0"
+                REVISION: "${CI_COMMIT_SHA:-unknown}"
         image: thegobc/image-generation-admin
         deploy:
             replicas: 1
