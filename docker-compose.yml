@@ -6,4 +6,4 @@ services:
             target: production
         environment:
             NODE_ENV: production
-            NEXT_PUBLIC_API_URL: https://champdavoine.com
+            NEXT_PUBLIC_API_URL: https://studio.fuzdi.fr

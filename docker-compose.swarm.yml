@@ -23,10 +23,17 @@ services:
                 order: stop-first
         labels:
             - 'traefik.enable=true'
-            - 'traefik.https.routers.image-generation-admin.rule=Host(`studio.fuzdi.fr`)'
-            - 'traefik.https.routers.image-generation-admin.entrypoints=websecure'
-            - 'traefik.https.routers.image-generation-admin.tls.certresolver=myresolver'
-            - 'traefik.https.services.image-generation-admin.loadbalancer.server.port=3000'
+            # HTTP to HTTPS redirect
+            - 'traefik.http.routers.image-generation-admin-web.rule=Host(`studio.fuzdi.fr`)'
+            - 'traefik.http.routers.image-generation-admin-web.entrypoints=web'
+            - 'traefik.http.routers.image-generation-admin-web.middlewares=redirect-to-https'
+            - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+            # HTTPS configuration
+            - 'traefik.http.routers.image-generation-admin.rule=Host(`studio.fuzdi.fr`)'
+            - 'traefik.http.routers.image-generation-admin.entrypoints=websecure'
+            - 'traefik.http.routers.image-generation-admin.tls.certresolver=myresolver'
+            - 'traefik.http.services.image-generation-admin.loadbalancer.server.port=3000'
+
         environment:
             NODE_ENV: production
         secrets:

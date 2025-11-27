@@ -1,104 +1,62 @@
-# Multi-stage build for production optimization
 FROM node:21-alpine AS base
 WORKDIR /app
-
-# Install system dependencies for native modules
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    libc6-compat \
-    curl
-
-# Configure npm for better network handling
-RUN npm config set fetch-timeout 300000 && \
-    npm config set fetch-retry-mintimeout 20000 && \
-    npm config set fetch-retry-maxtimeout 120000 && \
-    npm config set fetch-retries 5
-
-# Copy package files first for better caching
 COPY package*.json ./
-COPY next.config.mjs ./
-COPY tailwind.config.ts ./
-COPY tsconfig.json ./
-COPY postcss.config.mjs ./
+COPY . .
+
+# Build arguments for environment variables
+ARG NODE_ENV=production
+ARG NEXT_PUBLIC_BASE_URL
+ARG NEXT_PUBLIC_API_URL
+
+ENV NODE_ENV=${NODE_ENV}
+ENV NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+RUN npm install
 
 # Development stage
 FROM base AS development
-RUN npm ci --prefer-offline --no-audit --no-fund
-COPY . .
 EXPOSE 3000
 CMD ["npm", "run", "dev"]
 
-# Builder stage
+# Production build stage
 FROM base AS builder
-
-# Build arguments with default values
-ARG BUILDTIME="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-ARG VERSION="latest"
-ARG REVISION="unknown"
-
-# Install all dependencies (including dev dependencies)
-RUN npm ci --prefer-offline --no-audit --no-fund
-
-# Copy source code
-COPY . .
-
-# Set build environment for optimized production build
+WORKDIR /app
 ENV NODE_ENV=production
-ENV NEXT_TELEMETRY_DISABLED=1
-ENV NODE_OPTIONS="--max-old-space-size=4096"
-ENV BUILDTIME=$BUILDTIME
-ENV VERSION=$VERSION
-ENV REVISION=$REVISION
 
-# Build with timeout and safer script to prevent hanging
-RUN timeout 600 npm run build:safe || (echo "Build timed out after 10 minutes" && exit 1)
+RUN npm run build
 
-# Production stage with Node.js
+# Production runtime stage
 FROM node:21-alpine AS production
-
 WORKDIR /app
 
-# Install system dependencies for health checks
-RUN apk add --no-cache curl
+# Install wget for health checks
+RUN apk add --no-cache wget
 
-# Install production dependencies only
-COPY package*.json ./
-RUN npm ci --only=production --prefer-offline --no-audit --no-fund && npm cache clean --force
+# Copy package files
+COPY --from=builder /app/package*.json ./
 
-# Copy built application from builder
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+# Install only production dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy built application
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-
-# Copy startup script
-COPY start.sh ./
-RUN chmod +x start.sh
+COPY --from=builder /app/next.config.mjs ./next.config.mjs
 
 # Create non-root user for security
-RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nextjs -u 1001
 
-# Set proper permissions
+# Change ownership of the app directory to nextjs user
 RUN chown -R nextjs:nodejs /app
 USER nextjs
 
-# Expose port 3000
 EXPOSE 3000
 
-# Health check for container orchestration
-HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:3000/api/health || exit 1
+ENV PORT 3000
+ENV HOSTNAME 0.0.0.0
 
-# Add build information as labels  
-LABEL org.opencontainers.image.title="Image Generation Admin"
-LABEL org.opencontainers.image.description="AI-powered image generation administration interface"
-LABEL org.opencontainers.image.version="latest"
-LABEL org.opencontainers.image.created="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
-LABEL org.opencontainers.image.revision="unknown"
-
-# Start the Next.js application with startup script
-CMD ["./start.sh"]
+CMD ["npm", "start"]
 
 
