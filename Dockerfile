@@ -40,8 +40,8 @@ RUN npm run build
 FROM node:21-alpine AS production
 WORKDIR /app
 
-# Install wget for health checks
-RUN apk add --no-cache wget
+# Install wget and netcat for health checks and connectivity testing
+RUN apk add --no-cache wget netcat-openbsd
 
 # Copy package files
 COPY --from=builder /app/package*.json ./
@@ -53,6 +53,10 @@ RUN npm ci --only=production && npm cache clean --force
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
+
+# Copy the entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs
@@ -67,6 +71,7 @@ EXPOSE 3001
 ENV PORT=3001
 ENV HOSTNAME=0.0.0.0
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node", "server.js"]
 
 
