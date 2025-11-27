@@ -27,19 +27,31 @@ services:
             - 'traefik.http.routers.konama-frontend-web.rule=Host(`studio.fuzdi.fr`)'
             - 'traefik.http.routers.konama-frontend-web.entrypoints=web'
             - 'traefik.http.routers.konama-frontend-web.middlewares=redirect-to-https'
-            - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+
             # HTTPS configuration
-            - 'traefik.http.routers.konama-frontend.rule=Host(`studio.fuzdi.fr`)'
-            - 'traefik.http.routers.konama-frontend.entrypoints=websecure'
-            - 'traefik.http.routers.konama-frontend.tls.certresolver=myresolver'
+            - 'traefik.http.routers.konama-frontend-websecure.rule=Host(`studio.fuzdi.fr`)'
+            - 'traefik.http.routers.konama-frontend-websecure.entrypoints=websecure'
+            - 'traefik.http.routers.konama-frontend-websecure.tls=true'
+            - 'traefik.http.routers.konama-frontend-websecure.tls.certresolver=letsencrypt'
+
+            # Service configuration
             - 'traefik.http.services.konama-frontend.loadbalancer.server.port=3001'
+            - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
+            - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
 
         environment:
             NODE_ENV: production
+            NEXT_PUBLIC_API_URL: https://studio.fuzdi.fr
+            NEXT_PUBLIC_BASE_URL: https://studio.fuzdi.fr
+            NEXT_PUBLIC_COMFY_API_URL: http://localhost:3000/api
+            NEXT_PUBLIC_WORKFLOW_API_URL: http://localhost:4001
+            NEXT_PUBLIC_MOCK_IMAGE_GENERATION: "true"
+            NEXT_PUBLIC_MOCK_WORKFLOWS: "true"
+            PORT: 3001
         secrets:
             - konama_client_openai_api_key
         networks:
-            - webnet
+            - traefik-public
         healthcheck:
             test: [ "CMD", "curl", "-f", "http://localhost:3001/api/health" ]
             interval: 30s
@@ -53,5 +65,5 @@ secrets:
         name: konama_client_openai_api_key
 
 networks:
-    webnet:
+    traefik-public:
         external: true
