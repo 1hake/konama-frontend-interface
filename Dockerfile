@@ -39,10 +39,10 @@ COPY --from=builder /app/package*.json ./
 # Install only production dependencies
 RUN npm ci --only=production && npm cache clean --force
 
-# Copy built application
-COPY --from=builder /app/.next ./.next
+# Copy built application (standalone mode)
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.mjs ./next.config.mjs
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs
@@ -54,9 +54,9 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-ENV HOSTNAME 0.0.0.0
+ENV PORT=3000
+ENV HOSTNAME=0.0.0.0
 
-CMD ["npm", "start"]
+CMD ["node", "server.js"]
 
 
