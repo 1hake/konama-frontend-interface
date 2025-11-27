@@ -26,6 +26,7 @@ jobs:
                   push: true
                   tags: thegobc/image-generation-admin:latest
                   target: production
+                  no-cache: true
             
             - name: Copy docker-compose.swarm.yml to server
               uses: appleboy/scp-action@v0.1.7
