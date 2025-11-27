@@ -24,7 +24,7 @@ jobs:
               with:
                   context: .
                   push: true
-                  tags: thegobc/image-generation-admin:latest
+                  tags: thegobc/konama-frontend:latest
                   target: production
                   no-cache: true
                   build-args: |
@@ -42,7 +42,7 @@ jobs:
                   username: ${{ secrets.SSH_USER }}
                   key: ${{ secrets.SSH_PRIVATE_KEY_NOPW }}
                   source: "docker-compose.yml,docker-compose.swarm.yml,docker-entrypoint.sh"
-                  target: "./image-generation-admin/"
+                  target: "./konama-frontend/"
             
             - name: Deploy to server
               uses: appleboy/ssh-action@v1
@@ -55,8 +55,8 @@ jobs:
                       set -e
                       
                       # Navigate to project directory
-                      mkdir -p image-generation-admin
-                      cd image-generation-admin
+                      mkdir -p konama-frontend
+                      cd konama-frontend
                       
                       # Create secret if it doesn't exist
                       if ! docker secret inspect konama_client_openai_api_key >/dev/null 2>&1; then
@@ -65,10 +65,10 @@ jobs:
                       fi
                       
                       # Deploy or update the stack (use only swarm config for production)
-                      docker stack deploy -c docker-compose.swarm.yml image-generation-admin
+                      docker stack deploy -c docker-compose.swarm.yml konama-frontend_stack
                       
                       # Wait a moment for deployment to process
                       sleep 5
                       
                       # Force update to pull the new image
-                      docker service update --image thegobc/image-generation-admin:latest --force image-generation-admin_image-generation-admin
+                      docker service update --image thegobc/konama-frontend:latest --force konama-frontend_stack_konama-frontend
