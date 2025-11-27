@@ -32,7 +32,7 @@ services:
             - 'traefik.http.routers.image-generation-admin.rule=Host(`studio.fuzdi.fr`)'
             - 'traefik.http.routers.image-generation-admin.entrypoints=websecure'
             - 'traefik.http.routers.image-generation-admin.tls.certresolver=myresolver'
-            - 'traefik.http.services.image-generation-admin.loadbalancer.server.port=3000'
+            - 'traefik.http.services.image-generation-admin.loadbalancer.server.port=3001'
 
         environment:
             NODE_ENV: production
@@ -41,7 +41,7 @@ services:
         networks:
             - webnet
         healthcheck:
-            test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+            test: [ "CMD", "curl", "-f", "http://localhost:3001/api/health" ]
             interval: 30s
             timeout: 10s
             retries: 3
