@@ -7,44 +7,51 @@ A complete multi-workflow system that allows the image generation application to
 ## Files Created
 
 ### 1. Core Infrastructure
+
 - **`lib/workflowManager.ts`** - Central workflow management system
-  - Loads and registers workflows
-  - Generates workflow JSON dynamically
-  - Provides workflow metadata
-  - Extensible architecture for adding new workflows
+    - Loads and registers workflows
+    - Generates workflow JSON dynamically
+    - Provides workflow metadata
+    - Extensible architecture for adding new workflows
 
 ### 2. Workflow Definitions
+
 - **`workflows/flux-krea-dev.json`** - Flux Krea Dev workflow configuration
 - **`workflows/sd15-basic.json`** - Stable Diffusion 1.5 basic workflow configuration
 - **`workflows/README.md`** - Documentation for adding custom workflows
 
 ### 3. UI Components
+
 - **`components/WorkflowSelector.tsx`** - Interactive workflow selection component
-  - Beautiful card-based UI
-  - Displays workflow metadata
-  - Shows active workflow
-  - Disabled during generation
+    - Beautiful card-based UI
+    - Displays workflow metadata
+    - Shows active workflow
+    - Disabled during generation
 
 ### 4. API Routes
+
 - **`app/api/workflows/route.ts`** - REST API for workflow management
-  - GET endpoint to list all workflows
-  - CORS-enabled
-  - JSON response format
+    - GET endpoint to list all workflows
+    - CORS-enabled
+    - JSON response format
 
 ### 5. Documentation
+
 - **`WORKFLOWS.md`** - Comprehensive system documentation
-  - Architecture overview
-  - Usage examples
-  - Adding custom workflows
-  - API reference
-  - Troubleshooting guide
+    - Architecture overview
+    - Usage examples
+    - Adding custom workflows
+    - API reference
+    - Troubleshooting guide
 
 - **`WORKFLOW_SYSTEM_SUMMARY.md`** - This file
 
 ## Files Modified
 
 ### 1. Type Definitions (`types/index.ts`)
+
 **Added**:
+
 - `WorkflowParameter` - Parameter definition interface
 - `WorkflowMetadata` - Workflow metadata interface
 - `ComfyWorkflow` - Complete workflow structure
@@ -53,7 +60,9 @@ A complete multi-workflow system that allows the image generation application to
 - Updated `ImageGenerationFormProps` with workflow props
 
 ### 2. Hook (`hooks/useImageGeneration.ts`)
+
 **Changes**:
+
 - Added workflow state management
 - Integrated workflow manager
 - Updated `generateImage` to use selected workflow
@@ -62,25 +71,32 @@ A complete multi-workflow system that allows the image generation application to
 - Removed hardcoded `createFluxKreaWorkflow` (now in manager)
 
 ### 3. Form Component (`components/ImageGenerationForm.tsx`)
+
 **Changes**:
+
 - Added `WorkflowSelector` import
 - Added workflow props to component interface
 - Integrated workflow selector in the form UI
 - Positioned at the top of scrollable area
 
 ### 4. Main Page (`app/page.tsx`)
+
 **Changes**:
+
 - Destructured workflow-related props from hook
 - Passed workflow props to `ImageGenerationForm`
 - Layout unchanged (still image left, form right)
 
 ### 5. Component Index (`components/index.ts`)
+
 **Changes**:
+
 - Exported `WorkflowSelector` component
 
 ## Key Features
 
 ### 1. Workflow Selection
+
 - Visual workflow selector with cards
 - Shows workflow name, description, category, tags
 - Displays required models and metadata
@@ -88,18 +104,21 @@ A complete multi-workflow system that allows the image generation application to
 - Disabled during generation
 
 ### 2. Dynamic Parameter Handling
+
 - Each workflow defines its own parameters
 - Parameters automatically available in options
 - Type-safe parameter definitions
 - Supports: slider, select, text, number
 
 ### 3. Extensible Architecture
+
 - Easy to add new workflows
 - Modular workflow definitions
 - Separation of metadata and implementation
 - Template-based system
 
 ### 4. Backward Compatible
+
 - Default workflow (Flux Krea Dev) maintained
 - Existing functionality preserved
 - Optional workflow selection
@@ -108,6 +127,7 @@ A complete multi-workflow system that allows the image generation application to
 ## How It Works
 
 ### Workflow Selection Flow
+
 1. User opens the form
 2. `useImageGeneration` hook loads workflows via `workflowManager`
 3. Workflows displayed in `WorkflowSelector` component
@@ -116,6 +136,7 @@ A complete multi-workflow system that allows the image generation application to
 6. Selected workflow used for next generation
 
 ### Generation Flow
+
 1. User fills prompt and parameters
 2. Clicks "Générer"
 3. `generateImage` called with options
@@ -125,6 +146,7 @@ A complete multi-workflow system that allows the image generation application to
 7. Generated images displayed
 
 ### Workflow Registration
+
 1. Create JSON metadata file in `workflows/`
 2. Import in `workflowManager.ts`
 3. Register in `registerDefaultWorkflows()`
@@ -134,11 +156,13 @@ A complete multi-workflow system that allows the image generation application to
 ## Supported Workflows
 
 ### 1. Flux Krea Dev (Default)
+
 - ID: `flux-krea-dev`
 - Features: LoRA support, dynamic resolution, guidance control
 - Parameters: steps, aspectRatio, guidance, loraName, loraStrength
 
 ### 2. Stable Diffusion 1.5 Basic
+
 - ID: `sd15-basic`
 - Features: Classic SD1.5, multiple samplers, customizable dimensions
 - Parameters: steps, cfg, width, height, sampler, scheduler, checkpoint
@@ -149,20 +173,20 @@ A complete multi-workflow system that allows the image generation application to
 
 ```typescript
 // Generate with Flux Krea Dev (default)
-await generateImage("A beautiful landscape", "blurry", {
-  steps: 25,
-  aspectRatio: "16:9 (Landscape)",
-  guidance: 4.0
+await generateImage('A beautiful landscape', 'blurry', {
+    steps: 25,
+    aspectRatio: '16:9 (Landscape)',
+    guidance: 4.0,
 });
 
 // Generate with SD 1.5
 setSelectedWorkflow('sd15-basic');
-await generateImage("A beautiful landscape", "blurry", {
-  steps: 30,
-  cfg: 8,
-  width: 768,
-  height: 512,
-  sampler: "dpm_2"
+await generateImage('A beautiful landscape', 'blurry', {
+    steps: 30,
+    cfg: 8,
+    width: 768,
+    height: 512,
+    sampler: 'dpm_2',
 });
 ```
 
@@ -197,6 +221,7 @@ private createMyWorkflow(
 ## Benefits
 
 ### For Users
+
 - ✅ Easy workflow switching
 - ✅ Visual workflow selection
 - ✅ Clear workflow information
@@ -204,6 +229,7 @@ private createMyWorkflow(
 - ✅ No manual configuration needed
 
 ### For Developers
+
 - ✅ Modular architecture
 - ✅ Easy to extend
 - ✅ Type-safe
@@ -212,6 +238,7 @@ private createMyWorkflow(
 - ✅ Well-documented
 
 ### For Administrators
+
 - ✅ Simple workflow deployment
 - ✅ JSON-based configuration
 - ✅ Version control friendly
@@ -221,18 +248,21 @@ private createMyWorkflow(
 ## Technical Details
 
 ### State Management
+
 - React hooks for workflow state
 - Single source of truth (workflow manager)
 - Stateless components
 - Props passed down from page
 
 ### Type Safety
+
 - Full TypeScript support
 - Interfaces for all structures
 - Type checking at compile time
 - IntelliSense support
 
 ### Performance
+
 - Workflows loaded once on mount
 - Lazy workflow generation
 - Minimal re-renders
@@ -254,36 +284,38 @@ private createMyWorkflow(
 ## Future Enhancements
 
 1. **Dynamic Workflow Loading**
-   - Load workflows from server
-   - Hot reload without restart
-   - User-uploaded workflows
+    - Load workflows from server
+    - Hot reload without restart
+    - User-uploaded workflows
 
 2. **Workflow Management UI**
-   - Enable/disable workflows
-   - Reorder workflows
-   - Import/export workflows
+    - Enable/disable workflows
+    - Reorder workflows
+    - Import/export workflows
 
 3. **Advanced Features**
-   - Workflow favorites
-   - Workflow search/filter
-   - Workflow presets
-   - Workflow history
+    - Workflow favorites
+    - Workflow search/filter
+    - Workflow presets
+    - Workflow history
 
 4. **Community Features**
-   - Share workflows
-   - Workflow marketplace
-   - Ratings and reviews
-   - Community templates
+    - Share workflows
+    - Workflow marketplace
+    - Ratings and reviews
+    - Community templates
 
 ## Migration Notes
 
 ### From Old System
+
 - No breaking changes
 - Default workflow unchanged
 - All existing features work
 - New features are additive
 
 ### For Custom Implementations
+
 1. Replace direct workflow generation with manager
 2. Update type imports
 3. Pass workflow props through components

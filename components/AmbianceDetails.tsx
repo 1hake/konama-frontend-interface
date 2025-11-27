@@ -11,12 +11,14 @@ export const AmbianceDetails: React.FC<AmbianceDetailsProps> = ({
     ambiance,
     details,
     onFieldChange,
-    isGenerating
+    isGenerating,
 }) => {
     return (
         <div className="bg-gray-800 p-5 rounded-xl shadow-lg">
             <h3 className="text-base font-semibold text-green-300 mb-3 flex items-center">
-                <span className="bg-green-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2">3</span>
+                <span className="bg-green-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2">
+                    3
+                </span>
                 Ambiance & Détails
             </h3>
 
@@ -25,7 +27,7 @@ export const AmbianceDetails: React.FC<AmbianceDetailsProps> = ({
                 label="Ambiance / Palette"
                 type="textarea"
                 value={ambiance}
-                onChange={(value) => onFieldChange('ambiance', value as string)}
+                onChange={value => onFieldChange('ambiance', value as string)}
                 disabled={isGenerating}
                 rows={3}
                 tabIndex={6}
@@ -38,7 +40,7 @@ export const AmbianceDetails: React.FC<AmbianceDetailsProps> = ({
                 label="Détails avancés"
                 type="textarea"
                 value={details}
-                onChange={(value) => onFieldChange('details', value as string)}
+                onChange={value => onFieldChange('details', value as string)}
                 disabled={isGenerating}
                 rows={3}
                 tabIndex={7}

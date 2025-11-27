@@ -6,8 +6,6 @@ const workflowTemplatesCache = new Map<string, Record<string, unknown>>();
 let lastFetchTime = 0;
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache
 
-
-
 /**
  * Load workflows from local files
  */
@@ -15,7 +13,7 @@ async function loadWorkflowsFromApi(): Promise<void> {
     const now = Date.now();
 
     // Use cache if it's still valid
-    if (workflowsCache.size > 0 && (now - lastFetchTime) < CACHE_DURATION) {
+    if (workflowsCache.size > 0 && now - lastFetchTime < CACHE_DURATION) {
         console.log('📋 Using cached workflows');
         return;
     }
@@ -24,8 +22,6 @@ async function loadWorkflowsFromApi(): Promise<void> {
     await loadFallbackWorkflows();
     lastFetchTime = now;
 }
-
-
 
 /**
  * Load local workflows from JSON files
@@ -43,15 +39,24 @@ async function loadFallbackWorkflows(): Promise<void> {
             import('../workflows/flux-krea-dev.json'),
             import('../workflows/sd15-basic.json'),
             import('../workflows/templates/flux-krea-dev.json'),
-            import('../workflows/templates/sd15-basic.json')
+            import('../workflows/templates/sd15-basic.json'),
         ]);
 
         // Handle flux-krea-dev workflow
         if (workflowImports[0].status === 'fulfilled') {
-            const workflowData = workflowImports[0].value.default as Record<string, unknown>;
+            const workflowData = workflowImports[0].value.default as Record<
+                string,
+                unknown
+            >;
             // Add source information to metadata
-            if (workflowData.metadata && typeof workflowData.metadata === 'object') {
-                const metadata = workflowData.metadata as Record<string, unknown>;
+            if (
+                workflowData.metadata &&
+                typeof workflowData.metadata === 'object'
+            ) {
+                const metadata = workflowData.metadata as Record<
+                    string,
+                    unknown
+                >;
                 metadata.source = 'local';
                 metadata.lastFetched = new Date();
             }
@@ -61,10 +66,19 @@ async function loadFallbackWorkflows(): Promise<void> {
 
         // Handle sd15-basic workflow
         if (workflowImports[1].status === 'fulfilled') {
-            const workflowData = workflowImports[1].value.default as Record<string, unknown>;
+            const workflowData = workflowImports[1].value.default as Record<
+                string,
+                unknown
+            >;
             // Add source information to metadata
-            if (workflowData.metadata && typeof workflowData.metadata === 'object') {
-                const metadata = workflowData.metadata as Record<string, unknown>;
+            if (
+                workflowData.metadata &&
+                typeof workflowData.metadata === 'object'
+            ) {
+                const metadata = workflowData.metadata as Record<
+                    string,
+                    unknown
+                >;
                 metadata.source = 'local';
                 metadata.lastFetched = new Date();
             }
@@ -74,13 +88,19 @@ async function loadFallbackWorkflows(): Promise<void> {
 
         // Handle flux-krea-dev template
         if (workflowImports[2].status === 'fulfilled') {
-            workflowTemplatesCache.set('flux-krea-dev', workflowImports[2].value.default);
+            workflowTemplatesCache.set(
+                'flux-krea-dev',
+                workflowImports[2].value.default
+            );
             console.log('✅ Loaded flux-krea-dev template');
         }
 
         // Handle sd15-basic template
         if (workflowImports[3].status === 'fulfilled') {
-            workflowTemplatesCache.set('sd15-basic', workflowImports[3].value.default);
+            workflowTemplatesCache.set(
+                'sd15-basic',
+                workflowImports[3].value.default
+            );
             console.log('✅ Loaded sd15-basic template');
         }
 
@@ -88,7 +108,9 @@ async function loadFallbackWorkflows(): Promise<void> {
         const loadedTemplates = workflowTemplatesCache.size;
 
         if (loadedWorkflows > 0) {
-            console.log(`✅ Successfully loaded ${loadedWorkflows} local workflows and ${loadedTemplates} templates`);
+            console.log(
+                `✅ Successfully loaded ${loadedWorkflows} local workflows and ${loadedTemplates} templates`
+            );
         } else {
             console.warn('⚠️  No local workflows could be loaded');
 
@@ -97,21 +119,21 @@ async function loadFallbackWorkflows(): Promise<void> {
                 metadata: {
                     id: 'minimal',
                     name: 'Minimal Workflow',
-                    description: 'Minimal fallback workflow when no other workflows are available',
+                    description:
+                        'Minimal fallback workflow when no other workflows are available',
                     category: 'fallback',
                     version: '1.0.0',
                     supportsNegativePrompt: false,
                     source: 'fallback' as const,
                     lastFetched: new Date(),
-                    parameters: []
+                    parameters: [],
                 },
-                workflowTemplate: 'minimal'
+                workflowTemplate: 'minimal',
             };
 
             workflowsCache.set('minimal', minimalWorkflow);
             console.log('⚠️  Created minimal fallback workflow');
         }
-
     } catch (error) {
         console.error('❌ Failed to load local workflows:', error);
 
@@ -120,15 +142,16 @@ async function loadFallbackWorkflows(): Promise<void> {
             metadata: {
                 id: 'minimal',
                 name: 'Minimal Workflow',
-                description: 'Minimal fallback workflow when no other workflows are available',
+                description:
+                    'Minimal fallback workflow when no other workflows are available',
                 category: 'fallback',
                 version: '1.0.0',
                 supportsNegativePrompt: false,
                 source: 'fallback' as const,
                 lastFetched: new Date(),
-                parameters: []
+                parameters: [],
             },
-            workflowTemplate: 'minimal'
+            workflowTemplate: 'minimal',
         };
 
         workflowsCache.set('minimal', minimalWorkflow);
@@ -141,13 +164,17 @@ async function loadFallbackWorkflows(): Promise<void> {
  */
 export async function getAvailableWorkflows(): Promise<WorkflowMetadata[]> {
     await loadWorkflowsFromApi();
-    return Array.from(workflowsCache.values()).map((w: Record<string, unknown>) => w.metadata as WorkflowMetadata);
+    return Array.from(workflowsCache.values()).map(
+        (w: Record<string, unknown>) => w.metadata as WorkflowMetadata
+    );
 }
 
 /**
  * Get workflow metadata by ID
  */
-export async function getWorkflowMetadata(workflowId: string): Promise<WorkflowMetadata | undefined> {
+export async function getWorkflowMetadata(
+    workflowId: string
+): Promise<WorkflowMetadata | undefined> {
     await loadWorkflowsFromApi();
     const workflow = workflowsCache.get(workflowId);
     return workflow?.metadata as WorkflowMetadata;
@@ -175,7 +202,13 @@ export async function generateWorkflowJson(
         throw new Error(`Workflow template ${templateName} not found`);
     }
 
-    return generateWorkflowFromTemplate(template, positivePrompt, negativePrompt, options, workflow.metadata as WorkflowMetadata);
+    return generateWorkflowFromTemplate(
+        template,
+        positivePrompt,
+        negativePrompt,
+        options,
+        workflow.metadata as WorkflowMetadata
+    );
 }
 
 /**
@@ -205,9 +238,9 @@ function generateWorkflowFromTemplate(
     // Create replacement values
     const replacements = {
         positivePrompt,
-        negativePrompt: negativePrompt || "text, watermark",
+        negativePrompt: negativePrompt || 'text, watermark',
         seed,
-        ...params
+        ...params,
     };
 
     // Convert template to string, replace placeholders, then parse back
@@ -216,19 +249,24 @@ function generateWorkflowFromTemplate(
     // Replace all {{placeholder}} with actual values
     Object.entries(replacements).forEach(([key, value]) => {
         const placeholder = `"{{${key}}}"`;
-        const replacement = typeof value === 'string' ? `"${value}"` : String(value);
-        workflowString = workflowString.replace(new RegExp(placeholder, 'g'), replacement);
+        const replacement =
+            typeof value === 'string' ? `"${value}"` : String(value);
+        workflowString = workflowString.replace(
+            new RegExp(placeholder, 'g'),
+            replacement
+        );
     });
 
     return JSON.parse(workflowString);
 }
 
-
-
 /**
  * Register a custom workflow
  */
-export function registerWorkflow(workflowId: string, workflowData: Record<string, unknown>): void {
+export function registerWorkflow(
+    workflowId: string,
+    workflowData: Record<string, unknown>
+): void {
     workflowsCache.set(workflowId, workflowData);
 }
 
@@ -257,7 +295,7 @@ const workflowManager = {
     generateWorkflowJson,
     registerWorkflow,
     unregisterWorkflow,
-    refreshWorkflows
+    refreshWorkflows,
 };
 
 export default workflowManager;

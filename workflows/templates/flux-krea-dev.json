@@ -45,14 +45,8 @@
     },
     "58": {
         "inputs": {
-            "width": [
-                "59",
-                0
-            ],
-            "height": [
-                "59",
-                1
-            ],
+            "width": ["59", 0],
+            "height": ["59", 1],
             "batch_size": 1
         },
         "class_type": "EmptySD3LatentImage",
@@ -62,10 +56,7 @@
     },
     "56": {
         "inputs": {
-            "model": [
-                "38",
-                0
-            ],
+            "model": ["38", 0],
             "lora_name": "{{loraName}}",
             "strength_model": "{{loraStrength}}"
         },
@@ -77,10 +68,7 @@
     "45": {
         "inputs": {
             "text": "{{positivePrompt}}",
-            "clip": [
-                "40",
-                0
-            ]
+            "clip": ["40", 0]
         },
         "class_type": "CLIPTextEncode",
         "_meta": {
@@ -89,10 +77,7 @@
     },
     "42": {
         "inputs": {
-            "conditioning": [
-                "45",
-                0
-            ]
+            "conditioning": ["45", 0]
         },
         "class_type": "ConditioningZeroOut",
         "_meta": {
@@ -101,10 +86,7 @@
     },
     "65": {
         "inputs": {
-            "conditioning": [
-                "45",
-                0
-            ],
+            "conditioning": ["45", 0],
             "guidance": "{{guidance}}"
         },
         "class_type": "FluxGuidance",
@@ -120,22 +102,10 @@
             "sampler_name": "euler",
             "scheduler": "simple",
             "denoise": 1,
-            "model": [
-                "56",
-                0
-            ],
-            "positive": [
-                "65",
-                0
-            ],
-            "negative": [
-                "42",
-                0
-            ],
-            "latent_image": [
-                "58",
-                0
-            ]
+            "model": ["56", 0],
+            "positive": ["65", 0],
+            "negative": ["42", 0],
+            "latent_image": ["58", 0]
         },
         "class_type": "KSampler",
         "_meta": {
@@ -144,14 +114,8 @@
     },
     "8": {
         "inputs": {
-            "samples": [
-                "31",
-                0
-            ],
-            "vae": [
-                "39",
-                0
-            ]
+            "samples": ["31", 0],
+            "vae": ["39", 0]
         },
         "class_type": "VAEDecode",
         "_meta": {
@@ -169,30 +133,12 @@
     },
     "52": {
         "inputs": {
-            "image": [
-                "8",
-                0
-            ],
-            "model": [
-                "56",
-                0
-            ],
-            "positive": [
-                "65",
-                0
-            ],
-            "negative": [
-                "42",
-                0
-            ],
-            "vae": [
-                "39",
-                0
-            ],
-            "upscale_model": [
-                "53",
-                0
-            ],
+            "image": ["8", 0],
+            "model": ["56", 0],
+            "positive": ["65", 0],
+            "negative": ["42", 0],
+            "vae": ["39", 0],
+            "upscale_model": ["53", 0],
             "upscale_by": "{{upscaleBy}}",
             "seed": "{{upscaleSeed}}",
             "steps": "{{upscaleSteps}}",
@@ -221,10 +167,7 @@
     "9": {
         "inputs": {
             "filename_prefix": "flux_krea/flux_krea",
-            "images": [
-                "8",
-                0
-            ]
+            "images": ["8", 0]
         },
         "class_type": "SaveImage",
         "_meta": {
@@ -233,10 +176,7 @@
     },
     "54": {
         "inputs": {
-            "images": [
-                "52",
-                0
-            ]
+            "images": ["52", 0]
         },
         "class_type": "PreviewImage",
         "_meta": {

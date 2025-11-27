@@ -3,6 +3,7 @@
 ## Overview
 
 The **Funnel** feature is a multi-stage iterative image-generation pipeline that allows users to:
+
 1. Generate images across multiple workflows/models simultaneously
 2. Select the best results from each generation
 3. Refine selected images with custom parameters
@@ -13,11 +14,13 @@ The **Funnel** feature is a multi-stage iterative image-generation pipeline that
 ### Core Components
 
 #### 1. Data Layer
+
 - **`types/funnel.ts`** - TypeScript interfaces for all funnel-related data structures
 - **`lib/funnelStorage.ts`** - Filesystem-based JSON persistence layer
 - **`lib/generationQueue.ts`** - Parallel workflow execution with mock generation
 
 #### 2. API Layer
+
 - **`/api/funnel/create`** - Create new funnel with initial generation
 - **`/api/funnel/list`** - List all funnels
 - **`/api/funnel/[funnelId]`** - Get/delete funnel state
@@ -25,9 +28,11 @@ The **Funnel** feature is a multi-stage iterative image-generation pipeline that
 - **`/api/funnel/[funnelId]/step/create`** - Create next step with refinements
 
 #### 3. Hooks
+
 - **`hooks/useFunnel.ts`** - Main state management hook for funnel operations
 
 #### 4. UI Components
+
 - **`FunnelCreationModal`** - Modal for configuring and starting new funnels
 - **`FunnelWorkflowSelector`** - Multi-select dropdown for workflow selection
 - **`FunnelStepViewer`** - Grid display with image selection capabilities
@@ -35,76 +40,82 @@ The **Funnel** feature is a multi-stage iterative image-generation pipeline that
 - **`ImageRefinementPanel`** - Per-image parameter editor
 
 #### 5. Pages
+
 - **`/funnels`** - List all funnels
 - **`/funnels/[id]`** - Funnel editor interface
 
 ## Data Structures
 
 ### Funnel
+
 ```typescript
 interface Funnel {
-  id: string;
-  name: string;
-  description?: string;
-  config: FunnelConfig;
-  steps: FunnelStep[];
-  currentStepIndex: number;
-  status: 'active' | 'paused' | 'completed';
-  createdAt: string;
-  updatedAt: string;
+    id: string;
+    name: string;
+    description?: string;
+    config: FunnelConfig;
+    steps: FunnelStep[];
+    currentStepIndex: number;
+    status: 'active' | 'paused' | 'completed';
+    createdAt: string;
+    updatedAt: string;
 }
 ```
 
 ### FunnelStep
+
 ```typescript
 interface FunnelStep {
-  id: string;
-  funnelId: string;
-  stepIndex: number;
-  status: 'pending' | 'generating' | 'selecting' | 'completed';
-  createdAt: string;
-  completedAt?: string;
-  parentStepId?: string;
-  imageCount: number;
-  selectedCount: number;
+    id: string;
+    funnelId: string;
+    stepIndex: number;
+    status: 'pending' | 'generating' | 'selecting' | 'completed';
+    createdAt: string;
+    completedAt?: string;
+    parentStepId?: string;
+    imageCount: number;
+    selectedCount: number;
 }
 ```
 
 ### FunnelImage
+
 ```typescript
 interface FunnelImage {
-  id: string;
-  stepId: string;
-  funnelId: string;
-  filename: string;
-  type: string;
-  subfolder: string;
-  workflowId: string;
-  seed: number;
-  parameters: Record<string, any>;
-  prompt: string;
-  negativePrompt?: string;
-  selected: boolean;
-  parentImageId?: string;
-  generatedAt: string;
-  jobId?: string;
+    id: string;
+    stepId: string;
+    funnelId: string;
+    filename: string;
+    type: string;
+    subfolder: string;
+    workflowId: string;
+    seed: number;
+    parameters: Record<string, any>;
+    prompt: string;
+    negativePrompt?: string;
+    selected: boolean;
+    parentImageId?: string;
+    generatedAt: string;
+    jobId?: string;
 }
 ```
 
 ## User Flow
 
 ### 1. Create Funnel
+
 1. User clicks "New Funnel" button
 2. Modal opens with configuration options:
-   - Name and description
-   - Select multiple workflows (multi-select)
-   - Base prompt and negative prompt
-   - Images per workflow
+    - Name and description
+    - Select multiple workflows (multi-select)
+    - Base prompt and negative prompt
+    - Images per workflow
 3. User submits → API creates funnel + initial step
 4. System launches parallel generation across all selected workflows
 5. User is redirected to funnel editor
 
 ### 2. View & Select Images
+
 1. Timeline shows all steps with status indicators
 2. Current step's images displayed in grid
 3. User clicks images to select/deselect
@@ -112,15 +123,17 @@ interface FunnelImage {
 5. User clicks "Confirm Selection" to save
 
 ### 3. Refine Parameters
+
 1. Selected images appear in refinement panel
 2. User can:
-   - Apply global prompt overrides to all selected
-   - Change workflow per image
-   - Adjust seed values
-   - Modify other parameters
+    - Apply global prompt overrides to all selected
+    - Change workflow per image
+    - Adjust seed values
+    - Modify other parameters
 3. Changes are tracked as "refinements"
 
 ### 4. Create Next Step
+
 1. User clicks "Create Next Step"
 2. System creates new step
 3. Generates variants for each selected image with refinements
@@ -144,6 +157,7 @@ interface FunnelImage {
 ## Mock Generation
 
 Currently using mock image generation for testing:
+
 - **`generationQueue.ts`** simulates generation with progress updates
 - Mock images are SVG placeholders showing workflow ID and seed
 - Generation completes in 2-3 seconds per workflow
@@ -152,6 +166,7 @@ Currently using mock image generation for testing:
 ## Key Features
 
 ### ✅ Implemented
+
 - Multi-workflow parallel generation
 - Image selection with visual feedback
 - Step-by-step refinement
@@ -163,6 +178,7 @@ Currently using mock image generation for testing:
 - Funnel list/create/delete
 
 ### 🔄 Future Enhancements
+
 - Real ComfyUI integration
 - Image-to-image refinement
 - ControlNet support
@@ -176,9 +192,11 @@ Currently using mock image generation for testing:
 ## API Endpoints
 
 ### POST `/api/funnel/create`
+
 Create new funnel with initial generation
 
 **Request:**
+
 ```typescript
 {
   name: string;
@@ -194,6 +212,7 @@ Create new funnel with initial generation
 ```
 
 **Response:**
+
 ```typescript
 {
   funnel: Funnel;
@@ -204,9 +223,11 @@ Create new funnel with initial generation
 ```
 
 ### GET `/api/funnel/list`
+
 List all funnels
 
 **Response:**
+
 ```typescript
 {
   funnels: Funnel[];
@@ -214,9 +235,11 @@ List all funnels
 ```
 
 ### GET `/api/funnel/[funnelId]`
+
 Get complete funnel state
 
 **Response:**
+
 ```typescript
 {
   funnel: Funnel;
@@ -229,9 +252,11 @@ Get complete funnel state
 ```
 
 ### POST `/api/funnel/[funnelId]/step/[stepId]/select`
+
 Mark images as selected
 
 **Request:**
+
 ```typescript
 {
   imageIds: string[];
@@ -239,9 +264,11 @@ Mark images as selected
 ```
 
 ### POST `/api/funnel/[funnelId]/step/create`
+
 Create next step with refinements
 
 **Request:**
+
 ```typescript
 {
   selectedImageIds: string[];
@@ -262,36 +289,36 @@ Create next step with refinements
 import { useFunnel } from '@/hooks/useFunnel';
 
 function MyComponent() {
-  const {
-    funnel,
-    currentStep,
-    images,
-    createFunnel,
-    selectImages,
-    createNextStep,
-  } = useFunnel();
+    const {
+        funnel,
+        currentStep,
+        images,
+        createFunnel,
+        selectImages,
+        createNextStep,
+    } = useFunnel();
 
-  // Create a new funnel
-  const handleCreate = async () => {
-    await createFunnel(
-      {
-        selectedWorkflows: ['flux-krea-dev', 'sd15-basic'],
-        basePrompt: 'A beautiful landscape',
-        baseParameters: {},
-      },
-      'My Funnel'
-    );
-  };
+    // Create a new funnel
+    const handleCreate = async () => {
+        await createFunnel(
+            {
+                selectedWorkflows: ['flux-krea-dev', 'sd15-basic'],
+                basePrompt: 'A beautiful landscape',
+                baseParameters: {},
+            },
+            'My Funnel'
+        );
+    };
 
-  // Select images
-  const handleSelect = async (imageIds: string[]) => {
-    await selectImages(imageIds);
-  };
+    // Select images
+    const handleSelect = async (imageIds: string[]) => {
+        await selectImages(imageIds);
+    };
 
-  // Create next step
-  const handleNextStep = async (refinements) => {
-    await createNextStep(refinements);
-  };
+    // Create next step
+    const handleNextStep = async refinements => {
+        await createNextStep(refinements);
+    };
 }
 ```
 
@@ -314,24 +341,25 @@ Currently all generation is mocked. To test:
 To connect to real ComfyUI, modify `lib/generationQueue.ts`:
 
 Replace the `simulateGeneration` method with actual ComfyUI API calls:
+
 ```typescript
 private async generateWithComfyUI(job: GenerationJob): Promise<FunnelImage[]> {
   // Load workflow
   const workflow = await loadWorkflow(job.workflowId);
-  
+
   // Update workflow parameters
   const updatedWorkflow = updateWorkflowParameters(workflow, {
     prompt: job.prompt,
     negative_prompt: job.negativePrompt,
     ...job.parameters,
   });
-  
+
   // Queue prompt
   const response = await fetch(`${COMFY_API_URL}/prompt`, {
     method: 'POST',
     body: JSON.stringify({ prompt: updatedWorkflow }),
   });
-  
+
   // Poll for completion and get images
   // ... implementation
 }

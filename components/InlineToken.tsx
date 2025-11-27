@@ -30,7 +30,7 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
     fieldIndex,
     onNavigate,
     suggestions = [],
-    hasSuggestions = false
+    hasSuggestions = false,
 }) => {
     const [isEditing, setIsEditing] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false);
@@ -115,7 +115,7 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
                     ref={inputRef}
                     type="text"
                     value={value}
-                    onChange={(e) => onChange(e.target.value)}
+                    onChange={e => onChange(e.target.value)}
                     onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
                     placeholder={field.placeholder}
@@ -127,7 +127,9 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
                         focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50
                         min-w-[120px] max-w-[400px] transition-all
                     `}
-                    style={{ width: `${Math.max(120, (value || field.placeholder).length * 8 + 32)}px` }}
+                    style={{
+                        width: `${Math.max(120, (value || field.placeholder).length * 8 + 32)}px`,
+                    }}
                 />
             </span>
         );
@@ -154,21 +156,31 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
                     focus:outline-none focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/50
                 `}
             >
-                <span className={`font-light text-sm ${isEmpty ? 'italic opacity-70' : ''}`}>
+                <span
+                    className={`font-light text-sm ${isEmpty ? 'italic opacity-70' : ''}`}
+                >
                     {displayValue}
                 </span>
 
                 {hasAISuggestions && (
                     <div className="flex items-center gap-1">
                         <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                        <svg className="w-3.5 h-3.5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                        <svg
+                            className="w-3.5 h-3.5 text-blue-400"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
                             <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3z" />
                         </svg>
                     </div>
                 )}
 
                 {!isEmpty && !hasAISuggestions && (
-                    <svg className="w-3.5 h-3.5 opacity-40 group-hover:opacity-60 transition-opacity" fill="currentColor" viewBox="0 0 20 20">
+                    <svg
+                        className="w-3.5 h-3.5 opacity-40 group-hover:opacity-60 transition-opacity"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                    >
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                 )}
@@ -212,7 +224,11 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
                     className="absolute -top-1 -right-1 w-6 h-6 glass-light hover:bg-white/20 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all border border-white/20 active:scale-90"
                     title="Modifier manuellement"
                 >
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <svg
+                        className="w-3 h-3 text-white"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                    >
                         <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
                     </svg>
                 </button>

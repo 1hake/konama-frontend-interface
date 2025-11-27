@@ -30,65 +30,66 @@ const promptFields: PromptField[] = [
     {
         name: 'sujet',
         label: 'Sujet Principal',
-        placeholder: 'Le sujet principal de l\'image',
+        placeholder: "Le sujet principal de l'image",
         example: 'un pot de miel, une montagne enneigée, un chat noir',
-        icon: '🎯'
+        icon: '🎯',
     },
     {
         name: 'contexte',
         label: 'Contexte',
-        placeholder: 'Le contexte ou l\'environnement',
-        example: 'dans une cuisine rustique, au coucher du soleil, sous la pluie',
-        icon: '🌍'
+        placeholder: "Le contexte ou l'environnement",
+        example:
+            'dans une cuisine rustique, au coucher du soleil, sous la pluie',
+        icon: '🌍',
     },
     {
         name: 'decor',
         label: 'Décor',
         placeholder: 'Éléments de décor',
         example: 'fleurs sauvages, arbres anciens, lampes vintage',
-        icon: '🎨'
+        icon: '🎨',
     },
     {
         name: 'composition',
         label: 'Composition',
-        placeholder: 'Composition de l\'image',
+        placeholder: "Composition de l'image",
         example: 'plan rapproché, vue panoramique, angle faible',
-        icon: '📐'
+        icon: '📐',
     },
     {
         name: 'technique',
         label: 'Technique',
         placeholder: 'Style artistique ou technique',
         example: 'aquarelle, photographie macro, rendu 3D',
-        icon: '🖌️'
+        icon: '🖌️',
     },
     {
         name: 'ambiance',
         label: 'Ambiance',
         placeholder: 'Ambiance et atmosphère',
         example: 'atmosphère chaleureuse, lumière douce, ambiance mystérieuse',
-        icon: '✨'
+        icon: '✨',
     },
     {
         name: 'details',
         label: 'Détails',
         placeholder: 'Détails spécifiques',
         example: 'haute qualité, ultra détaillé, 8k',
-        icon: '🔍'
+        icon: '🔍',
     },
     {
         name: 'parametres',
         label: 'Paramètres',
         placeholder: 'Paramètres techniques',
         example: 'masterpiece, best quality, professional',
-        icon: '⚙️'
-    }
+        icon: '⚙️',
+    },
 ];
 
 export const UnifiedPromptBuilder: React.FC<UnifiedPromptBuilderProps> = ({
     fields,
     onFieldChange,
-    isGenerating
+    isGenerating,
 }) => {
     return (
         <div className="bg-gray-800/50 rounded-xl p-5 border border-gray-700">
@@ -103,7 +104,7 @@ export const UnifiedPromptBuilder: React.FC<UnifiedPromptBuilderProps> = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {promptFields.map((field) => (
+                {promptFields.map(field => (
                     <div key={field.name} className="relative">
                         <div className="flex items-center gap-2 mb-2">
                             <label className="text-sm font-semibold text-gray-200 flex items-center gap-1.5">
@@ -121,8 +122,16 @@ export const UnifiedPromptBuilder: React.FC<UnifiedPromptBuilderProps> = ({
                                                 ${open ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-purple-400 hover:bg-gray-700'}
                                             `}
                                         >
-                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clipRule="evenodd" />
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="currentColor"
+                                                viewBox="0 0 20 20"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
+                                                    clipRule="evenodd"
+                                                />
                                             </svg>
                                         </Popover.Button>
 
@@ -143,11 +152,14 @@ export const UnifiedPromptBuilder: React.FC<UnifiedPromptBuilderProps> = ({
                                                         </p>
                                                     </div>
                                                     <p className="text-sm text-gray-300 italic">
-                                                        &quot;{field.example}&quot;
+                                                        &quot;{field.example}
+                                                        &quot;
                                                     </p>
                                                     <div className="mt-2 pt-2 border-t border-gray-700">
                                                         <p className="text-xs text-gray-400">
-                                                            Utilisez des termes descriptifs séparés par des virgules
+                                                            Utilisez des termes
+                                                            descriptifs séparés
+                                                            par des virgules
                                                         </p>
                                                     </div>
                                                 </div>
@@ -161,7 +173,9 @@ export const UnifiedPromptBuilder: React.FC<UnifiedPromptBuilderProps> = ({
                         <input
                             type="text"
                             value={fields[field.name as keyof typeof fields]}
-                            onChange={(e) => onFieldChange(field.name, e.target.value)}
+                            onChange={e =>
+                                onFieldChange(field.name, e.target.value)
+                            }
                             placeholder={field.placeholder}
                             disabled={isGenerating}
                             className={`
@@ -176,7 +190,10 @@ export const UnifiedPromptBuilder: React.FC<UnifiedPromptBuilderProps> = ({
                         {/* Character Count */}
                         {fields[field.name as keyof typeof fields] && (
                             <div className="absolute right-2 bottom-2 text-xs text-gray-500">
-                                {fields[field.name as keyof typeof fields].length}
+                                {
+                                    fields[field.name as keyof typeof fields]
+                                        .length
+                                }
                             </div>
                         )}
                     </div>
@@ -187,12 +204,15 @@ export const UnifiedPromptBuilder: React.FC<UnifiedPromptBuilderProps> = ({
             <div className="mt-4 pt-4 border-t border-gray-700">
                 <div className="flex items-center justify-between">
                     <p className="text-xs text-gray-400">
-                        💡 Astuce: Plus vous êtes précis, meilleur sera le résultat
+                        💡 Astuce: Plus vous êtes précis, meilleur sera le
+                        résultat
                     </p>
                     <button
                         type="button"
                         onClick={() => {
-                            promptFields.forEach(field => onFieldChange(field.name, ''));
+                            promptFields.forEach(field =>
+                                onFieldChange(field.name, '')
+                            );
                         }}
                         disabled={isGenerating}
                         className="text-xs text-purple-400 hover:text-purple-300 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"

@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { GenerationProgress, GeneratedImage, WorkflowGenerationOptions } from '../types';
+import axios from 'axios';
+import {
+    GenerationProgress,
+    GeneratedImage,
+    WorkflowGenerationOptions,
+} from '../types';
 import { config } from '../lib/config';
 
 interface SimpleImageGenerationHookReturn {
@@ -7,14 +12,20 @@ interface SimpleImageGenerationHookReturn {
     progress: GenerationProgress | null;
     generatedImages: GeneratedImage[];
     error: string | null;
-    generateImage: (prompt: string, negativePrompt?: string, options?: WorkflowGenerationOptions) => Promise<void>;
+    generateImage: (
+        prompt: string,
+        negativePrompt?: string,
+        options?: WorkflowGenerationOptions
+    ) => Promise<void>;
     resetGeneration: () => void;
 }
 
 export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [progress, setProgress] = useState<GenerationProgress | null>(null);
-    const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>([]);
+    const [generatedImages, setGeneratedImages] = useState<GeneratedImage[]>(
+        []
+    );
     const [error, setError] = useState<string | null>(null);
     const wsRef = useRef<WebSocket | null>(null);
 
@@ -31,7 +42,10 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
         // Always use proxy for /history endpoint to avoid CORS issues
         if (endpoint.startsWith('/history/')) {
             const promptId = endpoint.replace('/history/', '');
-            console.log('✅ Using proxy for /history endpoint, promptId:', promptId);
+            console.log(
+                '✅ Using proxy for /history endpoint, promptId:',
+                promptId
+            );
             return `/api/history?prompt_id=${promptId}`;
         }
 
@@ -55,7 +69,7 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
 
     // WebSocket connection for real-time updates
     useEffect(() => {
-        // Re-enabled WebSocket connection 
+        // Re-enabled WebSocket connection
         const connectWebSocket = () => {
             const wsUrl = config.getWebSocketUrl();
             console.log('🔌 Connecting to WebSocket:', wsUrl);
@@ -66,7 +80,7 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
                 console.log('WebSocket connected');
             };
 
-            wsRef.current.onmessage = (event) => {
+            wsRef.current.onmessage = event => {
                 try {
                     const message = JSON.parse(event.data);
                     console.log('WebSocket message:', message);
@@ -77,14 +91,14 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
                             progress: message.data.value,
                             node: message.data.node || prev?.node,
                             promptId: prev?.promptId || '',
-                            status: 'executing'
+                            status: 'executing',
                         }));
                     } else if (message.type === 'executing') {
                         setProgress(prev => ({
                             ...prev,
                             promptId: prev?.promptId || '',
                             status: 'executing',
-                            node: message.data.node
+                            node: message.data.node,
                         }));
                     } else if (message.type === 'executed') {
                         // Generation completed
@@ -102,7 +116,7 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
                 setTimeout(connectWebSocket, 3000);
             };
 
-            wsRef.current.onerror = (error) => {
+            wsRef.current.onerror = error => {
                 console.error('WebSocket error:', error);
             };
         };
@@ -116,233 +130,248 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
         };
     }, []);
 
-    const checkImages = useCallback(async (promptId: string) => {
-        try {
-            const response = await fetch(getApiUrl(`/history/${promptId}`));
-            const data = await response.json();
-
-            if (data[promptId]?.outputs) {
-                const images: GeneratedImage[] = [];
-
-                Object.values(data[promptId].outputs).forEach((output: any) => {
-                    if (output.images) {
-                        images.push(...output.images);
-                    }
-                });
-
-                setGeneratedImages(images);
-
-                // Clear progress after images are loaded
-                setTimeout(() => {
-                    setProgress(null);
-                }, 2000);
-            }
-        } catch (error) {
-            console.error('Error checking images:', error);
-        }
-    }, [getApiUrl]);
-
-    const pollForCompletion = useCallback(async (promptId: string) => {
-        const maxAttempts = 60; // 5 minutes max
-        let attempts = 0;
-
-        const poll = async () => {
+    const checkImages = useCallback(
+        async (promptId: string) => {
             try {
-                const response = await fetch(getApiUrl(`/history/${promptId}`));
-                const data = await response.json();
+                const response = await axios.get(
+                    getApiUrl(`/history/${promptId}`)
+                );
+                const data = response.data;
 
-                if (data[promptId]) {
-                    // Generation completed
-                    setProgress(prev => ({
-                        ...prev,
-                        promptId,
-                        status: 'completed'
-                    }));
+                if (data[promptId]?.outputs) {
+                    const images: GeneratedImage[] = [];
 
-                    await checkImages(promptId);
-                    setIsGenerating(false);
-                    return;
-                }
+                    Object.values(data[promptId].outputs).forEach(
+                        (output: any) => {
+                            if (output.images) {
+                                images.push(...output.images);
+                            }
+                        }
+                    );
 
-                attempts++;
-                if (attempts < maxAttempts) {
-                    setTimeout(poll, 5000); // Check every 5 seconds
-                } else {
-                    throw new Error('Timeout waiting for generation');
+                    setGeneratedImages(images);
+
+                    // Clear progress after images are loaded
+                    setTimeout(() => {
+                        setProgress(null);
+                    }, 2000);
                 }
             } catch (error) {
-                console.error('Error polling for completion:', error);
+                console.error('Error checking images:', error);
+            }
+        },
+        [getApiUrl]
+    );
+
+    const pollForCompletion = useCallback(
+        async (promptId: string) => {
+            const maxAttempts = 60; // 5 minutes max
+            let attempts = 0;
+
+            const poll = async () => {
+                try {
+                    const response = await axios.get(
+                        getApiUrl(`/history/${promptId}`)
+                    );
+                    const data = response.data;
+
+                    if (data[promptId]) {
+                        // Generation completed
+                        setProgress(prev => ({
+                            ...prev,
+                            promptId,
+                            status: 'completed',
+                        }));
+
+                        await checkImages(promptId);
+                        setIsGenerating(false);
+                        return;
+                    }
+
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        setTimeout(poll, 5000); // Check every 5 seconds
+                    } else {
+                        throw new Error('Timeout waiting for generation');
+                    }
+                } catch (error) {
+                    console.error('Error polling for completion:', error);
+                    setError('Generation failed');
+                    setIsGenerating(false);
+                }
+            };
+
+            setTimeout(poll, 2000); // Start polling after 2 seconds
+        },
+        [checkImages, getApiUrl]
+    );
+
+    const generateImage = useCallback(
+        async (
+            prompt: string,
+            negativePrompt: string = '',
+            options: WorkflowGenerationOptions = {}
+        ) => {
+            const { steps = 20, workflowId } = options;
+
+            if (!prompt.trim()) {
+                setError('Please enter a prompt');
+                return;
+            }
+
+            if (!workflowId) {
+                setError('Please select a workflow');
+                return;
+            }
+
+            setIsGenerating(true);
+            setError(null);
+            setGeneratedImages([]);
+            setProgress(null);
+
+            // Mock mode for testing without endpoints
+            if (config.mockImageGeneration) {
+                console.log('🎭 MOCK MODE: Simulating image generation...');
+                const mockPromptId = `mock_${Date.now()}`;
+
+                setProgress({
+                    promptId: mockPromptId,
+                    status: 'queued',
+                });
+
+                // Simulate progress updates
+                setTimeout(() => {
+                    setProgress(prev => ({
+                        ...prev!,
+                        status: 'executing',
+                        progress: 0.2,
+                        node: 'LoadCheckpoint',
+                    }));
+                }, 500);
+
+                setTimeout(() => {
+                    setProgress(prev => ({
+                        ...prev!,
+                        progress: 0.5,
+                        node: 'CLIPTextEncode',
+                    }));
+                }, 1500);
+
+                setTimeout(() => {
+                    setProgress(prev => ({
+                        ...prev!,
+                        progress: 0.8,
+                        node: 'KSampler',
+                    }));
+                }, 2500);
+
+                // Generate mock images
+                setTimeout(() => {
+                    const mockImages: GeneratedImage[] = [
+                        {
+                            filename: 'mock_image_1.png',
+                            subfolder: 'mock',
+                            type: 'output',
+                        },
+                    ];
+
+                    setGeneratedImages(mockImages);
+                    setProgress(prev => ({
+                        ...prev!,
+                        status: 'completed',
+                    }));
+
+                    setTimeout(() => {
+                        setProgress(null);
+                        setIsGenerating(false);
+                    }, 2000);
+                }, 3500);
+
+                return;
+            }
+
+            try {
+                // Use our API endpoint to get the workflow JSON from the external service
+                const workflowResponse = await axios.post(
+                    `/api/workflows/${workflowId}/generate`,
+                    {
+                        positivePrompt: prompt,
+                        negativePrompt: negativePrompt || 'text, watermark',
+                        options: { steps, ...options },
+                    }
+                );
+
+                const workflow = workflowResponse.data;
+
+                const requestBody = {
+                    prompt: workflow,
+                    client_id: Math.random().toString(36).substring(7),
+                };
+                const url = getApiUrl('/prompt');
+
+                console.log('=== FRONTEND REQUEST START ===');
+                console.log('🎯 Making request to:', url);
+                console.log('🌍 Should be using proxy (not direct ComfyUI)');
+                console.log(
+                    '📤 Request body:',
+                    JSON.stringify(requestBody, null, 2)
+                );
+
+                // Explicit check to prevent direct ComfyUI calls
+                if (url.includes('8188') || url.includes('localhost:8188')) {
+                    console.error('❌ PREVENTING DIRECT COMFYUI CALL!');
+                    throw new Error(
+                        'Direct ComfyUI calls are blocked. Use /api/proxy instead.'
+                    );
+                }
+
+                const response = await axios.post(url, requestBody);
+
+                console.log(
+                    '📥 Response status:',
+                    response.status,
+                    response.statusText
+                );
+                console.log('📋 Response headers:', response.headers);
+
+                const data = response.data;
+                console.log('✅ Frontend request successful:');
+                console.log('📤 Response data:', JSON.stringify(data, null, 2));
+                console.log('=== FRONTEND REQUEST END ===');
+
+                if (data.prompt_id) {
+                    setProgress({
+                        promptId: data.prompt_id,
+                        status: 'queued',
+                    });
+
+                    // Poll for completion
+                    await pollForCompletion(data.prompt_id);
+                }
+            } catch (error) {
+                console.error('=== FRONTEND ERROR ===');
+                console.error('❌ Error generating image:', error);
+                console.error('Error type:', typeof error);
+                console.error(
+                    'Error name:',
+                    error instanceof Error ? error.name : 'Unknown'
+                );
+                console.error(
+                    'Error message:',
+                    error instanceof Error ? error.message : String(error)
+                );
+                console.error(
+                    'Error stack:',
+                    error instanceof Error ? error.stack : 'No stack trace'
+                );
+                console.error('=== END FRONTEND ERROR ===');
+
                 setError('Generation failed');
                 setIsGenerating(false);
             }
-        };
-
-        setTimeout(poll, 2000); // Start polling after 2 seconds
-    }, [checkImages, getApiUrl]);
-
-    const generateImage = useCallback(async (prompt: string, negativePrompt: string = '', options: WorkflowGenerationOptions = {}) => {
-        const { steps = 20, workflowId } = options;
-
-        if (!prompt.trim()) {
-            setError('Please enter a prompt');
-            return;
-        }
-
-        if (!workflowId) {
-            setError('Please select a workflow');
-            return;
-        }
-
-        setIsGenerating(true);
-        setError(null);
-        setGeneratedImages([]);
-        setProgress(null);
-
-        // Mock mode for testing without endpoints
-        if (config.mockImageGeneration) {
-            console.log('🎭 MOCK MODE: Simulating image generation...');
-            const mockPromptId = `mock_${Date.now()}`;
-
-            setProgress({
-                promptId: mockPromptId,
-                status: 'queued'
-            });
-
-            // Simulate progress updates
-            setTimeout(() => {
-                setProgress(prev => ({
-                    ...prev!,
-                    status: 'executing',
-                    progress: 0.2,
-                    node: 'LoadCheckpoint'
-                }));
-            }, 500);
-
-            setTimeout(() => {
-                setProgress(prev => ({
-                    ...prev!,
-                    progress: 0.5,
-                    node: 'CLIPTextEncode'
-                }));
-            }, 1500);
-
-            setTimeout(() => {
-                setProgress(prev => ({
-                    ...prev!,
-                    progress: 0.8,
-                    node: 'KSampler'
-                }));
-            }, 2500);
-
-            // Generate mock images
-            setTimeout(() => {
-                const mockImages: GeneratedImage[] = [
-                    {
-                        filename: 'mock_image_1.png',
-                        subfolder: 'mock',
-                        type: 'output'
-                    }
-                ];
-
-                setGeneratedImages(mockImages);
-                setProgress(prev => ({
-                    ...prev!,
-                    status: 'completed'
-                }));
-
-                setTimeout(() => {
-                    setProgress(null);
-                    setIsGenerating(false);
-                }, 2000);
-            }, 3500);
-
-            return;
-        }
-
-        try {
-            // Use our API endpoint to get the workflow JSON from the external service
-            const workflowResponse = await fetch(`/api/workflows/${workflowId}/generate`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    positivePrompt: prompt,
-                    negativePrompt: negativePrompt || 'text, watermark',
-                    options: { steps, ...options }
-                }),
-            });
-
-            if (!workflowResponse.ok) {
-                throw new Error(`Failed to generate workflow: ${workflowResponse.status} ${workflowResponse.statusText}`);
-            }
-
-            const workflow = await workflowResponse.json();
-
-            const requestBody = {
-                prompt: workflow,
-                client_id: Math.random().toString(36).substring(7)
-            };
-            const url = getApiUrl('/prompt');
-
-            console.log('=== FRONTEND REQUEST START ===');
-            console.log('🎯 Making request to:', url);
-            console.log('🌍 Should be using proxy (not direct ComfyUI)');
-            console.log('📤 Request body:', JSON.stringify(requestBody, null, 2));
-
-            // Explicit check to prevent direct ComfyUI calls
-            if (url.includes('8188') || url.includes('localhost:8188')) {
-                console.error('❌ PREVENTING DIRECT COMFYUI CALL!');
-                throw new Error('Direct ComfyUI calls are blocked. Use /api/proxy instead.');
-            }
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(requestBody),
-            });
-
-            console.log('📥 Response status:', response.status, response.statusText);
-            console.log('📋 Response headers:', Object.fromEntries(response.headers.entries()));
-
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('❌ Frontend request failed:');
-                console.error('   Status:', response.status);
-                console.error('   Status Text:', response.statusText);
-                console.error('   Response Text:', errorText);
-                throw new Error(`HTTP error! status: ${response.status} - ${errorText}`);
-            }
-
-            const data = await response.json();
-            console.log('✅ Frontend request successful:');
-            console.log('📤 Response data:', JSON.stringify(data, null, 2));
-            console.log('=== FRONTEND REQUEST END ===');
-
-            if (data.prompt_id) {
-                setProgress({
-                    promptId: data.prompt_id,
-                    status: 'queued'
-                });
-
-                // Poll for completion
-                await pollForCompletion(data.prompt_id);
-            }
-        } catch (error) {
-            console.error('=== FRONTEND ERROR ===');
-            console.error('❌ Error generating image:', error);
-            console.error('Error type:', typeof error);
-            console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
-            console.error('Error message:', error instanceof Error ? error.message : String(error));
-            console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-            console.error('=== END FRONTEND ERROR ===');
-
-            setError('Generation failed');
-            setIsGenerating(false);
-        }
-    }, [pollForCompletion, getApiUrl]);
+        },
+        [pollForCompletion, getApiUrl]
+    );
 
     const resetGeneration = useCallback(() => {
         setGeneratedImages([]);

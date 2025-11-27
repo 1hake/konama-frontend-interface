@@ -12,7 +12,9 @@ export async function GET() {
         const response = await fetch(`${config.workflowApiUrl}/workflows`);
 
         if (!response.ok) {
-            throw new Error(`External service returned ${response.status}: ${response.statusText}`);
+            throw new Error(
+                `External service returned ${response.status}: ${response.statusText}`
+            );
         }
 
         const workflows = await response.json();
@@ -31,7 +33,7 @@ export async function GET() {
             {
                 success: false,
                 error: 'Failed to fetch workflows',
-                details: error instanceof Error ? error.message : String(error)
+                details: error instanceof Error ? error.message : String(error),
             },
             { status: 500 }
         );

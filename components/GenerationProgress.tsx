@@ -6,7 +6,9 @@ interface GenerationProgressProps {
     progress: GenerationProgressType | null;
 }
 
-export const GenerationProgress: React.FC<GenerationProgressProps> = ({ progress }) => {
+export const GenerationProgress: React.FC<GenerationProgressProps> = ({
+    progress,
+}) => {
     if (!progress) return null;
 
     return (
@@ -14,11 +16,15 @@ export const GenerationProgress: React.FC<GenerationProgressProps> = ({ progress
             <div className="flex items-center space-x-2">
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-blue-300 border-t-transparent"></div>
                 <span>
-                    {progress.status === 'queued' && 'En attente dans la file...'}
-                    {progress.status === 'executing' && `Génération en cours${progress.node ? ` (${progress.node})` : ''}...`}
+                    {progress.status === 'queued' &&
+                        'En attente dans la file...'}
+                    {progress.status === 'executing' &&
+                        `Génération en cours${progress.node ? ` (${progress.node})` : ''}...`}
                     {progress.status === 'completed' && 'Génération terminée !'}
-                    {progress.status === 'error' && 'Erreur lors de la génération'}
-                    {progress.progress && ` - ${Math.round(progress.progress)}%`}
+                    {progress.status === 'error' &&
+                        'Erreur lors de la génération'}
+                    {progress.progress &&
+                        ` - ${Math.round(progress.progress)}%`}
                 </span>
             </div>
             {progress.progress && (

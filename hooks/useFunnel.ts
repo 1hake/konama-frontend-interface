@@ -5,6 +5,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 import {
   Funnel,
   FunnelStep,
@@ -55,12 +56,9 @@ export function useFunnel(funnelId?: string): UseFunnelReturn {
     setError(null);
 
     try {
-      const response = await fetch(`/api/funnel/${id}`);
-      if (!response.ok) {
-        throw new Error('Failed to load funnel');
-      }
+      const response = await axios.get(`/api/funnel/${id}`);
 
-      const data: FunnelState = await response.json();
+      const data: FunnelState = response.data;
       setFunnel(data.funnel);
       setCurrentStep(data.currentStep);
       setSteps(data.steps);
@@ -74,7 +72,10 @@ export function useFunnel(funnelId?: string): UseFunnelReturn {
       );
       setIsGenerating(hasRunningJobs);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load funnel');
+      const errorMessage = axios.isAxiosError(err) && err.response?.data?.error
+        ? err.response.data.error
+        : (err instanceof Error ? err.message : 'Failed to load funnel');
+      setError(errorMessage);
       console.error('Error loading funnel:', err);
     } finally {
       setLoading(false);
@@ -91,18 +92,13 @@ export function useFunnel(funnelId?: string): UseFunnelReturn {
       setIsGenerating(true);
 
       try {
-        const response = await fetch('/api/funnel/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, description, config }),
+        const response = await axios.post('/api/funnel/create', {
+          name,
+          description,
+          config
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to create funnel');
-        }
-
-        const data = await response.json();
+        const data = response.data;
         setFunnel(data.funnel);
         setCurrentStep(data.step);
         setSteps([data.step]);
@@ -137,20 +133,12 @@ export function useFunnel(funnelId?: string): UseFunnelReturn {
       setError(null);
 
       try {
-        const response = await fetch(
+        const response = await axios.post(
           `/api/funnel/${funnel.id}/step/${currentStep.id}/select`,
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageIds }),
-          }
+          { imageIds }
         );
 
-        if (!response.ok) {
-          throw new Error('Failed to select images');
-        }
-
-        const data = await response.json();
+        const data = response.data;
         setCurrentStep(data.step);
         setSelectedImages(data.selectedImages);
 
@@ -165,7 +153,10 @@ export function useFunnel(funnelId?: string): UseFunnelReturn {
         // Refresh funnel to get updated state
         await loadFunnel(funnel.id);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to select images');
+        const errorMessage = axios.isAxiosError(err) && err.response?.data?.error
+          ? err.response.data.error
+          : (err instanceof Error ? err.message : 'Failed to select images');
+        setError(errorMessage);
         console.error('Error selecting images:', err);
         throw err;
       } finally {
@@ -175,127 +166,127 @@ export function useFunnel(funnelId?: string): UseFunnelReturn {
     [funnel, currentStep, loadFunnel]
   );
 
-  /**
-   * Create next step with refinements
-   */
-  const createNextStep = useCallback(
-    async (refinements?: FunnelRefinement[], promptFields?: any, technicalParameters?: any) => {
-      if (!funnel || !currentStep) {
-        throw new Error('No funnel or current step');
-      }
+/**
+ * Create next step with refinements
+ */
+const createNextStep = useCallback(
+  async (refinements?: FunnelRefinement[], promptFields?: any, technicalParameters?: any) => {
+    if (!funnel || !currentStep) {
+      throw new Error('No funnel or current step');
+    }
 
-      if (selectedImages.length === 0) {
-        throw new Error('No images selected');
-      }
+    if (selectedImages.length === 0) {
+      throw new Error('No images selected');
+    }
 
-      setLoading(true);
-      setError(null);
-      setIsGenerating(true);
-
-      try {
-        const response = await fetch(`/api/funnel/${funnel.id}/step/create`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            selectedImageIds: selectedImages.map(img => img.id),
-            refinements,
-            promptFields,
-            technicalParameters,
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to create next step');
-        }
-
-        const data = await response.json();
-        setFunnel(data.funnel);
-        setCurrentStep(data.step);
-        setSteps(prevSteps => [...prevSteps, data.step]);
-        setImages(prevImages => [...prevImages, ...data.images]);
-        setSelectedImages([]);
-        setJobs(prevJobs => [...prevJobs, ...data.jobs]);
-
-        // Wait for generation to complete
-        await loadFunnel(data.funnel.id);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to create next step');
-        console.error('Error creating next step:', err);
-        throw err;
-      } finally {
-        setLoading(false);
-        setIsGenerating(false);
-      }
-    },
-    [funnel, currentStep, selectedImages, loadFunnel]
-  );
-
-  /**
-   * Delete a funnel
-   */
-  const deleteFunnel = useCallback(async (id: string) => {
     setLoading(true);
     setError(null);
+    setIsGenerating(true);
 
     try {
-      const response = await fetch(`/api/funnel/${id}`, {
-        method: 'DELETE',
+      const response = await fetch(`/api/funnel/${funnel.id}/step/create`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selectedImageIds: selectedImages.map(img => img.id),
+          refinements,
+          promptFields,
+          technicalParameters,
+        }),
       });
 
       if (!response.ok) {
-        throw new Error('Failed to delete funnel');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create next step');
       }
 
-      // Clear state if we deleted the current funnel
-      if (funnel?.id === id) {
-        setFunnel(null);
-        setCurrentStep(null);
-        setSteps([]);
-        setImages([]);
-        setSelectedImages([]);
-        setJobs([]);
-      }
+      const data = await response.json();
+      setFunnel(data.funnel);
+      setCurrentStep(data.step);
+      setSteps(prevSteps => [...prevSteps, data.step]);
+      setImages(prevImages => [...prevImages, ...data.images]);
+      setSelectedImages([]);
+      setJobs(prevJobs => [...prevJobs, ...data.jobs]);
+
+      // Wait for generation to complete
+      await loadFunnel(data.funnel.id);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete funnel');
-      console.error('Error deleting funnel:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create next step');
+      console.error('Error creating next step:', err);
       throw err;
     } finally {
       setLoading(false);
+      setIsGenerating(false);
     }
-  }, [funnel]);
+  },
+  [funnel, currentStep, selectedImages, loadFunnel]
+);
 
-  /**
-   * Refresh current funnel
-   */
-  const refreshFunnel = useCallback(async () => {
-    if (funnel) {
-      await loadFunnel(funnel.id);
+/**
+ * Delete a funnel
+ */
+const deleteFunnel = useCallback(async (id: string) => {
+  setLoading(true);
+  setError(null);
+
+  try {
+    const response = await fetch(`/api/funnel/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to delete funnel');
     }
-  }, [funnel, loadFunnel]);
 
-  // Auto-load funnel if funnelId is provided
-  useEffect(() => {
-    if (funnelId) {
-      loadFunnel(funnelId);
+    // Clear state if we deleted the current funnel
+    if (funnel?.id === id) {
+      setFunnel(null);
+      setCurrentStep(null);
+      setSteps([]);
+      setImages([]);
+      setSelectedImages([]);
+      setJobs([]);
     }
-  }, [funnelId, loadFunnel]);
+  } catch (err) {
+    setError(err instanceof Error ? err.message : 'Failed to delete funnel');
+    console.error('Error deleting funnel:', err);
+    throw err;
+  } finally {
+    setLoading(false);
+  }
+}, [funnel]);
 
-  return {
-    funnel,
-    currentStep,
-    steps,
-    images,
-    selectedImages,
-    jobs,
-    loading,
-    error,
-    isGenerating,
-    createFunnel,
-    loadFunnel,
-    selectImages,
-    createNextStep,
-    deleteFunnel,
-    refreshFunnel,
-  };
+/**
+ * Refresh current funnel
+ */
+const refreshFunnel = useCallback(async () => {
+  if (funnel) {
+    await loadFunnel(funnel.id);
+  }
+}, [funnel, loadFunnel]);
+
+// Auto-load funnel if funnelId is provided
+useEffect(() => {
+  if (funnelId) {
+    loadFunnel(funnelId);
+  }
+}, [funnelId, loadFunnel]);
+
+return {
+  funnel,
+  currentStep,
+  steps,
+  images,
+  selectedImages,
+  jobs,
+  loading,
+  error,
+  isGenerating,
+  createFunnel,
+  loadFunnel,
+  selectImages,
+  createNextStep,
+  deleteFunnel,
+  refreshFunnel,
+};
 }

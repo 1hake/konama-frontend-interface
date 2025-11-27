@@ -12,7 +12,15 @@ export const PromptBuilderHeader: React.FC = () => {
                 </span>
             </h3>
             <p className="text-gray-400 text-sm leading-relaxed">
-                Cliquez sur les champs colorés pour les personnaliser • Utilisez <kbd className="px-1.5 py-0.5 text-xs bg-gray-700/80 rounded border border-gray-600">Tab</kbd> ou <kbd className="px-1.5 py-0.5 text-xs bg-gray-700/80 rounded border border-gray-600">↵</kbd> pour naviguer
+                Cliquez sur les champs colorés pour les personnaliser • Utilisez{' '}
+                <kbd className="px-1.5 py-0.5 text-xs bg-gray-700/80 rounded border border-gray-600">
+                    Tab
+                </kbd>{' '}
+                ou{' '}
+                <kbd className="px-1.5 py-0.5 text-xs bg-gray-700/80 rounded border border-gray-600">
+                    ↵
+                </kbd>{' '}
+                pour naviguer
             </p>
         </div>
     );

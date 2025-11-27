@@ -11,7 +11,7 @@ interface ImageDropzoneProps {
 export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
     onImageUpload,
     onImageRemove,
-    uploadedImage
+    uploadedImage,
 }) => {
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -26,41 +26,53 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
         setIsDragging(false);
     }, []);
 
-    const processFile = useCallback((file: File) => {
-        if (file && file.type.startsWith('image/')) {
-            const previewUrl = URL.createObjectURL(file);
-            onImageUpload(file, previewUrl);
-        }
-    }, [onImageUpload]);
+    const processFile = useCallback(
+        (file: File) => {
+            if (file && file.type.startsWith('image/')) {
+                const previewUrl = URL.createObjectURL(file);
+                onImageUpload(file, previewUrl);
+            }
+        },
+        [onImageUpload]
+    );
 
-    const handleDrop = useCallback((e: React.DragEvent) => {
-        e.preventDefault();
-        setIsDragging(false);
+    const handleDrop = useCallback(
+        (e: React.DragEvent) => {
+            e.preventDefault();
+            setIsDragging(false);
 
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            processFile(files[0]);
-        }
-    }, [processFile]);
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                processFile(files[0]);
+            }
+        },
+        [processFile]
+    );
 
-    const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (files && files.length > 0) {
-            processFile(files[0]);
-        }
-    }, [processFile]);
+    const handleFileSelect = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                processFile(files[0]);
+            }
+        },
+        [processFile]
+    );
 
     const handleClick = useCallback(() => {
         fileInputRef.current?.click();
     }, []);
 
-    const handleRemove = useCallback((e: React.MouseEvent) => {
-        e.stopPropagation();
-        onImageRemove();
-        if (fileInputRef.current) {
-            fileInputRef.current.value = '';
-        }
-    }, [onImageRemove]);
+    const handleRemove = useCallback(
+        (e: React.MouseEvent) => {
+            e.stopPropagation();
+            onImageRemove();
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        },
+        [onImageRemove]
+    );
 
     return (
         <div className="relative">
@@ -89,8 +101,18 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
                             className="absolute top-2 right-2 p-2 bg-red-500/90 hover:bg-red-600 rounded-full text-white opacity-0 group-hover:opacity-100 transition-all duration-300 transform hover:scale-110 shadow-lg"
                             title="Remove image"
                         >
-                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
                             </svg>
                         </button>
 
@@ -112,9 +134,10 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
                     className={`
                         relative overflow-hidden rounded-2xl border-2 border-dashed cursor-pointer
                         transition-all duration-300 transform hover:scale-[1.01]
-                        ${isDragging
-                            ? 'border-purple-400 bg-gradient-to-br from-purple-500/20 to-pink-500/20 scale-[1.01]'
-                            : 'border-white/20 bg-gradient-to-br from-white/5 to-white/10 hover:border-purple-400/50 hover:from-purple-500/10 hover:to-pink-500/10'
+                        ${
+                            isDragging
+                                ? 'border-purple-400 bg-gradient-to-br from-purple-500/20 to-pink-500/20 scale-[1.01]'
+                                : 'border-white/20 bg-gradient-to-br from-white/5 to-white/10 hover:border-purple-400/50 hover:from-purple-500/10 hover:to-pink-500/10'
                         }
                     `}
                 >
@@ -127,14 +150,23 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
                             >
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
                             </svg>
                         </div>
 
                         {/* Text */}
                         <div className="space-y-1">
-                            <p className={`text-sm font-medium transition-colors duration-300 ${isDragging ? 'text-purple-300' : 'text-white/80'}`}>
-                                {isDragging ? 'Déposez votre image' : 'Ajouter une image'}
+                            <p
+                                className={`text-sm font-medium transition-colors duration-300 ${isDragging ? 'text-purple-300' : 'text-white/80'}`}
+                            >
+                                {isDragging
+                                    ? 'Déposez votre image'
+                                    : 'Ajouter une image'}
                             </p>
                             <p className="text-xs text-white/50">
                                 Glissez-déposez ou cliquez

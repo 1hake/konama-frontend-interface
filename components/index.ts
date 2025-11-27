@@ -19,3 +19,8 @@ export { PromptBuilderHeader } from './PromptBuilderHeader';
 export { PromptSentenceBuilder } from './PromptSentenceBuilder';
 export { PromptBuilderActions } from './PromptBuilderActions';
 export { ImageDropzone } from './ImageDropzone';
+
+// Authentication components
+export { default as ProtectedRoute } from './ProtectedRoute';
+export { default as UserProfile } from './UserProfile';
+export { default as AuthenticatedLayout } from './AuthenticatedLayout';

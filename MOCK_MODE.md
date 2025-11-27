@@ -9,6 +9,7 @@ Mock mode allows you to test the image generation interface without requiring ac
 ### 1. Mock Image Generation
 
 When enabled, the image generation process simulates the entire workflow:
+
 - Queued status
 - Progress updates with different nodes
 - Realistic timing delays
@@ -17,11 +18,13 @@ When enabled, the image generation process simulates the entire workflow:
 ### 2. Mock Workflows
 
 Three fake workflows are provided for testing:
+
 - **Flux Dev (Mock)** - Simulates Flux.1 Dev model
 - **Stable Diffusion 1.5 (Mock)** - Simulates SD 1.5 basic workflow
 - **SDXL Turbo (Mock)** - Simulates fast SDXL Turbo workflow
 
 Each mock workflow includes:
+
 - Full metadata (name, description, category)
 - Source indicator (local)
 - Tags and parameters
@@ -58,11 +61,11 @@ NEXT_PUBLIC_MOCK_WORKFLOWS=false
 3. Select any mock workflow from the workflow selector
 4. Enter a prompt and generate
 5. Watch the simulated progress:
-   - Queued → Executing
-   - LoadCheckpoint node (20% progress)
-   - CLIPTextEncode node (50% progress)
-   - KSampler node (80% progress)
-   - Complete with mock image display
+    - Queued → Executing
+    - LoadCheckpoint node (20% progress)
+    - CLIPTextEncode node (50% progress)
+    - KSampler node (80% progress)
+    - Complete with mock image display
 
 ### Testing Workflows
 
@@ -75,6 +78,7 @@ NEXT_PUBLIC_MOCK_WORKFLOWS=false
 ## Mock Image Display
 
 Mock images are displayed as:
+
 - Purple gradient SVG placeholder
 - "🎭 Mock Image ✨" text
 - "Mock Generation Complete" subtitle

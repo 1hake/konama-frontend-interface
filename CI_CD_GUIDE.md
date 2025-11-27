@@ -5,6 +5,7 @@ This guide covers the enhanced CI/CD pipeline for the Image Generation Admin app
 ## Overview
 
 The CI/CD pipeline now includes:
+
 - **Automated testing** on pull requests and main branch
 - **Multi-stage builds** with caching
 - **Security scanning** and linting
@@ -17,12 +18,14 @@ The CI/CD pipeline now includes:
 Set these secrets in your GitHub repository settings (`Settings > Secrets and variables > Actions`):
 
 ### Docker Registry
+
 ```
 DOCKER_USERNAME=your-docker-hub-username
 DOCKER_PASSWORD=your-docker-hub-password-or-token
 ```
 
 ### Server Access
+
 ```
 SERVER_HOST=your-server-ip-or-domain
 SERVER_USER=root
@@ -51,44 +54,46 @@ echo "your-openai-api-key" | docker secret create image_gen_openai_api_key -
 ### 3. Setup Traefik (Reverse Proxy)
 
 Create `traefik.yml`:
+
 ```yaml
 version: '3.8'
 
 services:
-  traefik:
-    image: traefik:v3.0
-    command:
-      - "--api.dashboard=true"
-      - "--providers.docker.swarmMode=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=your-email@domain.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik-letsencrypt:/letsencrypt
-    networks:
-      - webnet
-    deploy:
-      replicas: 1
-      placement:
-        constraints: [node.role == manager]
+    traefik:
+        image: traefik:v3.0
+        command:
+            - '--api.dashboard=true'
+            - '--providers.docker.swarmMode=true'
+            - '--providers.docker.exposedbydefault=false'
+            - '--entrypoints.web.address=:80'
+            - '--entrypoints.websecure.address=:443'
+            - '--certificatesresolvers.myresolver.acme.tlschallenge=true'
+            - '--certificatesresolvers.myresolver.acme.email=your-email@domain.com'
+            - '--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json'
+        ports:
+            - '80:80'
+            - '443:443'
+            - '8080:8080'
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock:ro
+            - traefik-letsencrypt:/letsencrypt
+        networks:
+            - webnet
+        deploy:
+            replicas: 1
+            placement:
+                constraints: [node.role == manager]
 
 volumes:
-  traefik-letsencrypt:
+    traefik-letsencrypt:
 
 networks:
-  webnet:
-    external: true
+    webnet:
+        external: true
 ```
 
 Deploy Traefik:
+
 ```bash
 docker stack deploy -c traefik.yml traefik
 ```
@@ -98,6 +103,7 @@ docker stack deploy -c traefik.yml traefik
 ### 1. Automatic Deployment (Recommended)
 
 The CI/CD pipeline automatically:
+
 1. Runs tests on every push/PR
 2. Builds and pushes Docker images on main branch
 3. Deploys to production server using Docker Swarm
@@ -123,15 +129,16 @@ Update `docker-compose.swarm.yml` with your domain:
 
 ```yaml
 labels:
-  - 'traefik.http.routers.image-generation-admin.rule=Host(`your-domain.com`)'
+    - 'traefik.http.routers.image-generation-admin.rule=Host(`your-domain.com`)'
 environment:
-  NEXT_PUBLIC_API_URL: https://your-domain.com
+    NEXT_PUBLIC_API_URL: https://your-domain.com
 ```
 
 ### Resource Limits
 
 The swarm configuration includes resource limits:
-- Memory: 1GB limit, 512MB reservation  
+
+- Memory: 1GB limit, 512MB reservation
 - CPU: 0.5 cores limit, 0.25 cores reservation
 
 Adjust these based on your server capacity.
@@ -218,7 +225,7 @@ curl -f http://localhost/health
 ## Performance Optimizations
 
 1. **Multi-stage builds** reduce final image size
-2. **Build caching** speeds up CI/CD pipeline  
+2. **Build caching** speeds up CI/CD pipeline
 3. **Gzip compression** reduces bandwidth usage
 4. **Static asset caching** improves load times
 5. **Health checks** enable zero-downtime deployments

@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import axios from 'axios';
 
 interface FieldSuggestions {
     sujet: string[];
@@ -24,7 +25,9 @@ interface FieldValues {
 }
 
 export const usePromptEnhancement = () => {
-    const [suggestions, setSuggestions] = useState<FieldSuggestions | null>(null);
+    const [suggestions, setSuggestions] = useState<FieldSuggestions | null>(
+        null
+    );
     const [isEnhancing, setIsEnhancing] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -33,25 +36,16 @@ export const usePromptEnhancement = () => {
         setError(null);
 
         try {
-            const response = await fetch('/api/enhance-prompt', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    currentFields,
-                }),
+            const response = await axios.post('/api/enhance-prompt', {
+                currentFields,
             });
 
-            if (!response.ok) {
-                throw new Error('Failed to enhance prompt');
-            }
-
-            const data = await response.json();
+            const data = response.data;
             setSuggestions(data.suggestions);
             return data.suggestions;
         } catch (err) {
-            const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+            const errorMessage =
+                err instanceof Error ? err.message : 'Unknown error';
             setError(errorMessage);
             console.error('Error enhancing prompt:', err);
             return null;
@@ -65,12 +59,15 @@ export const usePromptEnhancement = () => {
         setError(null);
     }, []);
 
-    const getSuggestionsForField = useCallback((field: string): string[] => {
-        if (!suggestions || !suggestions[field as keyof FieldSuggestions]) {
-            return [];
-        }
-        return suggestions[field as keyof FieldSuggestions];
-    }, [suggestions]);
+    const getSuggestionsForField = useCallback(
+        (field: string): string[] => {
+            if (!suggestions || !suggestions[field as keyof FieldSuggestions]) {
+                return [];
+            }
+            return suggestions[field as keyof FieldSuggestions];
+        },
+        [suggestions]
+    );
 
     return {
         suggestions,

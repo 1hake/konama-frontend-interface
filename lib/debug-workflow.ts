@@ -12,7 +12,9 @@ async function debugWorkflow(workflowPath?: string) {
         console.log('🔍 Debugging Workflow Issues...\n');
 
         // Default to example workflow if no path provided
-        const filePath = workflowPath || path.join(process.cwd(), 'app/api/proxy/example-normal.json');
+        const filePath =
+            workflowPath ||
+            path.join(process.cwd(), 'app/api/proxy/example-normal.json');
 
         console.log('📂 Loading workflow from:', filePath);
 
@@ -31,21 +33,27 @@ async function debugWorkflow(workflowPath?: string) {
 
         if (analysis.issues.length > 0) {
             console.log('\n❌ Issues:');
-            analysis.issues.forEach((issue, i) => console.log(`   ${i + 1}. ${issue}`));
+            analysis.issues.forEach((issue, i) =>
+                console.log(`   ${i + 1}. ${issue}`)
+            );
 
             console.log('\n💡 Recommendations:');
-            analysis.recommendations.forEach((rec, i) => console.log(`   ${i + 1}. ${rec}`));
+            analysis.recommendations.forEach((rec, i) =>
+                console.log(`   ${i + 1}. ${rec}`)
+            );
         }
 
         // Show problematic nodes
-        const problematicNodes = analysis.nodeAnalysis.filter(n =>
-            n.status === 'active' && !n.hasRequiredParams
+        const problematicNodes = analysis.nodeAnalysis.filter(
+            n => n.status === 'active' && !n.hasRequiredParams
         );
 
         if (problematicNodes.length > 0) {
             console.log('\n🚨 Problematic Active Nodes:');
             problematicNodes.forEach(node => {
-                console.log(`   Node ${node.id} (${node.type}) - Missing: ${node.missingParams?.join(', ')}`);
+                console.log(
+                    `   Node ${node.id} (${node.type}) - Missing: ${node.missingParams?.join(', ')}`
+                );
             });
         }
 
@@ -56,12 +64,18 @@ async function debugWorkflow(workflowPath?: string) {
             console.log('✅ Auto-fix successful!');
             if (fixResult.fixes.length > 0) {
                 console.log('🔧 Fixes applied:');
-                fixResult.fixes.forEach((fix, i) => console.log(`   ${i + 1}. ${fix}`));
+                fixResult.fixes.forEach((fix, i) =>
+                    console.log(`   ${i + 1}. ${fix}`)
+                );
             }
 
             console.log('\n📊 Final API Workflow:');
-            console.log(`   Nodes: ${Object.keys(fixResult.apiWorkflow!).length}`);
-            console.log(`   Node IDs: ${Object.keys(fixResult.apiWorkflow!).join(', ')}`);
+            console.log(
+                `   Nodes: ${Object.keys(fixResult.apiWorkflow!).length}`
+            );
+            console.log(
+                `   Node IDs: ${Object.keys(fixResult.apiWorkflow!).join(', ')}`
+            );
         } else {
             console.log('❌ Auto-fix failed');
         }
@@ -77,10 +91,13 @@ async function debugWorkflow(workflowPath?: string) {
         }
 
         console.log('\n4️⃣ === NODE MODE SUMMARY ===');
-        const modeSummary = analysis.nodeAnalysis.reduce((acc, node) => {
-            acc[node.status] = (acc[node.status] || 0) + 1;
-            return acc;
-        }, {} as Record<string, number>);
+        const modeSummary = analysis.nodeAnalysis.reduce(
+            (acc, node) => {
+                acc[node.status] = (acc[node.status] || 0) + 1;
+                return acc;
+            },
+            {} as Record<string, number>
+        );
 
         Object.entries(modeSummary).forEach(([status, count]) => {
             console.log(`   ${status}: ${count} nodes`);
@@ -89,20 +106,26 @@ async function debugWorkflow(workflowPath?: string) {
         // Save debug output
         const debugOutput = {
             analysis,
-            fixResult: fixResult.success ? {
-                fixes: fixResult.fixes,
-                nodeCount: Object.keys(fixResult.apiWorkflow!).length
-            } : { error: 'Fix failed' },
-            directConversion: directResult ? {
-                nodeCount: Object.keys(directResult).length,
-                nodeIds: Object.keys(directResult)
-            } : { error: 'Direct conversion failed' }
+            fixResult: fixResult.success
+                ? {
+                      fixes: fixResult.fixes,
+                      nodeCount: Object.keys(fixResult.apiWorkflow!).length,
+                  }
+                : { error: 'Fix failed' },
+            directConversion: directResult
+                ? {
+                      nodeCount: Object.keys(directResult).length,
+                      nodeIds: Object.keys(directResult),
+                  }
+                : { error: 'Direct conversion failed' },
         };
 
-        const debugPath = path.join(process.cwd(), 'workflow-debug-output.json');
+        const debugPath = path.join(
+            process.cwd(),
+            'workflow-debug-output.json'
+        );
         fs.writeFileSync(debugPath, JSON.stringify(debugOutput, null, 2));
         console.log(`\n💾 Debug output saved to: ${debugPath}`);
-
     } catch (error) {
         console.error('❌ Debug script failed:', error);
     }

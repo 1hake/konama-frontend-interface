@@ -7,30 +7,35 @@ A comprehensive, universal ComfyUI workflow converter that can transform **any**
 ## ✅ Key Features Implemented
 
 ### 1. **Universal Compatibility**
+
 - Works with **any** ComfyUI workflow format
 - Handles custom nodes automatically
 - Supports both known and unknown node types
 - Extensible architecture for adding new nodes
 
 ### 2. **Smart Parameter Mapping**
+
 - 100+ predefined node mappings
 - Automatic parameter detection for unknown nodes
 - Pattern-based inference system
 - Special handling for complex nodes (KSampler, Flux, etc.)
 
 ### 3. **Robust Input Handling**
+
 - Accepts JSON objects, JSON strings, or file paths
 - Auto-detects workflow format (normal vs API)
 - Comprehensive error handling and validation
 - Detailed logging for debugging
 
 ### 4. **Node Management**
+
 - Respects ComfyUI node modes (normal/bypass/mute)
 - Automatically filters UI-only nodes
 - Preserves all functional workflow logic
 - Maintains proper node connections
 
 ### 5. **Production Ready**
+
 - Full TypeScript support
 - Comprehensive test suite
 - Detailed documentation
@@ -39,14 +44,17 @@ A comprehensive, universal ComfyUI workflow converter that can transform **any**
 ## 📁 Files Created/Modified
 
 ### Core Converter
+
 - `/lib/workflowConverter.ts` - Main conversion logic (enhanced)
 - `/lib/workflowUtils.ts` - Utility functions for easy integration
 - `/lib/test-converter.ts` - Comprehensive test suite
 
 ### Documentation
+
 - `/lib/WORKFLOW_CONVERTER_README.md` - Complete usage guide
 
 ### API Integration
+
 - `/app/api/proxy/route.ts` - Updated to use the new converter
 
 ## 🧪 Test Results
@@ -63,6 +71,7 @@ A comprehensive, universal ComfyUI workflow converter that can transform **any**
 ## 🔧 How It Works
 
 ### Input Processing
+
 ```typescript
 const workflow = { nodes: [...], links: [...] }; // Normal format
 const apiWorkflow = processWorkflow(workflow);
@@ -70,28 +79,30 @@ const apiWorkflow = processWorkflow(workflow);
 ```
 
 ### Smart Mapping System
+
 1. **Link Resolution**: Converts visual connections to API references
-2. **Widget Mapping**: Maps UI widget values to parameter names  
+2. **Widget Mapping**: Maps UI widget values to parameter names
 3. **Special Handling**: Custom logic for complex nodes
 4. **Fallback Detection**: Infers parameters for unknown nodes
 
 ### Example Transformation
+
 ```javascript
 // INPUT (Normal Format)
 {
   "id": 31,
-  "type": "KSampler", 
+  "type": "KSampler",
   "widgets_values": [123456, "randomize", 20, 1, "euler", "simple", 1],
   "inputs": [{"name": "model", "link": 81}]
 }
 
-// OUTPUT (API Format)  
+// OUTPUT (API Format)
 {
   "31": {
     "inputs": {
       "seed": 123456,
       "steps": 20,
-      "cfg": 1, 
+      "cfg": 1,
       "sampler_name": "euler",
       "scheduler": "simple",
       "denoise": 1,
@@ -105,17 +116,19 @@ const apiWorkflow = processWorkflow(workflow);
 ## 🚀 Usage Examples
 
 ### Basic Usage
+
 ```typescript
 import { processWorkflow } from '@/lib/workflowConverter';
 
 const apiWorkflow = processWorkflow(normalWorkflow);
 if (apiWorkflow) {
-  // Ready to send to ComfyUI API
-  console.log('Converted successfully!');
+    // Ready to send to ComfyUI API
+    console.log('Converted successfully!');
 }
 ```
 
-### Advanced Usage  
+### Advanced Usage
+
 ```typescript
 import { ensureApiFormat, createComfyPayload } from '@/lib/workflowUtils';
 
@@ -126,20 +139,21 @@ const apiWorkflow = await ensureApiFormat(anyWorkflowFormat);
 const payload = await createComfyPayload(workflow, 'client-123');
 
 // Send to ComfyUI
-fetch('/api/comfyui/prompt', { 
-  method: 'POST',
-  body: JSON.stringify(payload) 
+fetch('/api/comfyui/prompt', {
+    method: 'POST',
+    body: JSON.stringify(payload),
 });
 ```
 
 ### Workflow Manipulation
+
 ```typescript
 import { updatePrompts, findNodesByType } from '@/lib/workflowUtils';
 
 // Update text prompts
 const updated = updatePrompts(apiWorkflow, {
-  "45": "new positive prompt",
-  "46": "new negative prompt"
+    '45': 'new positive prompt',
+    '46': 'new negative prompt',
 });
 
 // Find specific nodes
@@ -149,6 +163,7 @@ const samplers = findNodesByType(apiWorkflow, 'KSampler');
 ## 🔍 Supported Node Types
 
 ### Core Nodes (100% Support)
+
 - **Sampling**: KSampler, KSamplerAdvanced
 - **Models**: CheckpointLoader, UNETLoader, VAELoader, CLIPLoader
 - **Text**: CLIPTextEncode, CLIPTextEncodeSDXL
@@ -156,6 +171,7 @@ const samplers = findNodesByType(apiWorkflow, 'KSampler');
 - **Latent**: EmptyLatentImage, LatentUpscale
 
 ### Specialized Nodes (100% Support)
+
 - **Flux**: FluxGuidance, FluxResolutionNode
 - **LoRA**: LoraLoader, LoraLoaderModelOnly, PowerLoraLoader
 - **Upscaling**: UltimateSDUpscale, ImageScale
@@ -163,6 +179,7 @@ const samplers = findNodesByType(apiWorkflow, 'KSampler');
 - **Conditioning**: ConditioningZeroOut, ConditioningCombine
 
 ### Custom Nodes (Auto-Detection)
+
 - **Any node type** - automatic parameter inference
 - **Extensible** - easy to add specific mappings
 
@@ -176,6 +193,7 @@ const samplers = findNodesByType(apiWorkflow, 'KSampler');
 ## 🛠 Integration Points
 
 ### Your API Route (`/app/api/proxy/route.ts`)
+
 ```typescript
 // Auto-handles both formats
 const apiWorkflow = await ensureApiFormat(body.workflow || body.prompt);
@@ -184,13 +202,14 @@ const payload = { prompt: apiWorkflow };
 ```
 
 ### Frontend Usage
+
 ```typescript
 // Send either format - converter handles it
 const response = await fetch('/api/proxy', {
-  method: 'POST',
-  body: JSON.stringify({ 
-    workflow: normalFormatWorkflow  // or prompt: apiFormatWorkflow
-  })
+    method: 'POST',
+    body: JSON.stringify({
+        workflow: normalFormatWorkflow, // or prompt: apiFormatWorkflow
+    }),
 });
 ```
 

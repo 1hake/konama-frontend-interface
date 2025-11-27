@@ -18,7 +18,7 @@ interface VoiceRecorderProps {
 export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     onTranscriptionComplete,
     isGenerating,
-    className = ''
+    className = '',
 }) => {
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
     const audioChunksRef = useRef<Blob[]>([]);
@@ -26,16 +26,19 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     const [voiceState, setVoiceState] = useState<VoiceRecordingState>({
         isRecording: false,
         isProcessing: false,
-        error: null
+        error: null,
     });
 
     // Check for compatibility on mount
     useEffect(() => {
         const checkCompatibility = () => {
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+            if (
+                !navigator.mediaDevices ||
+                !navigator.mediaDevices.getUserMedia
+            ) {
                 setVoiceState(prev => ({
                     ...prev,
-                    error: 'Votre navigateur ne supporte pas l\'enregistrement audio. Utilisez Chrome, Firefox ou Safari récent.'
+                    error: "Votre navigateur ne supporte pas l'enregistrement audio. Utilisez Chrome, Firefox ou Safari récent.",
                 }));
                 return;
             }
@@ -43,20 +46,21 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             if (!window.MediaRecorder) {
                 setVoiceState(prev => ({
                     ...prev,
-                    error: 'MediaRecorder non supporté. Mettez à jour votre navigateur.'
+                    error: 'MediaRecorder non supporté. Mettez à jour votre navigateur.',
                 }));
                 return;
             }
 
             // Check if we're on HTTPS or localhost
-            const isSecure = window.location.protocol === 'https:' ||
+            const isSecure =
+                window.location.protocol === 'https:' ||
                 window.location.hostname === 'localhost' ||
                 window.location.hostname === '127.0.0.1';
 
             if (!isSecure) {
                 setVoiceState(prev => ({
                     ...prev,
-                    error: 'L\'enregistrement audio nécessite une connexion sécurisée (HTTPS).'
+                    error: "L'enregistrement audio nécessite une connexion sécurisée (HTTPS).",
                 }));
             }
         };
@@ -69,8 +73,13 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             setVoiceState(prev => ({ ...prev, error: null }));
 
             // Check for MediaRecorder support
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                throw new Error('MediaRecorder API not supported in this browser');
+            if (
+                !navigator.mediaDevices ||
+                !navigator.mediaDevices.getUserMedia
+            ) {
+                throw new Error(
+                    'MediaRecorder API not supported in this browser'
+                );
             }
 
             if (!window.MediaRecorder) {
@@ -81,8 +90,8 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                 audio: {
                     echoCancellation: true,
                     noiseSuppression: true,
-                    sampleRate: 44100
-                }
+                    sampleRate: 44100,
+                },
             });
 
             // Get supported MIME types
@@ -91,7 +100,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                 'audio/webm',
                 'audio/mp4',
                 'audio/ogg;codecs=opus',
-                'audio/wav'
+                'audio/wav',
             ];
 
             let selectedMimeType = '';
@@ -106,30 +115,34 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                 throw new Error('No supported audio format found');
             }
 
-            const mediaRecorder = new MediaRecorder(stream, { mimeType: selectedMimeType });
+            const mediaRecorder = new MediaRecorder(stream, {
+                mimeType: selectedMimeType,
+            });
             mediaRecorderRef.current = mediaRecorder;
             audioChunksRef.current = [];
 
-            mediaRecorder.addEventListener('dataavailable', (event) => {
+            mediaRecorder.addEventListener('dataavailable', event => {
                 if (event.data.size > 0) {
                     audioChunksRef.current.push(event.data);
                 }
             });
 
             mediaRecorder.addEventListener('stop', async () => {
-                const audioBlob = new Blob(audioChunksRef.current, { type: selectedMimeType });
+                const audioBlob = new Blob(audioChunksRef.current, {
+                    type: selectedMimeType,
+                });
                 await processAudioTranscription(audioBlob);
 
                 // Stop all tracks to turn off microphone
                 stream.getTracks().forEach(track => track.stop());
             });
 
-            mediaRecorder.addEventListener('error', (event) => {
+            mediaRecorder.addEventListener('error', event => {
                 console.error('MediaRecorder error:', event);
                 setVoiceState(prev => ({
                     ...prev,
-                    error: 'Erreur lors de l\'enregistrement audio',
-                    isRecording: false
+                    error: "Erreur lors de l'enregistrement audio",
+                    isRecording: false,
                 }));
             });
 
@@ -138,27 +151,31 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             setVoiceState(prev => ({
                 ...prev,
                 isRecording: true,
-                recordingStartTime: Date.now()
+                recordingStartTime: Date.now(),
             }));
         } catch (error) {
             console.error('Error starting recording:', error);
-            let errorMessage = 'Impossible d\'accéder au microphone.';
+            let errorMessage = "Impossible d'accéder au microphone.";
 
             if (error instanceof Error) {
                 if (error.name === 'NotAllowedError') {
-                    errorMessage = 'Permission microphone refusée. Veuillez autoriser l\'accès au microphone.';
+                    errorMessage =
+                        "Permission microphone refusée. Veuillez autoriser l'accès au microphone.";
                 } else if (error.name === 'NotFoundError') {
-                    errorMessage = 'Aucun microphone trouvé. Vérifiez votre matériel audio.';
+                    errorMessage =
+                        'Aucun microphone trouvé. Vérifiez votre matériel audio.';
                 } else if (error.name === 'NotSupportedError') {
-                    errorMessage = 'Enregistrement audio non supporté par ce navigateur.';
+                    errorMessage =
+                        'Enregistrement audio non supporté par ce navigateur.';
                 } else if (error.message.includes('MediaRecorder')) {
-                    errorMessage = 'Votre navigateur ne supporte pas l\'enregistrement audio.';
+                    errorMessage =
+                        "Votre navigateur ne supporte pas l'enregistrement audio.";
                 }
             }
 
             setVoiceState(prev => ({
                 ...prev,
-                error: errorMessage
+                error: errorMessage,
             }));
         }
     };
@@ -166,13 +183,14 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
     const stopRecording = () => {
         if (mediaRecorderRef.current && voiceState.isRecording) {
             // Check minimum recording time (1.5 seconds)
-            const recordingDuration = Date.now() - (voiceState.recordingStartTime || 0);
+            const recordingDuration =
+                Date.now() - (voiceState.recordingStartTime || 0);
 
             if (recordingDuration < 1500) {
                 setVoiceState(prev => ({
                     ...prev,
                     error: 'Enregistrement trop court. Maintenez le bouton enfoncé au moins 1,5 seconde.',
-                    isRecording: false
+                    isRecording: false,
                 }));
 
                 // Stop the recorder anyway to clean up
@@ -181,7 +199,11 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             }
 
             mediaRecorderRef.current.stop();
-            setVoiceState(prev => ({ ...prev, isRecording: false, isProcessing: true }));
+            setVoiceState(prev => ({
+                ...prev,
+                isRecording: false,
+                isProcessing: true,
+            }));
         }
     };
 
@@ -200,7 +222,9 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             const formData = new FormData();
             formData.append('audio', audioBlob, fileName);
 
-            console.log(`Sending audio file: ${fileName}, size: ${audioBlob.size} bytes, type: ${audioBlob.type}`);
+            console.log(
+                `Sending audio file: ${fileName}, size: ${audioBlob.size} bytes, type: ${audioBlob.type}`
+            );
 
             const response = await fetch('/api/transcribe', {
                 method: 'POST',
@@ -227,7 +251,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                 if (result.text.trim().length < 3) {
                     setVoiceState(prev => ({
                         ...prev,
-                        error: 'Enregistrement trop court. Parlez plus longtemps et plus clairement.'
+                        error: 'Enregistrement trop court. Parlez plus longtemps et plus clairement.',
                     }));
                 } else {
                     onTranscriptionComplete(result.text.trim());
@@ -235,7 +259,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             } else {
                 setVoiceState(prev => ({
                     ...prev,
-                    error: 'Aucune parole claire détectée. Essayez de parler plus fort, plus clairement et plus longtemps.'
+                    error: 'Aucune parole claire détectée. Essayez de parler plus fort, plus clairement et plus longtemps.',
                 }));
             }
         } catch (error) {
@@ -248,7 +272,7 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
 
             setVoiceState(prev => ({
                 ...prev,
-                error: errorMessage
+                error: errorMessage,
             }));
         } finally {
             setVoiceState(prev => ({ ...prev, isProcessing: false }));
@@ -272,37 +296,79 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                 disabled={isGenerating || voiceState.isProcessing}
                 className={`
                     group relative flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all duration-200 
-                    ${voiceState.isRecording
-                        ? 'bg-red-500/20 border-red-400/60 text-red-400 hover:bg-red-500/30'
-                        : voiceState.isProcessing
-                            ? 'bg-yellow-500/20 border-yellow-400/60 text-yellow-400'
-                            : 'bg-purple-500/20 border-purple-400/60 text-purple-400 hover:bg-purple-500/30'
+                    ${
+                        voiceState.isRecording
+                            ? 'bg-red-500/20 border-red-400/60 text-red-400 hover:bg-red-500/30'
+                            : voiceState.isProcessing
+                              ? 'bg-yellow-500/20 border-yellow-400/60 text-yellow-400'
+                              : 'bg-purple-500/20 border-purple-400/60 text-purple-400 hover:bg-purple-500/30'
                     }
                     border-2 hover:scale-105 shadow-lg
                     disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
                     focus:outline-none focus:ring-2 focus:ring-purple-400/50
                 `}
-                title={voiceState.isRecording ? 'Arrêter l&apos;enregistrement (min. 1,5s)' : voiceState.isProcessing ? 'Transcription en cours...' : 'Enregistrer avec la voix (parlez clairement)'}
+                title={
+                    voiceState.isRecording
+                        ? 'Arrêter l&apos;enregistrement (min. 1,5s)'
+                        : voiceState.isProcessing
+                          ? 'Transcription en cours...'
+                          : 'Enregistrer avec la voix (parlez clairement)'
+                }
             >
                 {voiceState.isProcessing ? (
-                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                        className="w-4 h-4 animate-spin"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                    >
+                        <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                        ></circle>
+                        <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                     </svg>
                 ) : voiceState.isRecording ? (
                     <>
                         <div className="w-4 h-4 bg-red-400 rounded-full animate-pulse"></div>
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm0 2h8v6H6V4z" clipRule="evenodd" />
+                        <svg
+                            className="w-4 h-4"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M6 2a2 2 0 00-2 2v6a2 2 0 002 2h8a2 2 0 002-2V4a2 2 0 00-2-2H6zm0 2h8v6H6V4z"
+                                clipRule="evenodd"
+                            />
                         </svg>
                     </>
                 ) : (
-                    <svg className="w-4 h-4 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
+                    <svg
+                        className="w-4 h-4 group-hover:scale-110 transition-transform"
+                        fill="currentColor"
+                        viewBox="0 0 20 20"
+                    >
+                        <path
+                            fillRule="evenodd"
+                            d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z"
+                            clipRule="evenodd"
+                        />
                     </svg>
                 )}
                 <span className="text-sm">
-                    {voiceState.isRecording ? 'Stop' : voiceState.isProcessing ? 'Transcription...' : 'Voix'}
+                    {voiceState.isRecording
+                        ? 'Stop'
+                        : voiceState.isProcessing
+                          ? 'Transcription...'
+                          : 'Voix'}
                 </span>
 
                 {voiceState.isRecording && (
@@ -316,9 +382,8 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
                     {voiceState.isRecording
                         ? '🎤 Parlez maintenant... (min. 1,5s)'
                         : voiceState.isProcessing
-                            ? '⏳ Transcription en cours...'
-                            : '💡 Cliquez et parlez clairement pendant au moins 1,5 seconde'
-                    }
+                          ? '⏳ Transcription en cours...'
+                          : '💡 Cliquez et parlez clairement pendant au moins 1,5 seconde'}
                 </p>
             )}
 
@@ -326,14 +391,31 @@ export const VoiceRecorder: React.FC<VoiceRecorderProps> = ({
             {voiceState.error && (
                 <div className="mt-4 p-4 bg-red-500/10 border border-red-400/30 rounded-xl">
                     <div className="flex items-start gap-3">
-                        <svg className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                        <svg
+                            className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                        >
+                            <path
+                                fillRule="evenodd"
+                                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+                                clipRule="evenodd"
+                            />
                         </svg>
                         <div>
-                            <h4 className="text-red-400 font-medium text-sm">Erreur d&apos;enregistrement</h4>
-                            <p className="text-red-300 text-sm mt-1">{voiceState.error}</p>
+                            <h4 className="text-red-400 font-medium text-sm">
+                                Erreur d&apos;enregistrement
+                            </h4>
+                            <p className="text-red-300 text-sm mt-1">
+                                {voiceState.error}
+                            </p>
                             <button
-                                onClick={() => setVoiceState(prev => ({ ...prev, error: null }))}
+                                onClick={() =>
+                                    setVoiceState(prev => ({
+                                        ...prev,
+                                        error: null,
+                                    }))
+                                }
                                 className="text-red-400 hover:text-red-300 text-xs underline mt-2 transition-colors"
                             >
                                 Fermer

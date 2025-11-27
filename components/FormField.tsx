@@ -33,13 +33,21 @@ export const FormField: React.FC<FormFieldProps> = ({
     max,
     step,
     options = [],
-    className = ""
+    className = '',
 }) => {
-    const baseInputClasses = "w-full px-3 py-2 text-sm border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+    const baseInputClasses =
+        'w-full px-3 py-2 text-sm border border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-gray-700 text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const handleChange = (
+        e: React.ChangeEvent<
+            HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+        >
+    ) => {
         if (type === 'number') {
-            const numValue = type === 'number' ? parseFloat(e.target.value) || 0 : e.target.value;
+            const numValue =
+                type === 'number'
+                    ? parseFloat(e.target.value) || 0
+                    : e.target.value;
             onChange(numValue);
         } else {
             onChange(e.target.value);
@@ -71,7 +79,7 @@ export const FormField: React.FC<FormFieldProps> = ({
                         tabIndex={tabIndex}
                         className={`${baseInputClasses} ${className}`}
                     >
-                        {options.map((option) => (
+                        {options.map(option => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
@@ -112,10 +120,15 @@ export const FormField: React.FC<FormFieldProps> = ({
 
     return (
         <div className={type === 'textarea' && rows > 3 ? 'mb-3' : 'mb-3'}>
-            <label htmlFor={id} className="block text-xs font-medium text-gray-300 mb-1">
+            <label
+                htmlFor={id}
+                className="block text-xs font-medium text-gray-300 mb-1"
+            >
                 {label}
                 {required && <span className="text-purple-400"> *</span>}
-                {hint && <span className="text-gray-500 text-xs ml-1">{hint}</span>}
+                {hint && (
+                    <span className="text-gray-500 text-xs ml-1">{hint}</span>
+                )}
             </label>
             {renderInput()}
         </div>

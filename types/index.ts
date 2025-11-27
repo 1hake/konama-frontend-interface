@@ -69,13 +69,21 @@ export interface ImageGenerationHookReturn {
     availableWorkflows: WorkflowMetadata[];
     selectedWorkflow: string | null;
     setSelectedWorkflow: (workflowId: string) => void;
-    generateImage: (prompt: string, negativePrompt?: string, options?: WorkflowGenerationOptions) => Promise<void>;
+    generateImage: (
+        prompt: string,
+        negativePrompt?: string,
+        options?: WorkflowGenerationOptions
+    ) => Promise<void>;
     resetGeneration: () => void;
     refreshWorkflows: () => Promise<void>;
 }
 
 export interface ImageGenerationFormProps {
-    onGenerate: (prompt: string, negativePrompt?: string, options?: WorkflowGenerationOptions) => Promise<void>;
+    onGenerate: (
+        prompt: string,
+        negativePrompt?: string,
+        options?: WorkflowGenerationOptions
+    ) => Promise<void>;
     isGenerating: boolean;
     error: string | null;
     availableWorkflows?: WorkflowMetadata[];
@@ -98,5 +106,6 @@ export interface GeneratedImagesDisplayProps {
     getImageUrl: (image: GeneratedImage) => string;
 }
 
-// Export funnel types
+// Export funnel and auth types
 export * from './funnel';
+export * from './auth';

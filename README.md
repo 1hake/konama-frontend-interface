@@ -23,22 +23,26 @@
 ## 🚀 Quick Setup
 
 1. **Clone the repository:**
+
 ```bash
 git clone https://github.com/1hake/image-generation-admin.git
 cd image-generation-admin
 ```
 
 2. **Install dependencies:**
+
 ```bash
 npm install
 ```
 
 3. **Configure your API endpoint:**
+
 ```bash
 cp .env.example .env.local
 ```
 
 Edit `.env.local` and set your configuration:
+
 ```env
 # ComfyUI API endpoint
 NEXT_PUBLIC_COMFY_API_URL=https://your-runpod-id.proxy.runpod.net
@@ -57,6 +61,7 @@ NEXT_PUBLIC_MOCK_WORKFLOWS=false
 > **💡 Mock Mode**: Enable mock mode to test the interface without backend services. See [MOCK_MODE.md](./MOCK_MODE.md) for details.
 
 4. **Start the development server:**
+
 ```bash
 npm run dev
 ```
@@ -68,13 +73,15 @@ npm run dev
 The application includes a voice recording feature that allows users to create prompts using their voice through OpenAI Whisper:
 
 ### Setup
+
 1. Get an OpenAI API key from [OpenAI Platform](https://platform.openai.com/api-keys)
 2. Add it to your `.env.local` file:
-   ```env
-   OPENAI_API_KEY=your_openai_api_key_here
-   ```
+    ```env
+    OPENAI_API_KEY=your_openai_api_key_here
+    ```
 
 ### Usage
+
 1. Click the **microphone button** (🎙️ "Voix") in the prompt builder
 2. **Allow microphone access** when prompted by your browser
 3. **Speak your image description** in French or English
@@ -82,6 +89,7 @@ The application includes a voice recording feature that allows users to create p
 5. The transcribed text will **automatically populate** the appropriate fields
 
 ### Features
+
 - **Real-time recording** with visual feedback
 - **Automatic transcription** using OpenAI Whisper
 - **Intelligent field mapping** based on content analysis
@@ -89,12 +97,13 @@ The application includes a voice recording feature that allows users to create p
 - **Browser microphone permissions** support
 
 ### Browser Compatibility
+
 - Chrome/Chromium (recommended)
 - Firefox
 - Safari
 - Edge
 
-*Note: Requires HTTPS in production for microphone access*
+_Note: Requires HTTPS in production for microphone access_
 
 ## 🚀 Installation
 
@@ -109,6 +118,7 @@ The application includes a voice recording feature that allows users to create p
 ## 📧 Configuration EmailJS
 
 Créer un template d'email avec les variables suivantes :
+
 - `{{from_name}}` - Nom du client
 - `{{from_email}}` - Email du client
 - `{{device_type}}` - Type d'appareil
@@ -128,11 +138,13 @@ Créer un template d'email avec les variables suivantes :
 Ce projet est configuré pour un déploiement sur Docker Swarm avec nginx et Traefik.
 
 #### Prérequis
+
 - Docker Swarm initialisé
 - Traefik configuré comme reverse proxy
 - Réseau `webnet` créé
 
 #### Construction de l'image
+
 ```bash
 # Construire l'image Docker
 docker build -t thegobc/jaitoutperdu:latest .
@@ -142,6 +154,7 @@ docker push thegobc/jaitoutperdu:latest
 ```
 
 #### Déploiement sur Swarm
+
 ```bash
 # Déployer le service
 docker stack deploy -c docker-compose.swarm.yml jaitoutperdu
@@ -152,6 +165,7 @@ docker service ps jaitoutperdu_nextjs-app
 ```
 
 #### Mise à jour
+
 ```bash
 # Construire une nouvelle version
 docker build -t thegobc/jaitoutperdu:v1.1.0 .
@@ -162,7 +176,9 @@ docker service update --image thegobc/jaitoutperdu:v1.1.0 jaitoutperdu_nextjs-ap
 ```
 
 #### Configuration nginx
+
 Le projet utilise nginx avec :
+
 - **Compression gzip** pour optimiser la bande passante
 - **Cache intelligent** pour les assets statiques
 - **Security headers** pour la sécurité
@@ -170,6 +186,7 @@ Le projet utilise nginx avec :
 - **Logging structuré**
 
 #### Monitoring et logs
+
 ```bash
 # Voir les logs du service
 docker service logs -f jaitoutperdu_nextjs-app
@@ -182,12 +199,14 @@ curl http://yourdomain.com/health
 ```
 
 ### Vercel (Développement/Test)
+
 ```bash
 npm i -g vercel
 vercel --prod
 ```
 
 ### Docker local
+
 ```bash
 # Construire et lancer localement
 docker build -t jaitoutperdu .

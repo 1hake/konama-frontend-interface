@@ -8,7 +8,7 @@ export async function GET() {
     return NextResponse.json({
         comfyApiUrl,
         message: 'Proxy test endpoint',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
     });
 }
 
@@ -21,12 +21,15 @@ export async function POST(request: NextRequest) {
             received: 'POST request',
             comfyApiUrl,
             bodyReceived: body,
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
         });
     } catch (error) {
-        return NextResponse.json({
-            error: 'Failed to parse request',
-            details: error instanceof Error ? error.message : String(error)
-        }, { status: 400 });
+        return NextResponse.json(
+            {
+                error: 'Failed to parse request',
+                details: error instanceof Error ? error.message : String(error),
+            },
+            { status: 400 }
+        );
     }
 }

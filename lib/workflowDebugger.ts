@@ -2,12 +2,18 @@
  * Workflow debugging and fixing utilities
  */
 
-import { processWorkflow, ApiWorkflow, NormalWorkflow } from './workflowConverter';
+import {
+    processWorkflow,
+    ApiWorkflow,
+    NormalWorkflow,
+} from './workflowConverter';
 
 /**
  * Analyzes a workflow and provides detailed information about potential issues
  */
-export function analyzeWorkflow(workflow: NormalWorkflow | Record<string, unknown>): {
+export function analyzeWorkflow(
+    workflow: NormalWorkflow | Record<string, unknown>
+): {
     isValid: boolean;
     issues: string[];
     recommendations: string[];
@@ -35,20 +41,37 @@ export function analyzeWorkflow(workflow: NormalWorkflow | Record<string, unknow
         return {
             isValid: false,
             issues: ['Workflow is missing or has no nodes'],
-            recommendations: ['Ensure workflow has a valid structure with nodes array'],
-            nodeAnalysis: []
+            recommendations: [
+                'Ensure workflow has a valid structure with nodes array',
+            ],
+            nodeAnalysis: [],
         };
     }
 
     // Required parameters for problematic node types
     const requiredParams: Record<string, string[]> = {
-        'FluxResolutionNode': ['megapixel', 'aspect_ratio', 'divisible_by', 'custom_ratio'],
-        'LoraLoaderModelOnly': ['lora_name', 'strength_model'],
-        'UpscaleModelLoader': ['model_name'],
-        'UltimateSDUpscale': [
-            'upscale_by', 'seed', 'steps', 'cfg', 'sampler_name', 'scheduler', 'denoise',
-            'mode_type', 'tile_width', 'tile_height', 'mask_blur', 'tile_padding'
-        ]
+        FluxResolutionNode: [
+            'megapixel',
+            'aspect_ratio',
+            'divisible_by',
+            'custom_ratio',
+        ],
+        LoraLoaderModelOnly: ['lora_name', 'strength_model'],
+        UpscaleModelLoader: ['model_name'],
+        UltimateSDUpscale: [
+            'upscale_by',
+            'seed',
+            'steps',
+            'cfg',
+            'sampler_name',
+            'scheduler',
+            'denoise',
+            'mode_type',
+            'tile_width',
+            'tile_height',
+            'mask_blur',
+            'tile_padding',
+        ],
     };
 
     // Analyze each node
@@ -80,7 +103,7 @@ export function analyzeWorkflow(workflow: NormalWorkflow | Record<string, unknow
             mode,
             status,
             hasRequiredParams,
-            missingParams: missingParams.length > 0 ? missingParams : undefined
+            missingParams: missingParams.length > 0 ? missingParams : undefined,
         });
 
         // Identify potential issues
@@ -95,22 +118,25 @@ export function analyzeWorkflow(workflow: NormalWorkflow | Record<string, unknow
     }
 
     // Count nodes by status
-    const statusCounts = nodeAnalysis.reduce((acc, node) => {
-        acc[node.status] = (acc[node.status] || 0) + 1;
-        return acc;
-    }, {} as Record<string, number>);
+    const statusCounts = nodeAnalysis.reduce(
+        (acc, node) => {
+            acc[node.status] = (acc[node.status] || 0) + 1;
+            return acc;
+        },
+        {} as Record<string, number>
+    );
 
     console.log('📊 Workflow Analysis:', {
         totalNodes: (workflow as NormalWorkflow).nodes.length,
         statusCounts,
-        issuesFound: issues.length
+        issuesFound: issues.length,
     });
 
     return {
         isValid: issues.length === 0,
         issues,
         recommendations,
-        nodeAnalysis
+        nodeAnalysis,
     };
 }
 
@@ -131,7 +157,7 @@ export function autoFixWorkflow(workflow: Record<string, unknown>): {
     const problematicTypes = [
         'UltimateSDUpscale',
         'UpscaleModelLoader',
-        'LoraLoaderModelOnly'
+        'LoraLoaderModelOnly',
     ];
 
     for (const node of fixed.nodes) {
@@ -142,15 +168,20 @@ export function autoFixWorkflow(workflow: Record<string, unknown>): {
         }
 
         // Fix missing widget values for FluxResolutionNode
-        if (node.type === 'FluxResolutionNode' && (!node.widgets_values || node.widgets_values.length < 5)) {
+        if (
+            node.type === 'FluxResolutionNode' &&
+            (!node.widgets_values || node.widgets_values.length < 5)
+        ) {
             node.widgets_values = [
-                "1.0",                    // megapixel
-                "1:1 (Square)",          // aspect_ratio
-                "64",                    // divisible_by
-                false,                   // custom_ratio
-                "1:1"                    // custom_aspect_ratio
+                '1.0', // megapixel
+                '1:1 (Square)', // aspect_ratio
+                '64', // divisible_by
+                false, // custom_ratio
+                '1:1', // custom_aspect_ratio
             ];
-            changes.push(`Fixed missing widget values for FluxResolutionNode (${node.id})`);
+            changes.push(
+                `Fixed missing widget values for FluxResolutionNode (${node.id})`
+            );
         }
     }
 
@@ -162,9 +193,16 @@ export function autoFixWorkflow(workflow: Record<string, unknown>): {
  */
 function isUIOnlyNodeType(nodeType: string): boolean {
     const uiOnlyNodes = [
-        'MarkdownNote', 'Note', 'TextNode',
-        'Label (rgthree)', 'Fast Groups Muter (rgthree)', 'Image Comparer (rgthree)',
-        'PreviewImage', 'DisplayFloat', 'DisplayInt', 'DisplayString'
+        'MarkdownNote',
+        'Note',
+        'TextNode',
+        'Label (rgthree)',
+        'Fast Groups Muter (rgthree)',
+        'Image Comparer (rgthree)',
+        'PreviewImage',
+        'DisplayFloat',
+        'DisplayInt',
+        'DisplayString',
     ];
     return uiOnlyNodes.includes(nodeType);
 }
@@ -217,14 +255,16 @@ export function validateAndFixWorkflow(workflow: Record<string, unknown>): {
         workflow: fixedWorkflow,
         apiWorkflow,
         analysis,
-        fixes
+        fixes,
     };
 }
 
 /**
  * Quick fix for the most common issue: bypass problematic upscale nodes
  */
-export function quickFixBypassUpscaleNodes(workflow: Record<string, unknown>): Record<string, unknown> {
+export function quickFixBypassUpscaleNodes(
+    workflow: Record<string, unknown>
+): Record<string, unknown> {
     const fixed = JSON.parse(JSON.stringify(workflow));
 
     if (!fixed.nodes) return fixed;
@@ -233,7 +273,7 @@ export function quickFixBypassUpscaleNodes(workflow: Record<string, unknown>): R
         'UltimateSDUpscale',
         'UpscaleModelLoader',
         'Image Comparer (rgthree)',
-        'PreviewImage'
+        'PreviewImage',
     ];
 
     for (const node of fixed.nodes) {

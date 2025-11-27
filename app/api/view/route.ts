@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import axios from 'axios';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,20 +26,16 @@ export async function GET(request: NextRequest) {
         });
 
         // Forward the request to the actual ComfyUI/RunPod endpoint
-        const response = await fetch(`${comfyApiUrl}/view?${viewParams.toString()}`, {
-            method: 'GET',
-        });
-
-        if (!response.ok) {
-            return NextResponse.json(
-                { error: 'Failed to fetch image' },
-                { status: response.status }
-            );
-        }
+        const response = await axios.get(
+            `${comfyApiUrl}/view?${viewParams.toString()}`,
+            {
+                responseType: 'arraybuffer',
+            }
+        );
 
         // Get the image data
-        const imageBuffer = await response.arrayBuffer();
-        const contentType = response.headers.get('content-type') || 'image/png';
+        const imageBuffer = response.data;
+        const contentType = response.headers['content-type'] || 'image/png';
 
         // Return the image with proper headers
         return new NextResponse(imageBuffer, {

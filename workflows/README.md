@@ -5,6 +5,7 @@ This directory contains ComfyUI workflow configurations for the image generation
 ## Overview
 
 Each workflow file defines:
+
 - **Metadata**: Description, parameters, required models, etc.
 - **Workflow Template**: The ComfyUI workflow structure
 
@@ -25,32 +26,30 @@ Create a new JSON file in this directory (e.g., `my-workflow.json`):
 
 ```json
 {
-  "metadata": {
-    "id": "my-workflow",
-    "name": "My Custom Workflow",
-    "description": "Description of what this workflow does",
-    "category": "custom",
-    "author": "Your Name",
-    "version": "1.0.0",
-    "tags": ["tag1", "tag2"],
-    "supportsNegativePrompt": true,
-    "requiredModels": [
-      "model-checkpoint.safetensors"
-    ],
-    "parameters": [
-      {
-        "name": "steps",
-        "label": "Steps",
-        "type": "slider",
-        "defaultValue": 20,
-        "min": 1,
-        "max": 50,
-        "step": 1,
-        "description": "Number of denoising steps"
-      }
-    ]
-  },
-  "workflowTemplate": "my-workflow"
+    "metadata": {
+        "id": "my-workflow",
+        "name": "My Custom Workflow",
+        "description": "Description of what this workflow does",
+        "category": "custom",
+        "author": "Your Name",
+        "version": "1.0.0",
+        "tags": ["tag1", "tag2"],
+        "supportsNegativePrompt": true,
+        "requiredModels": ["model-checkpoint.safetensors"],
+        "parameters": [
+            {
+                "name": "steps",
+                "label": "Steps",
+                "type": "slider",
+                "defaultValue": 20,
+                "min": 1,
+                "max": 50,
+                "step": 1,
+                "description": "Number of denoising steps"
+            }
+        ]
+    },
+    "workflowTemplate": "my-workflow"
 }
 ```
 
@@ -92,70 +91,74 @@ private createMyWorkflow(
 
 ## Workflow Metadata Fields
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| `id` | string | Yes | Unique identifier for the workflow |
-| `name` | string | Yes | Display name |
-| `description` | string | Yes | Brief description |
-| `category` | string | Yes | Category (e.g., "flux", "stable-diffusion", "custom") |
-| `author` | string | No | Author name |
-| `version` | string | No | Version number |
-| `tags` | string[] | No | Tags for filtering |
-| `thumbnail` | string | No | Path to thumbnail image |
-| `supportsNegativePrompt` | boolean | No | Whether it supports negative prompts |
-| `requiredModels` | string[] | No | List of required model files |
-| `parameters` | WorkflowParameter[] | No | Configurable parameters |
+| Field                    | Type                | Required | Description                                           |
+| ------------------------ | ------------------- | -------- | ----------------------------------------------------- |
+| `id`                     | string              | Yes      | Unique identifier for the workflow                    |
+| `name`                   | string              | Yes      | Display name                                          |
+| `description`            | string              | Yes      | Brief description                                     |
+| `category`               | string              | Yes      | Category (e.g., "flux", "stable-diffusion", "custom") |
+| `author`                 | string              | No       | Author name                                           |
+| `version`                | string              | No       | Version number                                        |
+| `tags`                   | string[]            | No       | Tags for filtering                                    |
+| `thumbnail`              | string              | No       | Path to thumbnail image                               |
+| `supportsNegativePrompt` | boolean             | No       | Whether it supports negative prompts                  |
+| `requiredModels`         | string[]            | No       | List of required model files                          |
+| `parameters`             | WorkflowParameter[] | No       | Configurable parameters                               |
 
 ## Parameter Types
 
 ### Slider
+
 ```json
 {
-  "name": "steps",
-  "label": "Steps",
-  "type": "slider",
-  "defaultValue": 20,
-  "min": 1,
-  "max": 50,
-  "step": 1,
-  "description": "Number of steps"
+    "name": "steps",
+    "label": "Steps",
+    "type": "slider",
+    "defaultValue": 20,
+    "min": 1,
+    "max": 50,
+    "step": 1,
+    "description": "Number of steps"
 }
 ```
 
 ### Select
+
 ```json
 {
-  "name": "sampler",
-  "label": "Sampler",
-  "type": "select",
-  "defaultValue": "euler",
-  "options": ["euler", "dpm_2", "ddim"],
-  "description": "Sampling method"
+    "name": "sampler",
+    "label": "Sampler",
+    "type": "select",
+    "defaultValue": "euler",
+    "options": ["euler", "dpm_2", "ddim"],
+    "description": "Sampling method"
 }
 ```
 
 ### Text Input
+
 ```json
 {
-  "name": "checkpoint",
-  "label": "Checkpoint",
-  "type": "text",
-  "defaultValue": "model.safetensors",
-  "description": "Model checkpoint filename"
+    "name": "checkpoint",
+    "label": "Checkpoint",
+    "type": "text",
+    "defaultValue": "model.safetensors",
+    "description": "Model checkpoint filename"
 }
 ```
 
 ### Number Input
+
 ```json
 {
-  "name": "width",
-  "label": "Width",
-  "type": "number",
-  "defaultValue": 512,
-  "min": 256,
-  "max": 2048,
-  "step": 64,
-  "description": "Image width"
+    "name": "width",
+    "label": "Width",
+    "type": "number",
+    "defaultValue": 512,
+    "min": 256,
+    "max": 2048,
+    "step": 64,
+    "description": "Image width"
 }
 ```
 
@@ -179,6 +182,7 @@ Your workflow generator function should return a ComfyUI-compatible workflow obj
 ```
 
 ### Key Points:
+
 - Node IDs must be strings
 - Connected inputs use `["node_id", output_index]` format
 - Always include `class_type` matching the ComfyUI node class

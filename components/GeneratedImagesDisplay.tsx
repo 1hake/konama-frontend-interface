@@ -8,29 +8,40 @@ interface ExtendedGeneratedImagesDisplayProps extends GeneratedImagesDisplayProp
     isGenerating?: boolean;
 }
 
-export const GeneratedImagesDisplay: React.FC<ExtendedGeneratedImagesDisplayProps> = ({
-    images,
-    getImageUrl,
-    progress,
-    isGenerating
-}) => {
+export const GeneratedImagesDisplay: React.FC<
+    ExtendedGeneratedImagesDisplayProps
+> = ({ images, getImageUrl, progress, isGenerating }) => {
     // Show progress if generating and no images yet
     if (isGenerating && images.length === 0 && progress) {
         return (
             <div className="relative w-full h-full flex flex-col items-center justify-center py-12 space-y-6">
                 <div className="text-center space-y-4 max-w-md">
                     <div className="w-32 h-32 mx-auto bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full flex items-center justify-center border-4 border-blue-500/30 animate-pulse">
-                        <svg className="w-16 h-16 text-blue-400 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        <svg
+                            className="w-16 h-16 text-blue-400 animate-spin"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
                         </svg>
                     </div>
 
                     <div className="space-y-2">
                         <p className="text-white text-lg font-semibold">
-                            {progress.status === 'queued' && '⏳ En attente dans la file...'}
-                            {progress.status === 'executing' && `🎨 Génération en cours${progress.node ? ` (${progress.node})` : ''}...`}
-                            {progress.status === 'completed' && '✅ Génération terminée !'}
-                            {progress.status === 'error' && '❌ Erreur lors de la génération'}
+                            {progress.status === 'queued' &&
+                                '⏳ En attente dans la file...'}
+                            {progress.status === 'executing' &&
+                                `🎨 Génération en cours${progress.node ? ` (${progress.node})` : ''}...`}
+                            {progress.status === 'completed' &&
+                                '✅ Génération terminée !'}
+                            {progress.status === 'error' &&
+                                '❌ Erreur lors de la génération'}
                         </p>
                         {progress.progress !== undefined && (
                             <p className="text-blue-300 text-sm font-medium">
@@ -52,7 +63,9 @@ export const GeneratedImagesDisplay: React.FC<ExtendedGeneratedImagesDisplayProp
 
                     {progress.error && (
                         <div className="mt-4 bg-red-500/10 border border-red-500/30 rounded-lg p-3">
-                            <p className="text-red-300 text-sm">⚠️ {progress.error}</p>
+                            <p className="text-red-300 text-sm">
+                                ⚠️ {progress.error}
+                            </p>
                         </div>
                     )}
                 </div>
@@ -65,13 +78,28 @@ export const GeneratedImagesDisplay: React.FC<ExtendedGeneratedImagesDisplayProp
             <div className="relative w-full h-full flex flex-col items-center justify-center py-8">
                 <div className="text-center space-y-4">
                     <div className="w-32 h-32 md:w-48 md:h-48 mx-auto bg-gradient-to-br from-purple-500/20 to-purple-700/20 rounded-full flex items-center justify-center border-4 border-purple-500/30">
-                        <svg className="w-16 h-16 md:w-24 md:h-24 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        <svg
+                            className="w-16 h-16 md:w-24 md:h-24 text-purple-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={1.5}
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            />
                         </svg>
                     </div>
                     <div>
-                        <p className="text-gray-300 text-lg md:text-xl font-semibold">Aucune image générée</p>
-                        <p className="text-gray-500 text-sm md:text-base mt-2">Remplissez le formulaire et cliquez sur &quot;Générer&quot;</p>
+                        <p className="text-gray-300 text-lg md:text-xl font-semibold">
+                            Aucune image générée
+                        </p>
+                        <p className="text-gray-500 text-sm md:text-base mt-2">
+                            Remplissez le formulaire et cliquez sur
+                            &quot;Générer&quot;
+                        </p>
                     </div>
                 </div>
             </div>
@@ -100,19 +128,33 @@ export const GeneratedImagesDisplay: React.FC<ExtendedGeneratedImagesDisplayProp
                                     download={image.filename}
                                     className="flex-1 bg-white text-black px-4 py-2.5 rounded-lg font-semibold hover:bg-gray-100 transition-colors flex items-center justify-center gap-2 shadow-lg"
                                 >
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
+                                    <svg
+                                        className="w-4 h-4"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
+                                    >
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                                            clipRule="evenodd"
+                                        />
                                     </svg>
                                     Télécharger
                                 </a>
 
                                 <button
                                     onClick={() => {
-                                        navigator.clipboard.writeText(getImageUrl(image));
+                                        navigator.clipboard.writeText(
+                                            getImageUrl(image)
+                                        );
                                     }}
                                     className="flex-1 bg-purple-600 text-white px-4 py-2.5 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center justify-center gap-2 shadow-lg"
                                 >
-                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg
+                                        className="w-4 h-4"
+                                        fill="currentColor"
+                                        viewBox="0 0 20 20"
+                                    >
                                         <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
                                         <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
                                     </svg>

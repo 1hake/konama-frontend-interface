@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextResponse } from 'next/server';
 
 // Force dynamic rendering for this API route
 export const dynamic = 'force-dynamic';
@@ -16,19 +16,19 @@ export async function GET() {
             services: {
                 database: await checkDatabase(),
                 ai: await checkAIService(),
-            }
-        }
+            },
+        };
 
-        return NextResponse.json(health, { status: 200 })
+        return NextResponse.json(health, { status: 200 });
     } catch {
         return NextResponse.json(
             {
                 status: 'error',
                 message: 'Health check failed',
-                timestamp: new Date().toISOString()
+                timestamp: new Date().toISOString(),
             },
             { status: 500 }
-        )
+        );
     }
 }
 
@@ -37,9 +37,9 @@ async function checkDatabase(): Promise<string> {
         // Add your database health check here
         // For example, if using Prisma:
         // const result = await prisma.$queryRaw`SELECT 1`
-        return 'ok'
+        return 'ok';
     } catch {
-        return 'error'
+        return 'error';
     }
 }
 
@@ -47,8 +47,8 @@ async function checkAIService(): Promise<string> {
     try {
         // Add your AI service health check here
         // For example, check if OpenAI API key is configured:
-        return process.env.OPENAI_API_KEY ? 'ok' : 'not_configured'
+        return process.env.OPENAI_API_KEY ? 'ok' : 'not_configured';
     } catch {
-        return 'error'
+        return 'error';
     }
 }

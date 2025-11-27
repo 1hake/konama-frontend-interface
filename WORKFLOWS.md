@@ -9,34 +9,36 @@ The image generation system now supports multiple ComfyUI workflows, allowing yo
 ### Components
 
 1. **Workflow Manager** (`lib/workflowManager.ts`)
-   - Central registry for all workflows
-   - Handles workflow loading and generation
-   - Provides workflow metadata
+    - Central registry for all workflows
+    - Handles workflow loading and generation
+    - Provides workflow metadata
 
 2. **Workflow Definitions** (`workflows/`)
-   - JSON files defining workflow metadata and parameters
-   - Each workflow has its own configuration file
+    - JSON files defining workflow metadata and parameters
+    - Each workflow has its own configuration file
 
 3. **Workflow Selector** (`components/WorkflowSelector.tsx`)
-   - UI component for selecting workflows
-   - Displays workflow information and status
+    - UI component for selecting workflows
+    - Displays workflow information and status
 
 4. **Type Definitions** (`types/index.ts`)
-   - TypeScript interfaces for workflows
-   - Parameter definitions and metadata structures
+    - TypeScript interfaces for workflows
+    - Parameter definitions and metadata structures
 
 ## Available Workflows
 
 ### 1. Flux Krea Dev (Default)
+
 - **ID**: `flux-krea-dev`
 - **Description**: Advanced Flux model with LoRA support and dynamic resolution
 - **Features**:
-  - Dynamic aspect ratio selection
-  - LoRA model support
-  - Configurable guidance scale
-  - High-quality output
+    - Dynamic aspect ratio selection
+    - LoRA model support
+    - Configurable guidance scale
+    - High-quality output
 
 **Parameters**:
+
 - Steps: 1-50 (default: 20)
 - Aspect Ratio: Multiple presets
 - Guidance: 1-10 (default: 3.5)
@@ -44,15 +46,17 @@ The image generation system now supports multiple ComfyUI workflows, allowing yo
 - LoRA Strength: 0-2 (default: 1.0)
 
 ### 2. Stable Diffusion 1.5 Basic
+
 - **ID**: `sd15-basic`
 - **Description**: Classic SD 1.5 workflow with KSampler
 - **Features**:
-  - Fast generation
-  - Multiple samplers
-  - Customizable dimensions
-  - CFG scale control
+    - Fast generation
+    - Multiple samplers
+    - Customizable dimensions
+    - CFG scale control
 
 **Parameters**:
+
 - Steps: 1-150 (default: 20)
 - CFG Scale: 1-20 (default: 8)
 - Width: 256-1024 (default: 512)
@@ -66,20 +70,20 @@ The image generation system now supports multiple ComfyUI workflows, allowing yo
 ### In the UI
 
 1. **Select Workflow**
-   - Open the form
-   - Look for the "🔧 Workflow ComfyUI" section at the top
-   - Click on your desired workflow
-   - The active workflow is highlighted with a purple border
+    - Open the form
+    - Look for the "🔧 Workflow ComfyUI" section at the top
+    - Click on your desired workflow
+    - The active workflow is highlighted with a purple border
 
 2. **Configure Parameters**
-   - Fill in the prompt fields
-   - Adjust workflow-specific parameters in the Technical Parameters section
-   - Parameters automatically adapt to the selected workflow
+    - Fill in the prompt fields
+    - Adjust workflow-specific parameters in the Technical Parameters section
+    - Parameters automatically adapt to the selected workflow
 
 3. **Generate Images**
-   - Click "Générer" to start generation
-   - Progress is tracked in real-time
-   - Generated images appear on the left side
+    - Click "Générer" to start generation
+    - Progress is tracked in real-time
+    - Generated images appear on the left side
 
 ### Programmatically
 
@@ -94,21 +98,21 @@ const fluxWorkflow = workflowManager.getWorkflow('flux-krea-dev');
 
 // Generate workflow JSON
 const workflowJson = workflowManager.generateWorkflowJson(
-  'flux-krea-dev',
-  'A beautiful landscape',
-  'blurry, low quality',
-  {
-    steps: 25,
-    aspectRatio: '16:9 (Landscape)',
-    guidance: 4.0
-  }
+    'flux-krea-dev',
+    'A beautiful landscape',
+    'blurry, low quality',
+    {
+        steps: 25,
+        aspectRatio: '16:9 (Landscape)',
+        guidance: 4.0,
+    }
 );
 
 // Use in generation
 await generateImage(prompt, negativePrompt, {
-  workflowId: 'flux-krea-dev',
-  steps: 25,
-  guidance: 4.0
+    workflowId: 'flux-krea-dev',
+    steps: 25,
+    guidance: 4.0,
 });
 ```
 
@@ -120,32 +124,30 @@ Create `workflows/my-workflow.json`:
 
 ```json
 {
-  "metadata": {
-    "id": "my-workflow",
-    "name": "My Custom Workflow",
-    "description": "Custom workflow for specific use case",
-    "category": "custom",
-    "author": "Your Name",
-    "version": "1.0.0",
-    "tags": ["custom", "specialized"],
-    "supportsNegativePrompt": true,
-    "requiredModels": [
-      "my-model.safetensors"
-    ],
-    "parameters": [
-      {
-        "name": "quality",
-        "label": "Quality",
-        "type": "slider",
-        "defaultValue": 80,
-        "min": 1,
-        "max": 100,
-        "step": 1,
-        "description": "Output quality"
-      }
-    ]
-  },
-  "workflowTemplate": "my-workflow"
+    "metadata": {
+        "id": "my-workflow",
+        "name": "My Custom Workflow",
+        "description": "Custom workflow for specific use case",
+        "category": "custom",
+        "author": "Your Name",
+        "version": "1.0.0",
+        "tags": ["custom", "specialized"],
+        "supportsNegativePrompt": true,
+        "requiredModels": ["my-model.safetensors"],
+        "parameters": [
+            {
+                "name": "quality",
+                "label": "Quality",
+                "type": "slider",
+                "defaultValue": 80,
+                "min": 1,
+                "max": 100,
+                "step": 1,
+                "description": "Output quality"
+            }
+        ]
+    },
+    "workflowTemplate": "my-workflow"
 }
 ```
 
@@ -197,23 +199,24 @@ private createMyWorkflow(
 
 ### Metadata Fields
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| id | string | ✓ | Unique identifier |
-| name | string | ✓ | Display name |
-| description | string | ✓ | Brief description |
-| category | string | ✓ | Category for grouping |
-| author | string | ✗ | Creator name |
-| version | string | ✗ | Version number |
-| tags | string[] | ✗ | Searchable tags |
-| thumbnail | string | ✗ | Preview image path |
-| supportsNegativePrompt | boolean | ✗ | Negative prompt support |
-| requiredModels | string[] | ✗ | Required model files |
-| parameters | Parameter[] | ✗ | Configurable parameters |
+| Field                  | Type        | Required | Description             |
+| ---------------------- | ----------- | -------- | ----------------------- |
+| id                     | string      | ✓        | Unique identifier       |
+| name                   | string      | ✓        | Display name            |
+| description            | string      | ✓        | Brief description       |
+| category               | string      | ✓        | Category for grouping   |
+| author                 | string      | ✗        | Creator name            |
+| version                | string      | ✗        | Version number          |
+| tags                   | string[]    | ✗        | Searchable tags         |
+| thumbnail              | string      | ✗        | Preview image path      |
+| supportsNegativePrompt | boolean     | ✗        | Negative prompt support |
+| requiredModels         | string[]    | ✗        | Required model files    |
+| parameters             | Parameter[] | ✗        | Configurable parameters |
 
 ### Parameter Types
 
 #### Slider
+
 ```typescript
 {
   name: "steps",
@@ -228,6 +231,7 @@ private createMyWorkflow(
 ```
 
 #### Select Dropdown
+
 ```typescript
 {
   name: "sampler",
@@ -240,6 +244,7 @@ private createMyWorkflow(
 ```
 
 #### Text Input
+
 ```typescript
 {
   name: "model",
@@ -251,6 +256,7 @@ private createMyWorkflow(
 ```
 
 #### Number Input
+
 ```typescript
 {
   name: "seed",
@@ -268,6 +274,7 @@ private createMyWorkflow(
 Get all available workflows.
 
 **Response**:
+
 ```json
 {
   "success": true,
@@ -289,36 +296,41 @@ Get all available workflows.
 Generate images using selected workflow.
 
 **Request**:
+
 ```json
 {
-  "prompt": {
-    // Generated workflow JSON
-  },
-  "client_id": "unique-id"
+    "prompt": {
+        // Generated workflow JSON
+    },
+    "client_id": "unique-id"
 }
 ```
 
 ## Best Practices
 
 ### 1. Workflow Design
+
 - Keep workflows modular and reusable
 - Use clear, descriptive node titles
 - Document required models and dependencies
 - Test workflows in ComfyUI first
 
 ### 2. Parameter Configuration
+
 - Provide sensible defaults
 - Set appropriate min/max ranges
 - Include helpful descriptions
 - Use consistent naming conventions
 
 ### 3. Error Handling
+
 - Validate required models exist
 - Check parameter bounds
 - Provide clear error messages
 - Log generation details
 
 ### 4. Performance
+
 - Optimize node connections
 - Cache workflow definitions
 - Minimize unnecessary computations
@@ -327,18 +339,21 @@ Generate images using selected workflow.
 ## Troubleshooting
 
 ### Workflow Not Appearing
+
 1. Check workflow JSON syntax
 2. Verify workflow ID is unique
 3. Ensure workflow is registered in manager
 4. Restart development server
 
 ### Generation Fails
+
 1. Check required models are installed
 2. Verify node class names match ComfyUI
 3. Validate parameter values
 4. Check ComfyUI server logs
 
 ### Parameters Not Working
+
 1. Verify parameter names in workflow generator
 2. Check parameter types and ranges
 3. Ensure proper destructuring in generator
@@ -448,6 +463,7 @@ private createUpscalerWorkflow(
 ## Support
 
 For issues or questions:
+
 1. Check existing workflows in `workflows/` directory
 2. Review workflow manager implementation
 3. Test with ComfyUI directly

@@ -21,21 +21,21 @@ export const TechnicalParameters: React.FC<TechnicalParametersProps> = ({
     loraStrength,
     negatifs,
     onFieldChange,
-    isGenerating
+    isGenerating,
 }) => {
     const aspectRatioOptions = [
-        { value: "1:1 (Square)", label: "1:1 (Carré)" },
-        { value: "16:9 (Wide)", label: "16:9 (Paysage large)" },
-        { value: "9:16 (Slim Vertical)", label: "9:16 (Vertical mince)" },
-        { value: "4:3 (Standard)", label: "4:3 (Standard)" },
-        { value: "3:4 (Portrait)", label: "3:4 (Portrait)" },
-        { value: "21:9 (Ultrawide)", label: "21:9 (Ultra-large)" }
+        { value: '1:1 (Square)', label: '1:1 (Carré)' },
+        { value: '16:9 (Wide)', label: '16:9 (Paysage large)' },
+        { value: '9:16 (Slim Vertical)', label: '9:16 (Vertical mince)' },
+        { value: '4:3 (Standard)', label: '4:3 (Standard)' },
+        { value: '3:4 (Portrait)', label: '3:4 (Portrait)' },
+        { value: '21:9 (Ultrawide)', label: '21:9 (Ultra-large)' },
     ];
 
     const loraOptions = [
-        { value: "CynthiaArch.safetensors", label: "CynthiaArch" },
-        { value: "p1x4r0ma_woman.safetensors", label: "Pixaroma" },
-        { value: "", label: "Aucun" }
+        { value: 'CynthiaArch.safetensors', label: 'CynthiaArch' },
+        { value: 'p1x4r0ma_woman.safetensors', label: 'Pixaroma' },
+        { value: '', label: 'Aucun' },
     ];
 
     return (
@@ -47,7 +47,9 @@ export const TechnicalParameters: React.FC<TechnicalParametersProps> = ({
                         id="parametres"
                         label="Paramètres de rendu"
                         value={parametres}
-                        onChange={(value) => onFieldChange('parametres', value as string)}
+                        onChange={value =>
+                            onFieldChange('parametres', value as string)
+                        }
                         disabled={isGenerating}
                         tabIndex={8}
                         placeholder="Format, qualité..."
@@ -60,7 +62,7 @@ export const TechnicalParameters: React.FC<TechnicalParametersProps> = ({
                     label="Étapes"
                     type="number"
                     value={steps}
-                    onChange={(value) => onFieldChange('steps', value as number)}
+                    onChange={value => onFieldChange('steps', value as number)}
                     disabled={isGenerating}
                     tabIndex={9}
                     placeholder="20"
@@ -74,7 +76,9 @@ export const TechnicalParameters: React.FC<TechnicalParametersProps> = ({
                     label="Guidance"
                     type="number"
                     value={guidance}
-                    onChange={(value) => onFieldChange('guidance', value as number)}
+                    onChange={value =>
+                        onFieldChange('guidance', value as number)
+                    }
                     disabled={isGenerating}
                     tabIndex={11}
                     placeholder="3.5"
@@ -90,7 +94,9 @@ export const TechnicalParameters: React.FC<TechnicalParametersProps> = ({
                         label="Format d'image"
                         type="select"
                         value={aspectRatio}
-                        onChange={(value) => onFieldChange('aspectRatio', value as string)}
+                        onChange={value =>
+                            onFieldChange('aspectRatio', value as string)
+                        }
                         disabled={isGenerating}
                         tabIndex={10}
                         hint="Ratio largeur/hauteur"
@@ -103,7 +109,9 @@ export const TechnicalParameters: React.FC<TechnicalParametersProps> = ({
                     label="LoRA"
                     type="select"
                     value={loraName}
-                    onChange={(value) => onFieldChange('loraName', value as string)}
+                    onChange={value =>
+                        onFieldChange('loraName', value as string)
+                    }
                     disabled={isGenerating}
                     tabIndex={12}
                     hint="Style"
@@ -115,7 +123,9 @@ export const TechnicalParameters: React.FC<TechnicalParametersProps> = ({
                     label="Force LoRA"
                     type="number"
                     value={loraStrength}
-                    onChange={(value) => onFieldChange('loraStrength', value as number)}
+                    onChange={value =>
+                        onFieldChange('loraStrength', value as number)
+                    }
                     disabled={isGenerating}
                     tabIndex={13}
                     placeholder="1.0"
@@ -131,7 +141,9 @@ export const TechnicalParameters: React.FC<TechnicalParametersProps> = ({
                         label="Négatifs (à éviter)"
                         type="textarea"
                         value={negatifs}
-                        onChange={(value) => onFieldChange('negatifs', value as string)}
+                        onChange={value =>
+                            onFieldChange('negatifs', value as string)
+                        }
                         disabled={isGenerating}
                         rows={2}
                         tabIndex={14}

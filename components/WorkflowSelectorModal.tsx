@@ -26,12 +26,16 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
     onRefresh,
 }) => {
     const [isRefreshing, setIsRefreshing] = useState(false);
-    const [expandedWorkflows, setExpandedWorkflows] = useState<Set<string>>(new Set());
+    const [expandedWorkflows, setExpandedWorkflows] = useState<Set<string>>(
+        new Set()
+    );
 
     const handleSelectWorkflow = (workflowId: string) => {
         // Toggle workflow in multi-select
         if (selectedWorkflows.includes(workflowId)) {
-            const newSelection = selectedWorkflows.filter(id => id !== workflowId);
+            const newSelection = selectedWorkflows.filter(
+                id => id !== workflowId
+            );
             onWorkflowsChange(newSelection);
             // If only one left, also set it as the single workflow
             if (newSelection.length === 1) {
@@ -156,14 +160,50 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                             <span>Select Workflows</span>
                                         </Dialog.Title>
                                         <div className="text-gray-400 text-sm mt-1 space-y-1">
-                                            <p>Choose one or multiple workflows • {selectedWorkflows.length} selected • {selectedWorkflows.length >= 2 ? '🎯 Funnel Mode' : '⚡ Single Mode'}</p>
+                                            <p>
+                                                Choose one or multiple workflows
+                                                • {selectedWorkflows.length}{' '}
+                                                selected •{' '}
+                                                {selectedWorkflows.length >= 2
+                                                    ? '🎯 Funnel Mode'
+                                                    : '⚡ Single Mode'}
+                                            </p>
                                             {workflows.length > 0 && (
                                                 <div className="flex items-center gap-2 text-xs">
                                                     <span>Sources:</span>
-                                                    {workflows.some(w => w.source === 'api') && <span className="text-green-400">● API</span>}
-                                                    {workflows.some(w => w.source === 'local') && <span className="text-blue-400">● Local</span>}
-                                                    {workflows.some(w => w.source === 'auto-detected') && <span className="text-yellow-400">● Auto-detected</span>}
-                                                    {workflows.some(w => w.source === 'fallback') && <span className="text-red-400">● Fallback</span>}
+                                                    {workflows.some(
+                                                        w => w.source === 'api'
+                                                    ) && (
+                                                        <span className="text-green-400">
+                                                            ● API
+                                                        </span>
+                                                    )}
+                                                    {workflows.some(
+                                                        w =>
+                                                            w.source === 'local'
+                                                    ) && (
+                                                        <span className="text-blue-400">
+                                                            ● Local
+                                                        </span>
+                                                    )}
+                                                    {workflows.some(
+                                                        w =>
+                                                            w.source ===
+                                                            'auto-detected'
+                                                    ) && (
+                                                        <span className="text-yellow-400">
+                                                            ● Auto-detected
+                                                        </span>
+                                                    )}
+                                                    {workflows.some(
+                                                        w =>
+                                                            w.source ===
+                                                            'fallback'
+                                                    ) && (
+                                                        <span className="text-red-400">
+                                                            ● Fallback
+                                                        </span>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
@@ -183,7 +223,12 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
                                                 >
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth={2}
+                                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                                    />
                                                 </svg>
                                             </button>
                                         )}
@@ -192,8 +237,18 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                             className="rounded-lg p-2 text-gray-400 hover:text-white hover:bg-gray-700 transition-colors"
                                             onClick={onClose}
                                         >
-                                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                            <svg
+                                                className="w-6 h-6"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M6 18L18 6M6 6l12 12"
+                                                />
                                             </svg>
                                         </button>
                                     </div>
@@ -202,9 +257,12 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                 {/* Actions Bar */}
                                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-700">
                                     <div className="text-sm text-gray-400">
-                                        {selectedWorkflows.length === 0 && 'Select workflows to begin'}
-                                        {selectedWorkflows.length === 1 && 'Single workflow selected - Standard mode'}
-                                        {selectedWorkflows.length >= 2 && `${selectedWorkflows.length} workflows - Funnel mode activated`}
+                                        {selectedWorkflows.length === 0 &&
+                                            'Select workflows to begin'}
+                                        {selectedWorkflows.length === 1 &&
+                                            'Single workflow selected - Standard mode'}
+                                        {selectedWorkflows.length >= 2 &&
+                                            `${selectedWorkflows.length} workflows - Funnel mode activated`}
                                     </div>
                                     <div className="flex gap-2">
                                         <button
@@ -228,31 +286,53 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                 {selectedWorkflowData && (
                                     <div className="mb-6 p-4 bg-purple-900/30 border-2 border-purple-500/50 rounded-xl">
                                         <div className="flex items-center gap-2 text-sm text-purple-300 mb-2">
-                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            <svg
+                                                className="w-4 h-4"
+                                                fill="currentColor"
+                                                viewBox="0 0 20 20"
+                                            >
+                                                <path
+                                                    fillRule="evenodd"
+                                                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                    clipRule="evenodd"
+                                                />
                                             </svg>
-                                            <span className="font-semibold">Workflow actuel</span>
+                                            <span className="font-semibold">
+                                                Workflow actuel
+                                            </span>
                                         </div>
-                                        <p className="text-white font-bold text-lg">{selectedWorkflowData.name}</p>
-                                        <p className="text-gray-300 text-sm">{selectedWorkflowData.description}</p>
+                                        <p className="text-white font-bold text-lg">
+                                            {selectedWorkflowData.name}
+                                        </p>
+                                        <p className="text-gray-300 text-sm">
+                                            {selectedWorkflowData.description}
+                                        </p>
                                     </div>
                                 )}
 
                                 {/* Workflows Grid */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                                    {workflows.map((workflow) => {
-                                        const isSelected = selectedWorkflows.includes(workflow.id);
+                                    {workflows.map(workflow => {
+                                        const isSelected =
+                                            selectedWorkflows.includes(
+                                                workflow.id
+                                            );
                                         return (
                                             <button
                                                 key={workflow.id}
                                                 type="button"
-                                                onClick={() => handleSelectWorkflow(workflow.id)}
+                                                onClick={() =>
+                                                    handleSelectWorkflow(
+                                                        workflow.id
+                                                    )
+                                                }
                                                 className={`
                                                 group text-left p-5 rounded-xl border-2 transition-all duration-200
-                                                ${isSelected
+                                                ${
+                                                    isSelected
                                                         ? 'border-purple-500 bg-gray-700 shadow-lg shadow-purple-500/20'
                                                         : 'border-gray-700 bg-gray-800/50 hover:border-purple-400 hover:bg-gray-700/70 hover:shadow-lg'
-                                                    }
+                                                }
                                             `}
                                             >
                                                 <div className="flex items-start justify-between gap-3 mb-3">
@@ -261,43 +341,70 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                                             <h4 className="font-bold text-white text-lg group-hover:text-purple-300 transition-colors">
                                                                 {workflow.name}
                                                             </h4>
-                                                            {getSourceBadge(workflow.source)}
+                                                            {getSourceBadge(
+                                                                workflow.source
+                                                            )}
                                                         </div>
                                                         <p className="text-gray-400 text-sm leading-relaxed">
-                                                            {workflow.description}
+                                                            {
+                                                                workflow.description
+                                                            }
                                                         </p>
                                                         {workflow.lastFetched && (
                                                             <p className="text-xs text-gray-500 mt-1">
-                                                                Last updated: {new Date(workflow.lastFetched).toLocaleString()}
+                                                                Last updated:{' '}
+                                                                {new Date(
+                                                                    workflow.lastFetched
+                                                                ).toLocaleString()}
                                                             </p>
                                                         )}
                                                     </div>
 
                                                     <div className="flex-shrink-0 flex items-center gap-2">
-                                                        {workflow.availableNodes && workflow.availableNodes.length > 0 && (
-                                                            <button
-                                                                type="button"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation();
-                                                                    toggleWorkflowDetails(workflow.id);
-                                                                }}
-                                                                className="p-1 text-gray-400 hover:text-purple-400 transition-colors"
-                                                                title="View node details"
-                                                            >
-                                                                <svg
-                                                                    className={`w-4 h-4 transition-transform ${expandedWorkflows.has(workflow.id) ? 'rotate-180' : ''}`}
-                                                                    fill="none"
-                                                                    stroke="currentColor"
-                                                                    viewBox="0 0 24 24"
+                                                        {workflow.availableNodes &&
+                                                            workflow
+                                                                .availableNodes
+                                                                .length > 0 && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={e => {
+                                                                        e.stopPropagation();
+                                                                        toggleWorkflowDetails(
+                                                                            workflow.id
+                                                                        );
+                                                                    }}
+                                                                    className="p-1 text-gray-400 hover:text-purple-400 transition-colors"
+                                                                    title="View node details"
                                                                 >
-                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                                                </svg>
-                                                            </button>
-                                                        )}
+                                                                    <svg
+                                                                        className={`w-4 h-4 transition-transform ${expandedWorkflows.has(workflow.id) ? 'rotate-180' : ''}`}
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth={
+                                                                                2
+                                                                            }
+                                                                            d="M19 9l-7 7-7-7"
+                                                                        />
+                                                                    </svg>
+                                                                </button>
+                                                            )}
                                                         {isSelected ? (
                                                             <div className="w-7 h-7 rounded-full bg-purple-500 flex items-center justify-center shadow-lg">
-                                                                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                                <svg
+                                                                    className="w-5 h-5 text-white"
+                                                                    fill="currentColor"
+                                                                    viewBox="0 0 20 20"
+                                                                >
+                                                                    <path
+                                                                        fillRule="evenodd"
+                                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                                        clipRule="evenodd"
+                                                                    />
                                                                 </svg>
                                                             </div>
                                                         ) : (
@@ -311,11 +418,16 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                                     <span className="px-2.5 py-1 bg-gray-600/50 text-gray-300 text-xs rounded-md font-medium">
                                                         {workflow.category}
                                                     </span>
-                                                    {workflow.tags?.slice(0, 3).map((tag) => (
-                                                        <span key={tag} className="px-2.5 py-1 bg-blue-900/30 text-blue-300 text-xs rounded-md">
-                                                            #{tag}
-                                                        </span>
-                                                    ))}
+                                                    {workflow.tags
+                                                        ?.slice(0, 3)
+                                                        .map(tag => (
+                                                            <span
+                                                                key={tag}
+                                                                className="px-2.5 py-1 bg-blue-900/30 text-blue-300 text-xs rounded-md"
+                                                            >
+                                                                #{tag}
+                                                            </span>
+                                                        ))}
                                                 </div>
 
                                                 {/* Metadata */}
@@ -323,65 +435,145 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                                     {workflow.author && (
                                                         <p className="flex items-center gap-1.5">
                                                             <span>👤</span>
-                                                            <span>{workflow.author}</span>
+                                                            <span>
+                                                                {
+                                                                    workflow.author
+                                                                }
+                                                            </span>
                                                         </p>
                                                     )}
                                                     {workflow.version && (
                                                         <p className="flex items-center gap-1.5">
                                                             <span>📦</span>
-                                                            <span>Version {workflow.version}</span>
+                                                            <span>
+                                                                Version{' '}
+                                                                {
+                                                                    workflow.version
+                                                                }
+                                                            </span>
                                                         </p>
                                                     )}
                                                     {workflow.supportsNegativePrompt && (
                                                         <p className="flex items-center gap-1.5 text-green-400">
                                                             <span>✅</span>
-                                                            <span>Prompt négatif supporté</span>
+                                                            <span>
+                                                                Prompt négatif
+                                                                supporté
+                                                            </span>
                                                         </p>
                                                     )}
                                                 </div>
 
                                                 {/* Required Models */}
-                                                {workflow.requiredModels && workflow.requiredModels.length > 0 && (
-                                                    <div className="mt-3 pt-3 border-t border-gray-600">
-                                                        <p className="text-xs font-semibold text-gray-300 mb-1.5">Modèles requis:</p>
-                                                        <div className="space-y-1">
-                                                            {workflow.requiredModels.slice(0, 2).map((model, idx) => (
-                                                                <p key={idx} className="text-xs text-gray-400 font-mono truncate">
-                                                                    • {model}
-                                                                </p>
-                                                            ))}
-                                                            {workflow.requiredModels.length > 2 && (
-                                                                <p className="text-xs text-gray-500">
-                                                                    +{workflow.requiredModels.length - 2} autres...
-                                                                </p>
-                                                            )}
+                                                {workflow.requiredModels &&
+                                                    workflow.requiredModels
+                                                        .length > 0 && (
+                                                        <div className="mt-3 pt-3 border-t border-gray-600">
+                                                            <p className="text-xs font-semibold text-gray-300 mb-1.5">
+                                                                Modèles requis:
+                                                            </p>
+                                                            <div className="space-y-1">
+                                                                {workflow.requiredModels
+                                                                    .slice(0, 2)
+                                                                    .map(
+                                                                        (
+                                                                            model,
+                                                                            idx
+                                                                        ) => (
+                                                                            <p
+                                                                                key={
+                                                                                    idx
+                                                                                }
+                                                                                className="text-xs text-gray-400 font-mono truncate"
+                                                                            >
+                                                                                •{' '}
+                                                                                {
+                                                                                    model
+                                                                                }
+                                                                            </p>
+                                                                        )
+                                                                    )}
+                                                                {workflow
+                                                                    .requiredModels
+                                                                    .length >
+                                                                    2 && (
+                                                                    <p className="text-xs text-gray-500">
+                                                                        +
+                                                                        {workflow
+                                                                            .requiredModels
+                                                                            .length -
+                                                                            2}{' '}
+                                                                        autres...
+                                                                    </p>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )}
+                                                    )}
 
                                                 {/* Available Nodes - Expandable */}
-                                                {workflow.availableNodes && workflow.availableNodes.length > 0 && expandedWorkflows.has(workflow.id) && (
-                                                    <div className="mt-3 pt-3 border-t border-gray-600">
-                                                        <div className="flex items-center justify-between mb-2">
-                                                            <p className="text-xs font-semibold text-gray-300">Nœuds ComfyUI disponibles:</p>
-                                                            <span className="text-xs text-gray-500 bg-gray-700 px-2 py-0.5 rounded">
-                                                                {workflow.availableNodes.length} nœuds
-                                                            </span>
-                                                        </div>
-                                                        <div className="max-h-24 overflow-y-auto space-y-1 custom-scrollbar">
-                                                            {workflow.availableNodes.slice(0, 15).map((node, idx) => (
-                                                                <p key={idx} className="text-xs text-gray-400 font-mono">
-                                                                    • {node}
+                                                {workflow.availableNodes &&
+                                                    workflow.availableNodes
+                                                        .length > 0 &&
+                                                    expandedWorkflows.has(
+                                                        workflow.id
+                                                    ) && (
+                                                        <div className="mt-3 pt-3 border-t border-gray-600">
+                                                            <div className="flex items-center justify-between mb-2">
+                                                                <p className="text-xs font-semibold text-gray-300">
+                                                                    Nœuds
+                                                                    ComfyUI
+                                                                    disponibles:
                                                                 </p>
-                                                            ))}
-                                                            {workflow.availableNodes.length > 15 && (
-                                                                <p className="text-xs text-gray-500">
-                                                                    +{workflow.availableNodes.length - 15} autres nœuds...
-                                                                </p>
-                                                            )}
+                                                                <span className="text-xs text-gray-500 bg-gray-700 px-2 py-0.5 rounded">
+                                                                    {
+                                                                        workflow
+                                                                            .availableNodes
+                                                                            .length
+                                                                    }{' '}
+                                                                    nœuds
+                                                                </span>
+                                                            </div>
+                                                            <div className="max-h-24 overflow-y-auto space-y-1 custom-scrollbar">
+                                                                {workflow.availableNodes
+                                                                    .slice(
+                                                                        0,
+                                                                        15
+                                                                    )
+                                                                    .map(
+                                                                        (
+                                                                            node,
+                                                                            idx
+                                                                        ) => (
+                                                                            <p
+                                                                                key={
+                                                                                    idx
+                                                                                }
+                                                                                className="text-xs text-gray-400 font-mono"
+                                                                            >
+                                                                                •{' '}
+                                                                                {
+                                                                                    node
+                                                                                }
+                                                                            </p>
+                                                                        )
+                                                                    )}
+                                                                {workflow
+                                                                    .availableNodes
+                                                                    .length >
+                                                                    15 && (
+                                                                    <p className="text-xs text-gray-500">
+                                                                        +
+                                                                        {workflow
+                                                                            .availableNodes
+                                                                            .length -
+                                                                            15}{' '}
+                                                                        autres
+                                                                        nœuds...
+                                                                    </p>
+                                                                )}
+                                                            </div>
                                                         </div>
-                                                    </div>
-                                                )}
+                                                    )}
                                             </button>
                                         );
                                     })}

@@ -177,6 +177,7 @@ Step Details:
 ## Color Coding
 
 ### Status Colors
+
 - 🟢 **Green** - Completed steps/actions
 - 🟡 **Yellow** - Generating/in-progress
 - 🟣 **Purple** - Selected/active/current
@@ -184,6 +185,7 @@ Step Details:
 - 🔴 **Red** - Errors/delete actions
 
 ### UI Elements
+
 - **Glass Effect** - Semi-transparent panels with blur
 - **Purple Gradient** - Primary actions (Create, Generate)
 - **White/20 Borders** - Container outlines
@@ -192,6 +194,7 @@ Step Details:
 ## Responsive Layout
 
 ### Desktop (>1024px)
+
 ```
 ┌────────────────────────────────────────┐
 │         2/3 Width          │  1/3 Width│
@@ -201,6 +204,7 @@ Step Details:
 ```
 
 ### Mobile (<1024px)
+
 ```
 ┌──────────────────────┐
 │   Image Viewer       │
@@ -214,6 +218,7 @@ Step Details:
 ## Interaction Flows
 
 ### Creating a Funnel
+
 ```
 1. Click "New Funnel"
    ↓
@@ -231,6 +236,7 @@ Step Details:
 ```
 
 ### Refining Images
+
 ```
 1. Select images in grid (click to toggle)
    ↓
@@ -250,6 +256,7 @@ Step Details:
 ```
 
 ### Navigating Steps
+
 ```
 1. View timeline at top
    ↓
@@ -265,16 +272,19 @@ Step Details:
 ## Visual Feedback
 
 ### Loading States
+
 - **Spinner icon** - During generation
 - **Progress text** - "Generating..." with workflow name
 - **Pulse animation** - On timeline step circle
 
 ### Success States
+
 - **Checkmark icon** - Completed steps
 - **Green text** - "Modified" in refinement panel
 - **Count badges** - Selection counts
 
 ### Interactive States
+
 - **Hover effects** - Brightness increase, scale
 - **Active states** - Border highlights, shadows
 - **Disabled states** - Opacity 50%, no pointer
@@ -297,6 +307,7 @@ Step Details:
 ---
 
 **Note**: All UI uses the existing Fuzdi Studio design system with:
+
 - Glass morphism effects
 - Purple/Pink gradients
 - Dark theme (gray-950 to black)

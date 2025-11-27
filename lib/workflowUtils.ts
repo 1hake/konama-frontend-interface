@@ -2,14 +2,20 @@
  * Utility functions for workflow conversion
  */
 
-import { processWorkflow, ApiWorkflow, ApiWorkflowNode } from './workflowConverter';
+import {
+    processWorkflow,
+    ApiWorkflow,
+    ApiWorkflowNode,
+} from './workflowConverter';
 
 /**
  * Converts any workflow input to API format with error handling
  * @param input - Workflow in normal format, JSON string, or file path
  * @returns Promise<ApiWorkflow | null>
  */
-export async function convertToApiFormat(input: unknown): Promise<ApiWorkflow | null> {
+export async function convertToApiFormat(
+    input: unknown
+): Promise<ApiWorkflow | null> {
     try {
         // Handle different input types
         let workflow = input;
@@ -45,8 +51,12 @@ export function isNormalFormat(workflow: unknown): boolean {
     const workflowObj = workflow as Record<string, unknown>;
 
     // Normal format has nodes and links arrays
-    if (workflowObj.nodes && Array.isArray(workflowObj.nodes) &&
-        workflowObj.links && Array.isArray(workflowObj.links)) {
+    if (
+        workflowObj.nodes &&
+        Array.isArray(workflowObj.nodes) &&
+        workflowObj.links &&
+        Array.isArray(workflowObj.links)
+    ) {
         return true;
     }
 
@@ -65,7 +75,9 @@ export function isNormalFormat(workflow: unknown): boolean {
  * @param workflow - Workflow in any format
  * @returns Promise<ApiWorkflow | null>
  */
-export async function ensureApiFormat(workflow: Record<string, unknown>): Promise<ApiWorkflow | null> {
+export async function ensureApiFormat(
+    workflow: Record<string, unknown>
+): Promise<ApiWorkflow | null> {
     if (!workflow) {
         return null;
     }
@@ -81,7 +93,7 @@ export async function ensureApiFormat(workflow: Record<string, unknown>): Promis
 
 /**
  * Creates a ready-to-send payload for ComfyUI API
- * @param workflow - Workflow in any format  
+ * @param workflow - Workflow in any format
  * @param clientId - Optional client ID for tracking
  * @returns Promise<object | null> - Ready to send to /prompt endpoint
  */
@@ -89,7 +101,6 @@ export async function createComfyPayload(
     workflow: Record<string, unknown>,
     clientId?: string
 ): Promise<{ prompt: ApiWorkflow; client_id?: string } | null> {
-
     const apiWorkflow = await ensureApiFormat(workflow);
 
     if (!apiWorkflow) {
@@ -97,7 +108,7 @@ export async function createComfyPayload(
     }
 
     const payload: { prompt: ApiWorkflow; client_id?: string } = {
-        prompt: apiWorkflow
+        prompt: apiWorkflow,
     };
 
     if (clientId) {
@@ -150,13 +161,16 @@ export function updatePrompts(
     const modified = { ...apiWorkflow };
 
     for (const [nodeId, newText] of Object.entries(updates)) {
-        if (modified[nodeId] && modified[nodeId].class_type === 'CLIPTextEncode') {
+        if (
+            modified[nodeId] &&
+            modified[nodeId].class_type === 'CLIPTextEncode'
+        ) {
             modified[nodeId] = {
                 ...modified[nodeId],
                 inputs: {
                     ...modified[nodeId].inputs,
-                    text: newText
-                }
+                    text: newText,
+                },
             };
         }
     }
@@ -199,8 +213,8 @@ export function updateNodeParams(
                 ...node,
                 inputs: {
                     ...node.inputs,
-                    ...updates
-                }
+                    ...updates,
+                },
             };
         }
     }

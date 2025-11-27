@@ -13,12 +13,14 @@ export const CoreElements: React.FC<CoreElementsProps> = ({
     contexte,
     decor,
     onFieldChange,
-    isGenerating
+    isGenerating,
 }) => {
     return (
         <div className="bg-gray-800 p-5 rounded-xl shadow-lg">
             <h3 className="text-base font-semibold text-purple-300 mb-3 flex items-center">
-                <span className="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2">1</span>
+                <span className="bg-purple-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs mr-2">
+                    1
+                </span>
                 Éléments Principaux
             </h3>
 
@@ -26,7 +28,7 @@ export const CoreElements: React.FC<CoreElementsProps> = ({
                 id="sujet"
                 label="Sujet"
                 value={sujet}
-                onChange={(value) => onFieldChange('sujet', value as string)}
+                onChange={value => onFieldChange('sujet', value as string)}
                 disabled={isGenerating}
                 tabIndex={1}
                 placeholder="Sujet principal..."
@@ -38,7 +40,7 @@ export const CoreElements: React.FC<CoreElementsProps> = ({
                 id="contexte"
                 label="Contexte / Action"
                 value={contexte}
-                onChange={(value) => onFieldChange('contexte', value as string)}
+                onChange={value => onFieldChange('contexte', value as string)}
                 disabled={isGenerating}
                 tabIndex={2}
                 placeholder="Contexte ou action..."
@@ -49,7 +51,7 @@ export const CoreElements: React.FC<CoreElementsProps> = ({
                 id="decor"
                 label="Décor / Arrière-plan"
                 value={decor}
-                onChange={(value) => onFieldChange('decor', value as string)}
+                onChange={value => onFieldChange('decor', value as string)}
                 disabled={isGenerating}
                 tabIndex={3}
                 placeholder="Environnement et lieu..."

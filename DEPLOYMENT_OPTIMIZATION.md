@@ -3,20 +3,24 @@
 ## Issues Fixed
 
 ### 1. Build Performance Problems
+
 - **Issue**: Build process getting stuck during `npm ci` and `npm run build`
 - **Solution**: Added optimized npm configurations and build flags
 
 ### 2. Baseline Browser Mapping Warning
+
 - **Issue**: `baseline-browser-mapping` data was outdated
 - **Solution**: Added latest version to devDependencies
 
 ### 3. Build Timeouts
+
 - **Issue**: Network timeouts during npm installs
 - **Solution**: Configured npm with extended timeouts and retry logic
 
 ## Optimizations Applied
 
 ### Docker Build Optimizations
+
 ```dockerfile
 # Enhanced npm configuration for better network handling
 RUN npm config set fetch-timeout 300000 && \
@@ -29,6 +33,7 @@ RUN npm ci --prefer-offline --no-audit --no-fund
 ```
 
 ### Next.js Build Optimizations
+
 ```javascript
 // next.config.mjs optimizations
 experimental: {
@@ -44,6 +49,7 @@ webpack: (config, { isServer }) => {
 ```
 
 ### Package.json Optimizations
+
 - Added `baseline-browser-mapping@latest` to devDependencies
 - Updated build script to set `NODE_ENV=production`
 - Added production-specific npm flags
@@ -51,12 +57,14 @@ webpack: (config, { isServer }) => {
 ## Deployment Instructions
 
 ### For Local Development
+
 ```bash
 # Use the optimized development build
 OPENAI_API_KEY="$(grep OPENAI_API_KEY .env.local | cut -d '=' -f2)" docker-compose up -d --build
 ```
 
 ### For Production Deployment
+
 ```bash
 # Option 1: Use the build script
 ./build-production.sh 1.0.0 push
@@ -70,16 +78,17 @@ docker stack deploy -c docker-compose.swarm.yml image-generation-admin
 
 ## Performance Improvements
 
-| Metric | Before | After | Improvement |
-|--------|---------|--------|-------------|
-| Build Time | 300s+ (often failed) | ~72s | ~75% faster |
-| npm install | Frequent timeouts | Reliable | 100% success rate |
-| Image Size | Not optimized | Optimized | Smaller production image |
-| Startup Time | Slow | ~181ms | Faster startup |
+| Metric       | Before               | After     | Improvement              |
+| ------------ | -------------------- | --------- | ------------------------ |
+| Build Time   | 300s+ (often failed) | ~72s      | ~75% faster              |
+| npm install  | Frequent timeouts    | Reliable  | 100% success rate        |
+| Image Size   | Not optimized        | Optimized | Smaller production image |
+| Startup Time | Slow                 | ~181ms    | Faster startup           |
 
 ## Monitoring Build Performance
 
 ### Check Build Logs
+
 ```bash
 # During build
 docker build --progress=plain --target production .
@@ -89,6 +98,7 @@ docker logs <container-name>
 ```
 
 ### Health Checks
+
 ```bash
 # Test health endpoint
 curl -f http://localhost:3000/api/health
@@ -101,12 +111,14 @@ docker-compose ps
 ## Troubleshooting
 
 ### If Build Still Fails
+
 1. **Clear Docker Cache**: `docker system prune -a`
 2. **Check Network**: Ensure stable internet connection
 3. **Use Build Script**: `./build-production.sh` has optimized settings
 4. **Check Logs**: `docker logs --tail=50 <container-name>`
 
 ### Common Issues
+
 - **npm TIMEOUT**: Network configuration issues → Use build script
 - **ENOSPC**: Disk space full → Clean Docker volumes
 - **Permission Denied**: File permissions → Check Dockerfile USER settings

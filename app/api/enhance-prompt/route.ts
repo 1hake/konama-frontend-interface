@@ -38,24 +38,27 @@ ${currentFields ? `Voici les champs actuels à améliorer : ${JSON.stringify(cur
 
 Réponds uniquement avec le JSON, sans autre texte.`;
 
-        const response = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-            },
-            body: JSON.stringify({
-                model: 'gpt-4o-mini',
-                messages: [
-                    {
-                        role: 'user',
-                        content: prompt,
-                    },
-                ],
-                temperature: 0.8,
-                max_tokens: 1000,
-            }),
-        });
+        const response = await fetch(
+            'https://api.openai.com/v1/chat/completions',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        {
+                            role: 'user',
+                            content: prompt,
+                        },
+                    ],
+                    temperature: 0.8,
+                    max_tokens: 1000,
+                }),
+            }
+        );
 
         if (!response.ok) {
             throw new Error(`OpenAI API error: ${response.statusText}`);
@@ -78,15 +81,31 @@ Réponds uniquement avec le JSON, sans autre texte.`;
             if (jsonMatch) {
                 suggestions = JSON.parse(jsonMatch[0]);
             } else {
-                throw new Error('Failed to parse suggestions from OpenAI response');
+                throw new Error(
+                    'Failed to parse suggestions from OpenAI response'
+                );
             }
         }
 
         // Validate the structure
-        const requiredFields = ['sujet', 'contexte', 'decor', 'composition', 'technique', 'ambiance', 'details', 'parametres'];
+        const requiredFields = [
+            'sujet',
+            'contexte',
+            'decor',
+            'composition',
+            'technique',
+            'ambiance',
+            'details',
+            'parametres',
+        ];
         for (const field of requiredFields) {
-            if (!suggestions[field as keyof FieldSuggestions] || !Array.isArray(suggestions[field as keyof FieldSuggestions])) {
-                throw new Error(`Invalid suggestions structure: missing or invalid field ${field}`);
+            if (
+                !suggestions[field as keyof FieldSuggestions] ||
+                !Array.isArray(suggestions[field as keyof FieldSuggestions])
+            ) {
+                throw new Error(
+                    `Invalid suggestions structure: missing or invalid field ${field}`
+                );
             }
         }
 

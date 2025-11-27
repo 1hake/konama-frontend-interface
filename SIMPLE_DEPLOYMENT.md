@@ -19,12 +19,14 @@ SSH_PRIVATE_KEY=your-ssh-private-key
 ## Server Setup
 
 ### 1. Initialize Docker Swarm
+
 ```bash
 docker swarm init
 docker network create --driver overlay webnet
 ```
 
 ### 2. Deploy Traefik (reverse proxy)
+
 ```bash
 # Create traefik.yml
 cat > traefik.yml << EOF
@@ -64,6 +66,7 @@ docker stack deploy -c traefik.yml traefik
 ```
 
 ### 3. Deploy your application
+
 ```bash
 docker stack deploy -c docker-compose.swarm.yml champdavoine
 ```
