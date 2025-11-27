@@ -1,7 +1,7 @@
 # Production Swarm configuration
 services:
-    image-generation-admin:
-        image: thegobc/image-generation-admin:latest
+    konama-frontend:
+        image: thegobc/konama-frontend:latest
         deploy:
             replicas: 1
             restart_policy:
@@ -24,15 +24,15 @@ services:
         labels:
             - 'traefik.enable=true'
             # HTTP to HTTPS redirect
-            - 'traefik.http.routers.image-generation-admin-web.rule=Host(`studio.fuzdi.fr`)'
-            - 'traefik.http.routers.image-generation-admin-web.entrypoints=web'
-            - 'traefik.http.routers.image-generation-admin-web.middlewares=redirect-to-https'
+            - 'traefik.http.routers.konama-frontend-web.rule=Host(`studio.fuzdi.fr`)'
+            - 'traefik.http.routers.konama-frontend-web.entrypoints=web'
+            - 'traefik.http.routers.konama-frontend-web.middlewares=redirect-to-https'
             - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
             # HTTPS configuration
-            - 'traefik.http.routers.image-generation-admin.rule=Host(`studio.fuzdi.fr`)'
-            - 'traefik.http.routers.image-generation-admin.entrypoints=websecure'
-            - 'traefik.http.routers.image-generation-admin.tls.certresolver=myresolver'
-            - 'traefik.http.services.image-generation-admin.loadbalancer.server.port=3001'
+            - 'traefik.http.routers.konama-frontend.rule=Host(`studio.fuzdi.fr`)'
+            - 'traefik.http.routers.konama-frontend.entrypoints=websecure'
+            - 'traefik.http.routers.konama-frontend.tls.certresolver=myresolver'
+            - 'traefik.http.services.konama-frontend.loadbalancer.server.port=3001'
 
         environment:
             NODE_ENV: production

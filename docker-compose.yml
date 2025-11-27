@@ -1,5 +1,5 @@
 services:
-    image-generation-admin:
+    konama-frontend:
         build:
             context: .
             dockerfile: Dockerfile
