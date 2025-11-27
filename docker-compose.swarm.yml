@@ -23,10 +23,10 @@ services:
                 order: stop-first
         labels:
             - 'traefik.enable=true'
-            - 'traefik.http.routers.champdavoine.rule=Host(`champdavoine.com`)'
-            - 'traefik.http.routers.champdavoine.entrypoints=websecure'
-            - 'traefik.http.routers.champdavoine.tls.certresolver=myresolver'
-            - 'traefik.http.services.champdavoine.loadbalancer.server.port=3000'
+            - 'traefik.https.routers.image-generation-admin.rule=Host(`studio.fuzdi.fr`)'
+            - 'traefik.https.routers.image-generation-admin.entrypoints=websecure'
+            - 'traefik.https.routers.image-generation-admin.tls.certresolver=myresolver'
+            - 'traefik.https.services.image-generation-admin.loadbalancer.server.port=3000'
         environment:
             NODE_ENV: production
         secrets:
@@ -34,7 +34,7 @@ services:
         networks:
             - webnet
         healthcheck:
-            test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+            test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
             interval: 30s
             timeout: 10s
             retries: 3
