@@ -27,6 +27,13 @@ jobs:
                   tags: thegobc/image-generation-admin:latest
                   target: production
                   no-cache: true
+                  build-args: |
+                      NODE_ENV=production
+                      NEXT_PUBLIC_API_URL=https://studio.fuzdi.fr
+                      NEXT_PUBLIC_COMFY_API_URL=http://localhost:3000/api
+                      NEXT_PUBLIC_WORKFLOW_API_URL=http://localhost:4001
+                      NEXT_PUBLIC_MOCK_IMAGE_GENERATION=true
+                      NEXT_PUBLIC_MOCK_WORKFLOWS=true
             
             - name: Copy docker-compose files to server
               uses: appleboy/scp-action@v0.1.7

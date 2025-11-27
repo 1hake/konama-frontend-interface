@@ -7,3 +7,12 @@ services:
         environment:
             NODE_ENV: production
             NEXT_PUBLIC_API_URL: https://studio.fuzdi.fr
+            # Port Configuration
+            PORT: 3001
+            # ComfyUI API Configuration
+            NEXT_PUBLIC_COMFY_API_URL: http://localhost:3000/api
+            # Workflow Service API
+            NEXT_PUBLIC_WORKFLOW_API_URL: http://localhost:4001
+            # Mock Mode Configuration
+            NEXT_PUBLIC_MOCK_IMAGE_GENERATION: true
+            NEXT_PUBLIC_MOCK_WORKFLOWS: true
