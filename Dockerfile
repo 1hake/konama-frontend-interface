@@ -1,6 +1,27 @@
 FROM node:21-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
-COPY package*.json ./
+
+# Install dependencies based on the preferred package manager
+COPY package.json package-lock.json* ./
+RUN npm ci
+
+# Development stage
+FROM base AS development
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+EXPOSE 3001
+CMD ["npm", "run", "dev"]
+
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Build arguments for environment variables
@@ -11,18 +32,7 @@ ARG NEXT_PUBLIC_API_URL
 ENV NODE_ENV=${NODE_ENV}
 ENV NEXT_PUBLIC_BASE_URL=${NEXT_PUBLIC_BASE_URL}
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-
-RUN npm install
-
-# Development stage
-FROM base AS development
-EXPOSE 3001
-CMD ["npm", "run", "dev"]
-
-# Production build stage
-FROM base AS builder
-WORKDIR /app
-ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
 
