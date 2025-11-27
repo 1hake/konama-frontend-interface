@@ -51,7 +51,7 @@ services:
         secrets:
             - konama_client_openai_api_key
         networks:
-            - traefik-public
+            - webnet
         healthcheck:
             test: [ "CMD", "curl", "-f", "http://localhost:3001/api/health" ]
             interval: 30s
@@ -65,5 +65,5 @@ secrets:
         name: konama_client_openai_api_key
 
 networks:
-    traefik-public:
+    webnet:
         external: true

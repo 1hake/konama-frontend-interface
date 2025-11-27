@@ -60,6 +60,12 @@ jobs:
                       mkdir -p konama-frontend
                       cd konama-frontend
                       
+                      # Create network if it doesn't exist
+                      if ! docker network ls --format "{{.Name}}" | grep -q "^webnet$"; then
+                          echo "Creating webnet overlay network..."
+                          docker network create --driver overlay --attachable webnet
+                      fi
+                      
                       # Create secret if it doesn't exist
                       if ! docker secret inspect konama_client_openai_api_key >/dev/null 2>&1; then
                           echo "Creating OpenAI API key secret..."
