@@ -6,7 +6,7 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "build:safe": "NODE_OPTIONS='--max-old-space-size=4096' next build",
-    "start": "npx serve@latest out",
+    "start": "NODE_ENV=production next start -H 0.0.0.0 -p 3001",
     "start:node": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
