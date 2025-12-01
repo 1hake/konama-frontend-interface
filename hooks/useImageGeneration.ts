@@ -291,9 +291,9 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
             }
 
             try {
-                // Use our API endpoint to get the workflow JSON from the external service
-                const workflowResponse = await axios.post(
-                    `/api/workflows/${workflowId}/generate`,
+                // Send the prompt directly to our API endpoint which handles the Konama API call
+                const response = await axios.post(
+                    `/api/workflows/${workflowId}/prompt`,
                     {
                         positivePrompt: prompt,
                         negativePrompt: negativePrompt || 'text, watermark',
@@ -301,43 +301,30 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
                     }
                 );
 
-                const workflow = workflowResponse.data;
-
-                const requestBody = {
-                    prompt: workflow,
-                    client_id: Math.random().toString(36).substring(7),
-                };
-                const url = getApiUrl('/prompt');
-
-                console.log('=== FRONTEND REQUEST START ===');
-                console.log('🎯 Making request to:', url);
-                console.log('🌍 Should be using proxy (not direct ComfyUI)');
-                console.log(
-                    '📤 Request body:',
-                    JSON.stringify(requestBody, null, 2)
-                );
-
-                // Explicit check to prevent direct ComfyUI calls
-                if (url.includes('8188') || url.includes('localhost:8188')) {
-                    console.error('❌ PREVENTING DIRECT COMFYUI CALL!');
-                    throw new Error(
-                        'Direct ComfyUI calls are blocked. Use /api/proxy instead.'
-                    );
-                }
-
-                const response = await axios.post(url, requestBody);
-
-                console.log(
-                    '📥 Response status:',
-                    response.status,
-                    response.statusText
-                );
-                console.log('📋 Response headers:', response.headers);
+                console.log('=== GENERATION REQUEST SUCCESS ===');
+                console.log('📥 Response status:', response.status, response.statusText);
+                console.log('📋 Response data:', response.data);
 
                 const data = response.data;
-                console.log('✅ Frontend request successful:');
-                console.log('📤 Response data:', JSON.stringify(data, null, 2));
-                console.log('=== FRONTEND REQUEST END ===');
+
+                // Set the prompt ID from the response
+                if (data.prompt_id) {
+                    setProgress({
+                        promptId: data.prompt_id,
+                        status: 'queued',
+                    });
+
+                    // Start polling for completion if using WebSocket fallback
+                    if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) {
+                        await pollForCompletion(data.prompt_id);
+                    }
+                } else {
+                    // If no prompt_id, assume immediate completion
+                    setIsGenerating(false);
+                    setProgress(null);
+                }
+
+                console.log('=== GENERATION REQUEST END ===');
 
                 if (data.prompt_id) {
                     setProgress({

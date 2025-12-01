@@ -5,7 +5,7 @@ export const config = {
 
     // Workflow service API for retrieving workflows
     workflowApiUrl:
-        process.env.NEXT_PUBLIC_WORKFLOW_API_URL || 'http://localhost:4000',
+        process.env.NEXT_PUBLIC_WORKFLOW_API_URL || 'https://client.konama.fuzdi.fr',
 
     // Check if using external API (not localhost)
     isExternalApi:

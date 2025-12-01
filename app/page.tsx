@@ -7,6 +7,7 @@ import { useFunnel } from '../hooks/useFunnel';
 import { ImageGenerationForm, GeneratedImagesDisplay } from '../components';
 import AuthenticatedLayout from '../components/AuthenticatedLayout';
 import { FunnelTimeline, FunnelStepViewer } from '../components/Funnel';
+import { WorkflowDiagnostic } from '../components/WorkflowDiagnostic';
 import { GeneratedImage, FunnelRefinement } from '../types';
 
 export default function Home() {
@@ -465,6 +466,9 @@ export default function Home() {
                     }}
                 />
             </div>
+
+            {/* Temporary Diagnostic Component */}
+            <WorkflowDiagnostic />
         </AuthenticatedLayout>
     );
 }

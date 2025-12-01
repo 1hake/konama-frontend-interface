@@ -6,7 +6,7 @@ services:
             target: production
         environment:
             NODE_ENV: production
-            NEXT_PUBLIC_API_URL: https://studio.fuzdi.fr
+            NEXT_PUBLIC_API_URL: https://studio2.fuzdi.fr
             # Port Configuration
             PORT: 3001
             # ComfyUI API Configuration

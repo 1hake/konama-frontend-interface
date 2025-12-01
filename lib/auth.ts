@@ -162,8 +162,12 @@ export const AuthAPI = {
         });
         const data = response.data;
 
+        console.log('Login response:', data); // Debug log
+
         if (data.success && data.data) {
+            console.log('Persisting auth session:', data.data); // Debug log
             persistAuthSession(data.data as AuthSessionData);
+            console.log('Session persisted, checking cookie:', readAuthSession()); // Debug log
         }
 
         return data;

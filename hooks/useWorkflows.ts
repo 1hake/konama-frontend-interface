@@ -110,6 +110,40 @@ export const useWorkflows = () => {
                         },
                     ],
                 },
+                {
+                    id: 'fallback-basic-mock',
+                    name: 'Fallback Basic (Mock)',
+                    description:
+                        'Simple fallback workflow for when main workflows are unavailable (Mock Data)',
+                    category: 'fallback',
+                    version: '1.0.0',
+                    supportsNegativePrompt: true,
+                    source: 'fallback' as const,
+                    lastFetched: new Date(),
+                    tags: ['fallback', 'basic', 'sd1.5', 'reliable', 'mock'],
+                    author: 'Mock System',
+                    requiredModels: ['v1-5-pruned-emaonly-fp16.safetensors'],
+                    parameters: [
+                        {
+                            name: 'steps',
+                            label: 'Steps',
+                            type: 'slider' as const,
+                            defaultValue: 20,
+                            min: 1,
+                            max: 100,
+                            step: 1,
+                        },
+                        {
+                            name: 'cfg',
+                            label: 'CFG Scale',
+                            type: 'slider' as const,
+                            defaultValue: 8,
+                            min: 1,
+                            max: 20,
+                            step: 0.5,
+                        },
+                    ],
+                },
             ];
 
             setWorkflows(mockWorkflows);
@@ -140,28 +174,29 @@ export const useWorkflows = () => {
             let workflowsData: WorkflowMetadata[] = [];
 
             if (data.data && Array.isArray(data.data)) {
-                // Parse the workflow files from the external service
+                // Parse workflow names from the new API structure
                 workflowsData = data.data
-                    .map((item: any, index: number) => {
-                        const workflowName =
-                            item.content?.name || `Workflow ${index + 1}`;
-                        const workflowContent = item.content?.content;
+                    .map((item: any) => {
+                        const workflowName = item.name;
+                        if (!workflowName) return null;
 
-                        // Use the filename (without path and extension) as the workflow ID for easier identification
-                        const workflowId = workflowName
-                            .replace(/^workflows\//, '')
-                            .replace(/\.json$/, '');
-                        const displayName = workflowId
+                        // Create a metadata object from the workflow name
+                        const workflowId = workflowName;
+                        const displayName = workflowName
                             .replace(/-/g, ' ')
-                            .replace(/\b\w/g, (l: string) => l.toUpperCase());
+                            .replace(/([A-Z])/g, ' $1')
+                            .replace(/\b\w/g, (l: string) => l.toUpperCase())
+                            .trim();
 
-                        // Create a metadata object from the workflow file
+                        // Create a metadata object for the workflow
                         const metadata: WorkflowMetadata = {
                             id: workflowId,
                             name: displayName,
                             description: `${displayName} workflow`,
-                            category: workflowName.includes('flux')
+                            category: workflowName.toLowerCase().includes('flux')
                                 ? 'flux'
+                                : workflowName.toLowerCase().includes('basic')
+                                ? 'basic'
                                 : 'stable-diffusion',
                             version: '1.0.0',
                             supportsNegativePrompt: true,
@@ -229,10 +264,36 @@ export const useWorkflows = () => {
         fetchWorkflows();
     }, [fetchWorkflows]);
 
+    const fetchWorkflowByName = useCallback(async (workflowName: string) => {
+        try {
+            console.log(`🔍 Fetching workflow: ${workflowName}`);
+            
+            let response;
+            try {
+                response = await axios.get(
+                    `${config.workflowApiUrl}/workflows/workflow?name=${encodeURIComponent(workflowName)}`
+                );
+            } catch (directError) {
+                // If direct connection fails, try through our proxy
+                console.log('Direct connection failed, trying proxy...');
+                response = await axios.get(
+                    `/api/workflows/workflow?name=${encodeURIComponent(workflowName)}`
+                );
+            }
+
+            console.log(`✅ Successfully fetched workflow: ${workflowName}`);
+            return response.data;
+        } catch (err) {
+            console.error(`❌ Failed to fetch workflow ${workflowName}:`, err);
+            throw err;
+        }
+    }, []);
+
     return {
         workflows,
         loading,
         error,
         refreshWorkflows,
+        fetchWorkflowByName,
     };
 };
