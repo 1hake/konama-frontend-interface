@@ -23,26 +23,29 @@ services:
                 order: stop-first
         labels:
             - 'traefik.enable=true'
-            # HTTP to HTTPS redirect
-            - 'traefik.http.routers.konama-frontend-web.rule=Host(`studio2.fuzdi.fr`)'
-            - 'traefik.http.routers.konama-frontend-web.entrypoints=web'
-            - 'traefik.http.routers.konama-frontend-web.middlewares=redirect-to-https'
+            # Rule for the root domain
+            - 'traefik.http.routers.konama-frontend.rule=Host(`studio.fuzdi.fr`)'
+            - 'traefik.http.routers.konama-frontend.entrypoints=websecure'
+            - 'traefik.http.routers.konama-frontend.tls.certresolver=letsencrypt'
 
-            # HTTPS configuration
-            - 'traefik.http.routers.konama-frontend-websecure.rule=Host(`studio2.fuzdi.fr`)'
-            - 'traefik.http.routers.konama-frontend-websecure.entrypoints=websecure'
-            - 'traefik.http.routers.konama-frontend-websecure.tls=true'
-            - 'traefik.http.routers.konama-frontend-websecure.tls.certresolver=letsencrypt'
+            # Rule for the www subdomain (if needed)
+            - 'traefik.http.routers.konama-frontend-www.rule=Host(`www.studio.fuzdi.fr`)'
+            - 'traefik.http.routers.konama-frontend-www.entrypoints=websecure'
+            - 'traefik.http.routers.konama-frontend-www.tls.certresolver=letsencrypt'
+            - 'traefik.http.routers.konama-frontend-www.middlewares=redirect-to-root'
+
+            # Redirect middleware from www to root domain
+            - 'traefik.http.middlewares.redirect-to-root.redirectregex.regex=^https?://www\.studio\.fuzdi\.fr/(.*)'
+            - 'traefik.http.middlewares.redirect-to-root.redirectregex.replacement=https://studio.fuzdi.fr/$${1}'
+            - 'traefik.http.middlewares.redirect-to-root.redirectregex.permanent=true'
 
             # Service configuration
             - 'traefik.http.services.konama-frontend.loadbalancer.server.port=3001'
-            - 'traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https'
-            - 'traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true'
 
         environment:
             NODE_ENV: production
-            NEXT_PUBLIC_API_URL: https://studio2.fuzdi.fr
-            NEXT_PUBLIC_BASE_URL: https://studio2.fuzdi.fr
+            NEXT_PUBLIC_API_URL: https://studio.fuzdi.fr
+            NEXT_PUBLIC_BASE_URL: https://studio.fuzdi.fr
             NEXT_PUBLIC_COMFY_API_URL: http://localhost:3000/api
             NEXT_PUBLIC_WORKFLOW_API_URL: http://localhost:4001
             NEXT_PUBLIC_MOCK_IMAGE_GENERATION: "true"

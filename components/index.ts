@@ -10,6 +10,7 @@ export { PromptPreview } from './PromptPreview';
 export { ActionButtons } from './ActionButtons';
 export { WorkflowSelector } from './WorkflowSelector';
 export { WorkflowSelectorModal } from './WorkflowSelectorModal';
+export { WorkflowList } from './WorkflowApiList';
 export { UnifiedPromptBuilder } from './UnifiedPromptBuilder';
 export { InlinePromptBuilder } from './InlinePromptBuilder';
 export { VoiceRecorder } from './VoiceRecorder';

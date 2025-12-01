@@ -106,6 +106,7 @@ export interface GeneratedImagesDisplayProps {
     getImageUrl: (image: GeneratedImage) => string;
 }
 
-// Export funnel and auth types
+// Export funnel, auth, and workflow API types
 export * from './funnel';
 export * from './auth';
+export * from './workflow-api';
