@@ -229,67 +229,6 @@ export const useImageGeneration = (): SimpleImageGenerationHookReturn => {
             setGeneratedImages([]);
             setProgress(null);
 
-            // Mock mode for testing without endpoints
-            if (config.mockImageGeneration) {
-                console.log('🎭 MOCK MODE: Simulating image generation...');
-                const mockPromptId = `mock_${Date.now()}`;
-
-                setProgress({
-                    promptId: mockPromptId,
-                    status: 'queued',
-                });
-
-                // Simulate progress updates
-                setTimeout(() => {
-                    setProgress(prev => ({
-                        ...prev!,
-                        status: 'executing',
-                        progress: 0.2,
-                        node: 'LoadCheckpoint',
-                    }));
-                }, 500);
-
-                setTimeout(() => {
-                    setProgress(prev => ({
-                        ...prev!,
-                        progress: 0.5,
-                        node: 'CLIPTextEncode',
-                    }));
-                }, 1500);
-
-                setTimeout(() => {
-                    setProgress(prev => ({
-                        ...prev!,
-                        progress: 0.8,
-                        node: 'KSampler',
-                    }));
-                }, 2500);
-
-                // Generate mock images
-                setTimeout(() => {
-                    const mockImages: GeneratedImage[] = [
-                        {
-                            filename: 'mock_image_1.png',
-                            subfolder: 'mock',
-                            type: 'output',
-                        },
-                    ];
-
-                    setGeneratedImages(mockImages);
-                    setProgress(prev => ({
-                        ...prev!,
-                        status: 'completed',
-                    }));
-
-                    setTimeout(() => {
-                        setProgress(null);
-                        setIsGenerating(false);
-                    }, 2000);
-                }, 3500);
-
-                return;
-            }
-
             try {
                 // Send the prompt directly to our API endpoint which handles the Konama API call
                 const response = await axios.post(

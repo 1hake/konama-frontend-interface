@@ -11,7 +11,6 @@ export const WorkflowDiagnostic = () => {
                 <p>Loading: <span className={loading ? 'text-yellow-400' : 'text-green-400'}>{loading ? 'Yes' : 'No'}</span></p>
                 <p>Count: <span className="text-blue-400">{workflows.length}</span></p>
                 <p>Error: <span className={error ? 'text-red-400' : 'text-green-400'}>{error || 'None'}</span></p>
-                <p>Mock Mode: <span className={config.mockWorkflows ? 'text-yellow-400' : 'text-green-400'}>{config.mockWorkflows ? 'Yes' : 'No'}</span></p>
                 <p>API URL: <span className="text-gray-400 text-xs">{config.workflowApiUrl}</span></p>
                 {workflows.length > 0 && (
                     <div>

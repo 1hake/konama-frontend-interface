@@ -48,8 +48,6 @@ services:
             NEXT_PUBLIC_BASE_URL: https://studio.fuzdi.fr
             NEXT_PUBLIC_COMFY_API_URL: http://localhost:3000/api
             NEXT_PUBLIC_WORKFLOW_API_URL: http://localhost:4001
-            NEXT_PUBLIC_MOCK_IMAGE_GENERATION: "true"
-            NEXT_PUBLIC_MOCK_WORKFLOWS: "true"
             PORT: 3001
         secrets:
             - IMAGE_GEN_ADMIN_OPENAI_API_KEY
