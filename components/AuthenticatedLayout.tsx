@@ -27,7 +27,7 @@ export default function AuthenticatedLayout({
     return (
         <ProtectedRoute>
             {/* Header with Logo and Logout */}
-            <div className="bg-gray-900/80 backdrop-blur-sm border-b border-gray-700/50 sticky top-0 z-40">
+            <div className="bg-gradient-to-br from-gray-950 via-gray-900 to-black backdrop-blur-sm border-b border-gray-700/50 sticky top-0 z-40">
                 <div className="container mx-auto px-6 py-4">
                     <div className="flex items-center justify-between">
                         {/* Logo and Title */}

@@ -72,3 +72,153 @@ html {
 * {
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Custom animations for organic ferrofluid effect */
+@keyframes ferrofluid-morph {
+    0%, 100% {
+        border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+        transform: scale(1) rotate(0deg);
+    }
+    20% {
+        border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+        transform: scale(1.08) rotate(8deg);
+    }
+    40% {
+        border-radius: 50% 60% 30% 60% / 30% 60% 70% 40%;
+        transform: scale(0.92) rotate(-12deg);
+    }
+    60% {
+        border-radius: 60% 40% 60% 40% / 70% 30% 60% 40%;
+        transform: scale(1.05) rotate(5deg);
+    }
+    80% {
+        border-radius: 40% 60% 50% 60% / 60% 40% 50% 60%;
+        transform: scale(0.96) rotate(-6deg);
+    }
+}
+
+@keyframes spike-emerge {
+    0%, 100% {
+        border-radius: 45% 55% 50% 50% / 50% 50% 50% 50%;
+        transform: scale(1);
+    }
+    25% {
+        border-radius: 20% 80% 30% 70% / 40% 60% 40% 60%;
+        transform: scale(1.12);
+    }
+    50% {
+        border-radius: 70% 30% 60% 40% / 30% 70% 30% 70%;
+        transform: scale(0.88);
+    }
+    75% {
+        border-radius: 35% 65% 45% 55% / 55% 45% 65% 35%;
+        transform: scale(1.06);
+    }
+}
+
+@keyframes magnetic-drift {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.6;
+    }
+    25% {
+        transform: translate(15px, -20px) scale(1.2);
+        opacity: 0.8;
+    }
+    50% {
+        transform: translate(-10px, 15px) scale(0.9);
+        opacity: 0.5;
+    }
+    75% {
+        transform: translate(20px, 10px) scale(1.1);
+        opacity: 0.7;
+    }
+    100% {
+        transform: translate(0, 0) scale(1);
+        opacity: 0.6;
+    }
+}
+
+@keyframes fluid-wave {
+    0%, 100% {
+        transform: scale(1) translateY(0);
+        opacity: 0.4;
+    }
+    33% {
+        transform: scale(1.2) translateY(-5px);
+        opacity: 0.7;
+    }
+    66% {
+        transform: scale(0.85) translateY(5px);
+        opacity: 0.3;
+    }
+}
+
+@keyframes magnetic-pulse {
+    0%, 100% {
+        transform: scale(0.85);
+        opacity: 0.6;
+    }
+    50% {
+        transform: scale(1.15);
+        opacity: 0.9;
+    }
+}
+
+@keyframes color-flow {
+    0% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+    33% {
+        filter: hue-rotate(30deg) brightness(1.1);
+    }
+    66% {
+        filter: hue-rotate(-20deg) brightness(0.9);
+    }
+    100% {
+        filter: hue-rotate(0deg) brightness(1);
+    }
+}
+
+@keyframes ripple-wave {
+    0% {
+        transform: scale(0.7);
+        opacity: 0.8;
+    }
+    70% {
+        transform: scale(1.2);
+        opacity: 0.2;
+    }
+    100% {
+        transform: scale(1.4);
+        opacity: 0;
+    }
+}
+
+.animate-ferrofluid-morph {
+    animation: ferrofluid-morph 7s ease-in-out infinite;
+}
+
+.animate-spike-emerge {
+    animation: spike-emerge 5s ease-in-out infinite;
+}
+
+.animate-magnetic-drift {
+    animation: magnetic-drift 6s ease-in-out infinite;
+}
+
+.animate-fluid-wave {
+    animation: fluid-wave 4s ease-in-out infinite;
+}
+
+.animate-magnetic-pulse {
+    animation: magnetic-pulse 3s ease-in-out infinite;
+}
+
+.animate-color-flow {
+    animation: color-flow 8s ease-in-out infinite;
+}
+
+.animate-ripple-wave {
+    animation: ripple-wave 3.5s ease-out infinite;
+}

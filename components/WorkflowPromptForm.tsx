@@ -1,32 +1,132 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useWorkflows } from '@/hooks/useWorkflows';
 import { useWorkflowSubmission } from '@/hooks/useWorkflowSubmission';
+import { usePromptEnhancement } from '@/hooks/usePromptEnhancement';
 import { UserPromptInput } from '@/types/workflow-api';
+import { PromptSentenceBuilder } from './PromptSentenceBuilder';
+import { WorkflowSelectorModal } from './WorkflowSelectorModal';
+
+const inlineFields = [
+  { name: 'sujet', label: 'sujet', placeholder: 'un pot de miel', example: 'un pot de miel, une montagne enneigée, un chat noir', color: 'bg-gradient-to-r from-blue-500/25 to-blue-600/25 border-blue-400/60 text-blue-200' },
+  { name: 'contexte', label: 'contexte', placeholder: 'dans une cuisine', example: 'dans une cuisine rustique, au coucher du soleil, sous la pluie', color: 'bg-gradient-to-r from-emerald-500/25 to-green-600/25 border-emerald-400/60 text-emerald-200' },
+  { name: 'decor', label: 'décor', placeholder: 'fleurs sauvages', example: 'fleurs sauvages, arbres anciens, lampes vintage', color: 'bg-gradient-to-r from-pink-500/25 to-rose-600/25 border-pink-400/60 text-pink-200' },
+  { name: 'composition', label: 'composition', placeholder: 'plan rapproché', example: 'plan rapproché, vue panoramique, angle faible', color: 'bg-gradient-to-r from-purple-500/25 to-violet-600/25 border-purple-400/60 text-purple-200' },
+  { name: 'technique', label: 'technique', placeholder: 'aquarelle', example: 'aquarelle, photographie macro, rendu 3D', color: 'bg-gradient-to-r from-orange-500/25 to-amber-600/25 border-orange-400/60 text-orange-200' },
+  { name: 'ambiance', label: 'ambiance', placeholder: 'lumière douce', example: 'atmosphère chaleureuse, lumière douce, ambiance mystérieuse', color: 'bg-gradient-to-r from-yellow-500/25 to-amber-500/25 border-yellow-400/60 text-yellow-200' },
+  { name: 'details', label: 'détails', placeholder: 'haute qualité', example: 'haute qualité, ultra détaillé, 8k', color: 'bg-gradient-to-r from-cyan-500/25 to-teal-600/25 border-cyan-400/60 text-cyan-200' },
+  { name: 'parametres', label: 'paramètres', placeholder: 'masterpiece', example: 'masterpiece, best quality, professional', color: 'bg-gradient-to-r from-indigo-500/25 to-blue-600/25 border-indigo-400/60 text-indigo-200' },
+];
 
 export function WorkflowPromptForm() {
-  const { workflows, loading: loadingWorkflows, error: workflowError } = useWorkflows();
-  const { submitWorkflow, isSubmitting, error: submissionError, response } = useWorkflowSubmission({
+  const { workflows, error: workflowError } = useWorkflows();
+  const { submitWorkflow, isSubmitting, error: submissionError } = useWorkflowSubmission({
     onSuccess: (data) => {
       console.log('✅ Workflow submitted successfully:', data);
-      alert('Workflow submitted successfully! Check the response in console.');
     },
     onError: (error) => {
       console.error('❌ Submission failed:', error);
-      alert(`Submission failed: ${error.message}`);
     },
   });
+  
+  const { 
+    isEnhancing, 
+    enhancePrompt, 
+    getSuggestionsForField, 
+    hasSuggestions 
+  } = usePromptEnhancement();
 
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string>('');
-  const [positivePrompt, setPositivePrompt] = useState<string>('');
-  const [negativePrompt, setNegativePrompt] = useState<string>('');
-  const [mode, setMode] = useState<'slow' | 'fast'>('slow');
+  const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
+  const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
+  
+  // Prompt fields state
+  const [fields, setFields] = useState({
+    sujet: '',
+    contexte: '',
+    decor: '',
+    composition: '',
+    technique: '',
+    ambiance: '',
+    details: '',
+    parametres: '',
+  });
+  
+  // Technical fields state
+  const [technicalFields, setTechnicalFields] = useState({
+    steps: 20,
+    guidance: 7.5,
+    aspectRatio: '1:1',
+    loraName: '',
+    loraStrength: 0.8,
+    negatifs: '',
+  });
 
+  
   // Set default workflow when workflows load
   useEffect(() => {
     if (workflows.length > 0 && !selectedWorkflowId) {
       setSelectedWorkflowId(workflows[0].name);
+      setSelectedWorkflows([workflows[0].name]);
     }
   }, [workflows, selectedWorkflowId]);
+  
+  // Handle field changes
+  const handleFieldChange = useCallback((field: string, value: string | number) => {
+    if (field === 'negatifs' || field === 'steps' || field === 'guidance' || field === 'aspectRatio' || field === 'loraName' || field === 'loraStrength') {
+      setTechnicalFields(prev => ({ ...prev, [field]: value }));
+    } else {
+      setFields(prev => ({ ...prev, [field]: value }));
+    }
+  }, []);
+  
+  // Navigate between suggestions
+  const handleNavigate = useCallback(() => {
+    // Implement navigation if needed
+  }, []);
+  
+  // Build the final prompt from fields
+  const buildPrompt = useCallback(() => {
+    const parts = [];
+    if (fields.sujet) parts.push(fields.sujet);
+    if (fields.contexte) parts.push(fields.contexte);
+    if (fields.decor) parts.push(fields.decor);
+    if (fields.composition) parts.push(fields.composition);
+    if (fields.technique) parts.push(fields.technique);
+    if (fields.ambiance) parts.push(fields.ambiance);
+    if (fields.details) parts.push(fields.details);
+    if (fields.parametres) parts.push(fields.parametres);
+    return parts.filter(p => p.trim()).join(', ');
+  }, [fields]);
+  
+  // Handle prompt enhancement
+  const handleEnhancePrompt = useCallback(async () => {
+    await enhancePrompt(fields);
+  }, [fields, enhancePrompt]);
+  
+  // Clear all fields
+  const handleClearAll = useCallback(() => {
+    setFields({
+      sujet: '',
+      contexte: '',
+      decor: '',
+      composition: '',
+      technique: '',
+      ambiance: '',
+      details: '',
+      parametres: '',
+    });
+    setTechnicalFields({
+      steps: 20,
+      guidance: 7.5,
+      aspectRatio: '1:1',
+      loraName: '',
+      loraStrength: 0.8,
+      negatifs: '',
+    });
+  }, []);
+  
+  // Check if there's content
+  const hasContent = Object.values(fields).some(v => v.trim() !== '') || technicalFields.negatifs.trim() !== '';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,8 +136,9 @@ export function WorkflowPromptForm() {
       return;
     }
 
+    const positivePrompt = buildPrompt();
     if (!positivePrompt.trim()) {
-      alert('Please enter a positive prompt');
+      alert('Please enter at least one prompt field');
       return;
     }
 
@@ -57,7 +158,7 @@ export function WorkflowPromptForm() {
 
     const userPrompt: UserPromptInput = {
       positive: positivePrompt,
-      negative: negativePrompt || undefined,
+      negative: technicalFields.negatifs || undefined,
     };
 
     try {
@@ -65,161 +166,79 @@ export function WorkflowPromptForm() {
         workflowId: selectedWorkflowId,
         workflowData: selectedWorkflow.details,
         userPrompt,
-        mode,
+        mode: 'slow',
       });
     } catch (error) {
       // Error already handled by useWorkflowSubmission
       console.error('Error submitting workflow:', error);
     }
   };
+  
+  const handleGenerate = () => {
+    const form = document.querySelector('form');
+    if (form) {
+      form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+    }
+  };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">
-        Generate Image with Workflow
-      </h2>
+    <div className="max-w-4xl mx-auto">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Workflow Selector Modal */}
+        <WorkflowSelectorModal
+          isOpen={isWorkflowModalOpen}
+          onClose={() => setIsWorkflowModalOpen(false)}
+          workflows={workflows}
+          selectedWorkflow={selectedWorkflowId}
+          selectedWorkflows={selectedWorkflows}
+          onWorkflowChange={(workflowId) => {
+            setSelectedWorkflowId(workflowId);
+          }}
+          onWorkflowsChange={(workflowIds) => {
+            setSelectedWorkflows(workflowIds);
+            if (workflowIds.length === 1) {
+              setSelectedWorkflowId(workflowIds[0]);
+            }
+          }}
+          onRefresh={async () => {
+            // Workflows are already loaded via useWorkflows hook
+          }}
+        />
 
-      {workflowError && (
-        <div className="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded">
-          Error loading workflows: {workflowError}
-        </div>
-      )}
-
-      {submissionError && (
-        <div className="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded">
-          Submission error: {submissionError.message}
-        </div>
-      )}
-
-      {response && (
-        <div className="mb-4 p-4 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded">
-          ✅ Workflow submitted successfully! Check console for details.
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Workflow Selection */}
-        <div>
-          <label
-            htmlFor="workflow"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Select Workflow
-          </label>
-          <select
-            id="workflow"
-            value={selectedWorkflowId}
-            onChange={(e) => setSelectedWorkflowId(e.target.value)}
-            disabled={loadingWorkflows || isSubmitting}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white disabled:opacity-50"
-          >
-            {loadingWorkflows ? (
-              <option>Loading workflows...</option>
-            ) : workflows.length === 0 ? (
-              <option>No workflows available</option>
-            ) : (
-              workflows.map((workflow) => (
-                <option key={workflow.name} value={workflow.name}>
-                  {workflow.name}
-                  {workflow.details ? ' ✓' : ' (loading...)'}
-                </option>
-              ))
-            )}
-          </select>
-          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-            {workflows.length} workflow{workflows.length !== 1 ? 's' : ''} available
-          </p>
-        </div>
-
-        {/* Mode Selection */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Generation Mode
-          </label>
-          <div className="flex gap-4">
-            <label className="flex items-center">
-              <input
-                type="radio"
-                value="slow"
-                checked={mode === 'slow'}
-                onChange={(e) => setMode(e.target.value as 'slow' | 'fast')}
-                disabled={isSubmitting}
-                className="mr-2"
-              />
-              <span className="text-sm text-gray-700 dark:text-gray-300">Slow (Higher Quality)</span>
-            </label>
-            <label className="flex items-center">
-              <input
-                type="radio"
-                value="fast"
-                checked={mode === 'fast'}
-                onChange={(e) => setMode(e.target.value as 'slow' | 'fast')}
-                disabled={isSubmitting}
-                className="mr-2"
-              />
-              <span className="text-sm text-gray-700 dark:text-gray-300">Fast</span>
-            </label>
+        {/* Error Messages */}
+        {workflowError && (
+          <div className="p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg">
+            Error loading workflows: {workflowError}
           </div>
-        </div>
+        )}
 
-        {/* Positive Prompt */}
-        <div>
-          <label
-            htmlFor="positive-prompt"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Positive Prompt *
-          </label>
-          <textarea
-            id="positive-prompt"
-            value={positivePrompt}
-            onChange={(e) => setPositivePrompt(e.target.value)}
-            placeholder="Describe what you want to see..."
-            disabled={isSubmitting}
-            rows={4}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white disabled:opacity-50"
-            required
-          />
-        </div>
+        {submissionError && (
+          <div className="p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg">
+            Submission error: {submissionError.message}
+          </div>
+        )}
 
-        {/* Negative Prompt */}
-        <div>
-          <label
-            htmlFor="negative-prompt"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-          >
-            Negative Prompt (Optional)
-          </label>
-          <textarea
-            id="negative-prompt"
-            value={negativePrompt}
-            onChange={(e) => setNegativePrompt(e.target.value)}
-            placeholder="Describe what you don't want to see..."
-            disabled={isSubmitting}
-            rows={2}
-            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white disabled:opacity-50"
-          />
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={isSubmitting || loadingWorkflows || !selectedWorkflowId || !positivePrompt.trim()}
-          className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Generating...' : 'Generate Image'}
-        </button>
+        {/* Prompt Sentence Builder */}
+        <PromptSentenceBuilder
+          fields={fields}
+          technicalFields={technicalFields}
+          onFieldChange={handleFieldChange}
+          isGenerating={isSubmitting}
+          isEnhancing={isEnhancing}
+          inlineFields={inlineFields}
+          getSuggestionsForField={getSuggestionsForField}
+          hasSuggestions={hasSuggestions}
+          onNavigate={handleNavigate}
+          onGenerate={handleGenerate}
+          onEnhancePrompt={handleEnhancePrompt}
+          onOpenWorkflowModal={() => setIsWorkflowModalOpen(true)}
+          selectedWorkflow={selectedWorkflowId}
+          availableWorkflows={workflows}
+          error={workflowError || submissionError?.message || null}
+          onClearAll={handleClearAll}
+          hasContent={hasContent}
+        />
       </form>
-
-      {/* Debug Info */}
-      {response && (
-        <div className="mt-6 p-4 bg-gray-100 dark:bg-gray-700 rounded-md">
-          <h3 className="text-sm font-semibold mb-2 text-gray-900 dark:text-white">Response:</h3>
-          <pre className="text-xs overflow-auto text-gray-800 dark:text-gray-200">
-            {JSON.stringify(response, null, 2)}
-          </pre>
-        </div>
-      )}
     </div>
   );
 }
