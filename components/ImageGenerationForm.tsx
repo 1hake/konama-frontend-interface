@@ -28,7 +28,6 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
     availableWorkflows = [],
     selectedWorkflow = null,
     onWorkflowChange,
-    onRefreshWorkflows,
 }) => {
     const [fields, setFields] = useState<PromptFields>({
         sujet: '',
@@ -131,7 +130,6 @@ export const ImageGenerationForm: React.FC<ImageGenerationFormProps> = ({
                         availableWorkflows={availableWorkflows}
                         selectedWorkflow={selectedWorkflow}
                         onWorkflowChange={onWorkflowChange}
-                        onRefreshWorkflows={onRefreshWorkflows}
                         error={error}
                         uploadedImage={uploadedImage}
                         onImageUpload={handleImageUpload}

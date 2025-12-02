@@ -31,7 +31,6 @@ interface InlinePromptBuilderProps {
     availableWorkflows?: WorkflowMetadata[];
     selectedWorkflow?: string | null;
     onWorkflowChange?: (workflowId: string) => void;
-    onRefreshWorkflows?: () => Promise<void>;
     error?: string | null;
     uploadedImage?: { file: File; previewUrl: string } | null;
     onImageUpload?: (file: File, previewUrl: string) => void;
@@ -107,7 +106,6 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
     availableWorkflows = [],
     selectedWorkflow = null,
     onWorkflowChange,
-    onRefreshWorkflows,
     error: formError,
     uploadedImage,
     onImageUpload,
@@ -163,14 +161,7 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
                     onClose={() => setIsWorkflowModalOpen(false)}
                     workflows={availableWorkflows}
                     selectedWorkflow={selectedWorkflow}
-                    selectedWorkflows={selectedWorkflow ? [selectedWorkflow] : []}
                     onWorkflowChange={onWorkflowChange}
-                    onWorkflowsChange={(workflowIds) => {
-                        if (workflowIds.length > 0 && onWorkflowChange) {
-                            onWorkflowChange(workflowIds[0]);
-                        }
-                    }}
-                    onRefresh={onRefreshWorkflows}
                 />
             )}
 

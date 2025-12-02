@@ -78,43 +78,43 @@ export const GeneratedImagesDisplay: React.FC<
             <div className="relative w-full h-full flex flex-col items-center justify-center py-16">
                 <div className="text-center space-y-6">
                     {/* Organic Ferrofluid Animation */}
-                    <div className="relative w-48 h-48 md:w-64 md:h-64 mx-auto">
+                    <div className="relative w-64 h-64 md:w-80 md:h-80 mx-auto">
                         {/* Outer magnetic field ripples */}
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-blue-500/15 via-purple-500/15 to-pink-500/15 animate-ripple-wave blur-2xl"></div>
-                        <div className="absolute inset-2 rounded-full bg-gradient-to-r from-pink-500/15 via-blue-500/15 to-purple-500/15 animate-ripple-wave blur-xl" style={{ animationDelay: '1.2s' }}></div>
-                        <div className="absolute inset-4 rounded-full bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-blue-500/15 animate-ripple-wave blur-lg" style={{ animationDelay: '2.4s' }}></div>
+                        <div className="absolute -inset-8 rounded-full bg-gradient-to-r from-blue-500/15 via-purple-500/15 to-pink-500/15 animate-ripple-wave blur-3xl"></div>
+                        <div className="absolute -inset-6 rounded-full bg-gradient-to-r from-pink-500/15 via-blue-500/15 to-purple-500/15 animate-ripple-wave blur-2xl" style={{ animationDelay: '1s' }}></div>
+                        <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-purple-500/15 via-pink-500/15 to-blue-500/15 animate-ripple-wave blur-xl" style={{ animationDelay: '2s' }}></div>
                         
                         {/* Magnetic particles drifting in field */}
-                        <div className="absolute inset-8">
-                            <div className="absolute top-1/4 left-1/4 w-4 h-4 bg-blue-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-blue-500/50"></div>
-                            <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-purple-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-purple-500/50" style={{ animationDelay: '1s' }}></div>
-                            <div className="absolute bottom-1/3 left-1/2 w-3.5 h-3.5 bg-pink-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-pink-500/50" style={{ animationDelay: '2s' }}></div>
-                            <div className="absolute bottom-1/4 right-1/3 w-2.5 h-2.5 bg-cyan-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-cyan-500/50" style={{ animationDelay: '3s' }}></div>
-                            <div className="absolute top-1/2 left-1/3 w-3 h-3 bg-indigo-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-indigo-500/50" style={{ animationDelay: '4s' }}></div>
+                        <div className="absolute inset-6">
+                            <div className="absolute top-1/4 left-1/4 w-5 h-5 bg-blue-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-blue-500/50"></div>
+                            <div className="absolute top-1/3 right-1/4 w-4 h-4 bg-purple-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-purple-500/50" style={{ animationDelay: '0.8s' }}></div>
+                            <div className="absolute bottom-1/3 left-1/2 w-4.5 h-4.5 bg-pink-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-pink-500/50" style={{ animationDelay: '1.6s' }}></div>
+                            <div className="absolute bottom-1/4 right-1/3 w-3.5 h-3.5 bg-cyan-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-cyan-500/50" style={{ animationDelay: '2.4s' }}></div>
+                            <div className="absolute top-1/2 left-1/3 w-4 h-4 bg-indigo-400/80 rounded-full blur-sm animate-magnetic-drift shadow-lg shadow-indigo-500/50" style={{ animationDelay: '3.2s' }}></div>
                         </div>
                         
                         {/* Main ferrofluid blob with spiky morphing */}
-                        <div className="absolute inset-10 animate-ferrofluid-morph overflow-hidden">
+                        <div className="absolute inset-8 animate-ferrofluid-morph overflow-hidden">
                             <div className="w-full h-full bg-gradient-to-br from-blue-500/50 via-purple-500/60 to-pink-500/50 backdrop-blur-sm animate-color-flow shadow-2xl shadow-purple-500/60"></div>
                         </div>
                         
                         {/* Coral red accent layer */}
-                        <div className="absolute inset-12 animate-spike-emerge overflow-hidden" style={{ animationDelay: '0.8s' }}>
+                        <div className="absolute inset-10 animate-spike-emerge overflow-hidden" style={{ animationDelay: '0.6s' }}>
                             <div className="w-full h-full bg-gradient-to-br from-[#FD5245]/60 via-[#FD5245]/50 to-pink-500/40 backdrop-blur-sm shadow-2xl shadow-[#FD5245]/50"></div>
                         </div>
                         
                         {/* Secondary spike layer */}
-                        <div className="absolute inset-14 animate-spike-emerge overflow-hidden">
+                        <div className="absolute inset-12 animate-spike-emerge overflow-hidden" style={{ animationDelay: '0.3s' }}>
                             <div className="w-full h-full bg-gradient-to-br from-purple-400/40 via-pink-400/50 to-blue-400/40 backdrop-blur-md shadow-xl shadow-pink-500/50"></div>
                         </div>
                         
                         {/* Inner fluid waves */}
-                        <div className="absolute inset-20 rounded-full bg-gradient-to-br from-blue-300/50 via-purple-300/60 to-pink-300/50 animate-fluid-wave blur-md"></div>
-                        <div className="absolute inset-24 rounded-full bg-gradient-to-br from-pink-300/60 via-blue-300/70 to-purple-300/60 animate-fluid-wave blur-sm" style={{ animationDelay: '1.3s' }}></div>
+                        <div className="absolute inset-16 rounded-full bg-gradient-to-br from-blue-300/50 via-purple-300/60 to-pink-300/50 animate-fluid-wave blur-md"></div>
+                        <div className="absolute inset-20 rounded-full bg-gradient-to-br from-pink-300/60 via-blue-300/70 to-purple-300/60 animate-fluid-wave blur-sm" style={{ animationDelay: '1s' }}></div>
                         
                         {/* Core magnetic pulse */}
                         <div className="absolute inset-0 flex items-center justify-center">
-                            <div className="w-8 h-8 bg-gradient-to-br from-white/60 via-blue-200/70 to-purple-200/60 rounded-full animate-magnetic-pulse blur-md shadow-2xl shadow-white/30"></div>
+                            <div className="w-10 h-10 bg-gradient-to-br from-white/60 via-blue-200/70 to-purple-200/60 rounded-full animate-magnetic-pulse blur-md shadow-2xl shadow-white/30"></div>
                         </div>
                     </div>
                     

@@ -90,7 +90,6 @@ export interface ImageGenerationFormProps {
     availableWorkflows?: WorkflowMetadata[];
     selectedWorkflow?: string | null;
     onWorkflowChange?: (workflowId: string) => void;
-    onRefreshWorkflows?: () => Promise<void>;
 }
 
 export interface GeneratedImagesDisplayProps {

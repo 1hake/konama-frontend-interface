@@ -80,7 +80,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [showParameters, setShowParameters] = useState(false);
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState(false);
     const lastScrollYRef = useRef(0);
 
     // Auto-fold when generation starts

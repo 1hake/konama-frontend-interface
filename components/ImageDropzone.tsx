@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef } from 'react';
+import Image from 'next/image';
 
 interface ImageDropzoneProps {
     onImageUpload: (file: File, previewUrl: string) => void;
@@ -88,9 +89,11 @@ export const ImageDropzone: React.FC<ImageDropzoneProps> = ({
                 // Image preview state
                 <div className="relative group">
                     <div className="relative overflow-hidden rounded-2xl border-2 border-purple-500/30 bg-gradient-to-br from-purple-500/10 to-pink-500/10 backdrop-blur-sm">
-                        <img
+                        <Image
                             src={uploadedImage.previewUrl}
                             alt="Input preview"
+                            width={400}
+                            height={128}
                             className="w-full h-32 object-cover"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

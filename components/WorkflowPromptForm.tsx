@@ -36,7 +36,6 @@ export function WorkflowPromptForm() {
   } = usePromptEnhancement();
 
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string>('');
-  const [selectedWorkflows, setSelectedWorkflows] = useState<string[]>([]);
   const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
   
   // Prompt fields state
@@ -66,7 +65,6 @@ export function WorkflowPromptForm() {
   useEffect(() => {
     if (workflows.length > 0 && !selectedWorkflowId) {
       setSelectedWorkflowId(workflows[0].name);
-      setSelectedWorkflows([workflows[0].name]);
     }
   }, [workflows, selectedWorkflowId]);
   
@@ -79,10 +77,7 @@ export function WorkflowPromptForm() {
     }
   }, []);
   
-  // Navigate between suggestions
-  const handleNavigate = useCallback(() => {
-    // Implement navigation if needed
-  }, []);
+
   
   // Build the final prompt from fields
   const buildPrompt = useCallback(() => {
@@ -125,7 +120,6 @@ export function WorkflowPromptForm() {
     });
   }, []);
   
-  // Check if there's content
   const hasContent = Object.values(fields).some(v => v.trim() !== '') || technicalFields.negatifs.trim() !== '';
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -142,15 +136,12 @@ export function WorkflowPromptForm() {
       return;
     }
 
-    // Find the selected workflow
     const selectedWorkflow = workflows.find((w) => w.name === selectedWorkflowId);
-
     if (!selectedWorkflow) {
       alert('Selected workflow not found');
       return;
     }
 
-    // Check if workflow details are loaded
     if (!selectedWorkflow.details) {
       alert('Workflow details not loaded. Please try again.');
       return;
@@ -161,17 +152,12 @@ export function WorkflowPromptForm() {
       negative: technicalFields.negatifs || undefined,
     };
 
-    try {
-      await submitWorkflow({
-        workflowId: selectedWorkflowId,
-        workflowData: selectedWorkflow.details,
-        userPrompt,
-        mode: 'slow',
-      });
-    } catch (error) {
-      // Error already handled by useWorkflowSubmission
-      console.error('Error submitting workflow:', error);
-    }
+    await submitWorkflow({
+      workflowId: selectedWorkflowId,
+      workflowData: selectedWorkflow.details,
+      userPrompt,
+      mode: 'slow',
+    });
   };
   
   const handleGenerate = () => {
@@ -190,22 +176,9 @@ export function WorkflowPromptForm() {
           onClose={() => setIsWorkflowModalOpen(false)}
           workflows={workflows}
           selectedWorkflow={selectedWorkflowId}
-          selectedWorkflows={selectedWorkflows}
-          onWorkflowChange={(workflowId) => {
-            setSelectedWorkflowId(workflowId);
-          }}
-          onWorkflowsChange={(workflowIds) => {
-            setSelectedWorkflows(workflowIds);
-            if (workflowIds.length === 1) {
-              setSelectedWorkflowId(workflowIds[0]);
-            }
-          }}
-          onRefresh={async () => {
-            // Workflows are already loaded via useWorkflows hook
-          }}
+          onWorkflowChange={setSelectedWorkflowId}
         />
 
-        {/* Error Messages */}
         {workflowError && (
           <div className="p-4 bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-lg">
             Error loading workflows: {workflowError}
@@ -218,7 +191,6 @@ export function WorkflowPromptForm() {
           </div>
         )}
 
-        {/* Prompt Sentence Builder */}
         <PromptSentenceBuilder
           fields={fields}
           technicalFields={technicalFields}
@@ -228,7 +200,7 @@ export function WorkflowPromptForm() {
           inlineFields={inlineFields}
           getSuggestionsForField={getSuggestionsForField}
           hasSuggestions={hasSuggestions}
-          onNavigate={handleNavigate}
+          onNavigate={() => {}}
           onGenerate={handleGenerate}
           onEnhancePrompt={handleEnhancePrompt}
           onOpenWorkflowModal={() => setIsWorkflowModalOpen(true)}
