@@ -2,7 +2,7 @@ export { useImageGeneration } from './useImageGeneration';
 export { usePromptEnhancement } from './usePromptEnhancement';
 export { useWorkflows } from './useWorkflows';
 export { useWorkflowsApi } from './useWorkflowsApi';
-export { useFunnel } from './useFunnel';
+export { useWorkflowSubmission } from './useWorkflowSubmission';
 
 // Authentication hooks
 export {

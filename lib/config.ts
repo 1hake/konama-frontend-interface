@@ -7,6 +7,10 @@ export const config = {
     workflowApiUrl:
         process.env.NEXT_PUBLIC_WORKFLOW_API_URL || 'https://client.konama.fuzdi.fr',
 
+    // Auth API URL (for authentication services)
+    authApiUrl:
+        process.env.NEXT_PUBLIC_API_URL || 'https://client.konama.fuzdi.fr',
+
     // Check if using external API (not localhost)
     isExternalApi:
         process.env.NEXT_PUBLIC_COMFY_API_URL &&

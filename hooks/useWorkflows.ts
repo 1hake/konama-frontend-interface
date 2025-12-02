@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import { apiClient } from '../lib/auth';
 import { WorkflowMetadata } from '../types';
 import { config } from '../lib/config';
 
@@ -155,17 +155,8 @@ export const useWorkflows = () => {
         }
 
         try {
-            // Try direct connection first
-            let response;
-            try {
-                response = await axios.get(
-                    `${config.workflowApiUrl}/workflows`
-                );
-            } catch (directError) {
-                // If direct connection fails, try through our proxy
-                console.log('Direct connection failed, trying proxy...');
-                response = await axios.get('/api/workflows');
-            }
+            // Use authenticated API client to call our proxy endpoint
+            const response = await apiClient.get('/workflows');
 
             const data = response.data;
             console.log('Raw workflow data:', data);
@@ -240,6 +231,34 @@ export const useWorkflows = () => {
                 `✅ Successfully loaded ${workflowsData.length} workflows:`,
                 workflowsData.map(w => w.name)
             );
+
+            // Fetch full workflow details for each workflow
+            if (workflowsData.length > 0) {
+                console.log('🔄 Fetching full workflow details...');
+                const detailsPromises = workflowsData.map(async (workflow) => {
+                    try {
+                        const detailResponse = await apiClient.get(
+                            `/workflows/${workflow.id}`
+                        );
+                        console.log(`✅ Fetched details for: ${workflow.name}`, detailResponse.data);
+                        
+                        // Update the workflow object with details
+                        return {
+                            ...workflow,
+                            details: detailResponse.data.data || detailResponse.data
+                        };
+                    } catch (err) {
+                        console.error(`❌ Failed to fetch details for ${workflow.name}:`, err);
+                        return workflow; // Return without details if fetch fails
+                    }
+                });
+
+                const workflowsWithDetails = await Promise.all(detailsPromises);
+                console.log('✅ All workflow details fetched:', workflowsWithDetails);
+                
+                // Update the state with workflows that now have details
+                setWorkflows(workflowsWithDetails);
+            }
         } catch (err) {
             const errorMessage =
                 err instanceof Error
@@ -270,13 +289,13 @@ export const useWorkflows = () => {
             
             let response;
             try {
-                response = await axios.get(
+                response = await apiClient.get(
                     `${config.workflowApiUrl}/workflows/workflow?name=${encodeURIComponent(workflowName)}`
                 );
             } catch (directError) {
                 // If direct connection fails, try through our proxy
                 console.log('Direct connection failed, trying proxy...');
-                response = await axios.get(
+                response = await apiClient.get(
                     `/api/workflows/workflow?name=${encodeURIComponent(workflowName)}`
                 );
             }

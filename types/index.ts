@@ -48,6 +48,7 @@ export interface WorkflowMetadata {
     source?: 'api' | 'local' | 'auto-detected' | 'fallback';
     availableNodes?: string[];
     lastFetched?: Date;
+    details?: any; // Full workflow data from backend
 }
 
 export interface ComfyWorkflow {
@@ -90,15 +91,6 @@ export interface ImageGenerationFormProps {
     selectedWorkflow?: string | null;
     onWorkflowChange?: (workflowId: string) => void;
     onRefreshWorkflows?: () => Promise<void>;
-    isFunnelMode?: boolean;
-    selectedWorkflows?: string[];
-    onSelectedWorkflowsChange?: (workflowIds: string[]) => void;
-    // Funnel editing support
-    viewStepIndex?: number;
-    currentStepIndex?: number;
-    editingPromptFields?: any;
-    editingTechnicalFields?: any;
-    onEditingFieldsChange?: (promptFields: any, technicalFields: any) => void;
 }
 
 export interface GeneratedImagesDisplayProps {
@@ -106,7 +98,6 @@ export interface GeneratedImagesDisplayProps {
     getImageUrl: (image: GeneratedImage) => string;
 }
 
-// Export funnel, auth, and workflow API types
-export * from './funnel';
+// Export auth and workflow API types
 export * from './auth';
 export * from './workflow-api';

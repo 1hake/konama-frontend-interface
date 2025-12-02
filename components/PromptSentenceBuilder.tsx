@@ -50,11 +50,6 @@ interface PromptSentenceBuilderProps {
     // Clear functionality
     onClearAll: () => void;
     hasContent: boolean;
-    // Funnel mode props
-    isFunnelMode?: boolean;
-    selectedWorkflows?: string[];
-    onSelectedWorkflowsChange?: (workflowIds: string[]) => void;
-    isViewingPastStep?: boolean;
     // Image upload props
     uploadedImage?: { file: File; previewUrl: string } | null;
     onImageUpload?: (file: File, previewUrl: string) => void;
@@ -79,9 +74,6 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
     error,
     onClearAll,
     hasContent,
-    isFunnelMode = false,
-    selectedWorkflows = [],
-    isViewingPastStep = false,
     uploadedImage,
     onImageUpload,
     onImageRemove,
@@ -146,27 +138,6 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 to-purple-500/10 animate-pulse pointer-events-none"></div>
             )}
 
-            {/* Info Banner when viewing past step */}
-            {isViewingPastStep && (
-                <div className="mb-3 p-3 glass-light border border-blue-400/30 rounded-xl flex items-center gap-2 text-blue-300 text-sm">
-                    <svg
-                        className="w-4 h-4 flex-shrink-0"
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                    >
-                        <path
-                            fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                            clipRule="evenodd"
-                        />
-                    </svg>
-                    <span>
-                        Viewing previous step parameters. Edit to refine for
-                        next generation.
-                    </span>
-                </div>
-            )}
-
             {/* Action Bar */}
             <div className="flex gap-2 items-center relative z-10">
                 {/* Collapse/Expand Button */}
@@ -197,19 +168,13 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                     type="button"
                     onClick={onOpenWorkflowModal}
                     disabled={isGenerating}
-                    title={
-                        isFunnelMode
-                            ? 'Select workflows (Funnel Mode)'
-                            : 'Select workflow'
-                    }
+                    title="Select workflow"
                     className={`
                         flex-shrink-0 p-2.5 rounded-full font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed border active:scale-95
                         ${
-                            isFunnelMode
-                                ? 'bg-purple-500/20 hover:bg-purple-500/30 text-white border-purple-400/30 hover:border-purple-400/50'
-                                : selectedWorkflow
-                                  ? 'bg-blue-500/20 hover:bg-blue-500/30 text-white border-blue-400/30 hover:border-blue-400/50'
-                                  : 'bg-orange-500/20 hover:bg-orange-500/30 text-white border-orange-400/30 hover:border-orange-400/50 animate-pulse'
+                            selectedWorkflow
+                              ? 'bg-blue-500/20 hover:bg-blue-500/30 text-white border-blue-400/30 hover:border-blue-400/50'
+                              : 'bg-orange-500/20 hover:bg-orange-500/30 text-white border-orange-400/30 hover:border-orange-400/50 animate-pulse'
                         }
                     `}
                 >
@@ -233,11 +198,6 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                                 d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                             />
                         </svg>
-                        {selectedWorkflows && selectedWorkflows.length > 0 && (
-                            <span className="text-sm font-semibold">
-                                {selectedWorkflows.length}
-                            </span>
-                        )}
                     </div>
                 </button>
 
@@ -261,8 +221,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                             )}
                         </div>
                     )}
-                    {!isFunnelMode &&
-                        !selectedWorkflow &&
+                    {!selectedWorkflow &&
                         availableWorkflows.length > 0 &&
                         !error &&
                         isExpanded && (
@@ -279,30 +238,6 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                                     />
                                 </svg>
                                 <span>Sélectionnez un workflow</span>
-                            </div>
-                        )}
-                    {isFunnelMode &&
-                        (!selectedWorkflows ||
-                            selectedWorkflows.length === 0) &&
-                        availableWorkflows.length > 0 &&
-                        !error &&
-                        isExpanded && (
-                            <div className="bg-orange-500/10 border border-orange-500/30 text-orange-300 px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 backdrop-blur-sm">
-                                <svg
-                                    className="w-3 h-3 flex-shrink-0"
-                                    fill="currentColor"
-                                    viewBox="0 0 20 20"
-                                >
-                                    <path
-                                        fillRule="evenodd"
-                                        d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                                        clipRule="evenodd"
-                                    />
-                                </svg>
-                                <span>
-                                    Sélectionnez des workflows pour le mode
-                                    funnel
-                                </span>
                             </div>
                         )}
                 </div>
@@ -353,9 +288,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                     disabled={
                         isGenerating ||
                         fields.sujet.trim() === '' ||
-                        (isFunnelMode
-                            ? selectedWorkflows.length === 0
-                            : !selectedWorkflow)
+                        !selectedWorkflow
                     }
                     className="flex-shrink-0 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium px-6 py-2.5 rounded-full transition-all duration-300 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg active:scale-95 disabled:opacity-50 text-sm"
                 >
@@ -378,11 +311,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                                 />
                             </svg>
                             {isExpanded && (
-                                <span>
-                                    {isFunnelMode
-                                        ? 'Generate next step'
-                                        : 'Générer'}
-                                </span>
+                                <span>Générer</span>
                             )}
                         </>
                     )}

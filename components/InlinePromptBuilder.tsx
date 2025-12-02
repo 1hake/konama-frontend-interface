@@ -33,10 +33,6 @@ interface InlinePromptBuilderProps {
     onWorkflowChange?: (workflowId: string) => void;
     onRefreshWorkflows?: () => Promise<void>;
     error?: string | null;
-    isFunnelMode?: boolean;
-    selectedWorkflows?: string[];
-    onSelectedWorkflowsChange?: (workflowIds: string[]) => void;
-    isViewingPastStep?: boolean;
     uploadedImage?: { file: File; previewUrl: string } | null;
     onImageUpload?: (file: File, previewUrl: string) => void;
     onImageRemove?: () => void;
@@ -113,10 +109,6 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
     onWorkflowChange,
     onRefreshWorkflows,
     error: formError,
-    isFunnelMode = false,
-    selectedWorkflows = [],
-    onSelectedWorkflowsChange,
-    isViewingPastStep = false,
     uploadedImage,
     onImageUpload,
     onImageRemove,
@@ -171,9 +163,13 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
                     onClose={() => setIsWorkflowModalOpen(false)}
                     workflows={availableWorkflows}
                     selectedWorkflow={selectedWorkflow}
-                    selectedWorkflows={selectedWorkflows}
+                    selectedWorkflows={selectedWorkflow ? [selectedWorkflow] : []}
                     onWorkflowChange={onWorkflowChange}
-                    onWorkflowsChange={onSelectedWorkflowsChange || (() => {})}
+                    onWorkflowsChange={(workflowIds) => {
+                        if (workflowIds.length > 0 && onWorkflowChange) {
+                            onWorkflowChange(workflowIds[0]);
+                        }
+                    }}
                     onRefresh={onRefreshWorkflows}
                 />
             )}
@@ -197,10 +193,6 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
                 error={formError}
                 onClearAll={handleClearAll}
                 hasContent={hasContent}
-                isFunnelMode={isFunnelMode}
-                selectedWorkflows={selectedWorkflows}
-                onSelectedWorkflowsChange={onSelectedWorkflowsChange}
-                isViewingPastStep={isViewingPastStep}
                 uploadedImage={uploadedImage}
                 onImageUpload={onImageUpload}
                 onImageRemove={onImageRemove}

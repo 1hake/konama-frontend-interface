@@ -28,14 +28,12 @@
 #### 3. Hooks et logique métier
 
 - **`hooks/useAuth.ts`** : Ajout du hook `useAuthenticatedAPI`
-- **`hooks/useFunnel.ts`** : Axios dans toutes les opérations CRUD
 - **`hooks/useImageGeneration.ts`** : Axios pour les appels API
 - **`hooks/useWorkflows.ts`** : Axios pour récupérer les workflows
 - **`hooks/usePromptEnhancement.ts`** : Axios pour l'amélioration de prompts
 
 #### 4. Pages et composants
 
-- **`app/funnels/page.tsx`** : Axios pour charger la liste des funnels
 - **`app/api/view/route.ts`** : Axios pour récupérer les images
 
 ### 🔧 Configuration des intercepteurs Axios

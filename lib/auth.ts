@@ -8,7 +8,9 @@ import {
     UserData,
 } from './sessionCookie';
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+// Use relative path to call Next.js API routes, which proxy to the backend
+// This avoids CORS issues when calling from the browser
+const baseURL = '/api';
 
 const createClient = () =>
     axios.create({

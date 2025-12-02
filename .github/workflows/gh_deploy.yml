@@ -29,7 +29,7 @@ jobs:
                   no-cache: true
                   build-args: |
                       NODE_ENV=production
-                      NEXT_PUBLIC_API_URL=https://studio.fuzdi.fr
+                      NEXT_PUBLIC_API_URL=https://client.konama.fuzdi.fr
                       NEXT_PUBLIC_BASE_URL=https://studio.fuzdi.fr
                       NEXT_PUBLIC_COMFY_API_URL=http://localhost:3000/api
                       NEXT_PUBLIC_WORKFLOW_API_URL=http://localhost:4001

@@ -165,7 +165,7 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                                 • {selectedWorkflows.length}{' '}
                                                 selected •{' '}
                                                 {selectedWorkflows.length >= 2
-                                                    ? '🎯 Funnel Mode'
+                                                    ? '🎯 Multi Mode'
                                                     : '⚡ Single Mode'}
                                             </p>
                                             {workflows.length > 0 && (
@@ -262,7 +262,7 @@ export const WorkflowSelectorModal: React.FC<WorkflowSelectorModalProps> = ({
                                         {selectedWorkflows.length === 1 &&
                                             'Single workflow selected - Standard mode'}
                                         {selectedWorkflows.length >= 2 &&
-                                            `${selectedWorkflows.length} workflows - Funnel mode activated`}
+                                            `${selectedWorkflows.length} workflows - Multi mode activated`}
                                     </div>
                                     <div className="flex gap-2">
                                         <button

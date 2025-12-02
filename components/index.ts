@@ -20,6 +20,7 @@ export { PromptBuilderHeader } from './PromptBuilderHeader';
 export { PromptSentenceBuilder } from './PromptSentenceBuilder';
 export { PromptBuilderActions } from './PromptBuilderActions';
 export { ImageDropzone } from './ImageDropzone';
+export { WorkflowPromptForm } from './WorkflowPromptForm';
 
 // Authentication components
 export { default as ProtectedRoute } from './ProtectedRoute';

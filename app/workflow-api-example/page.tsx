@@ -63,22 +63,20 @@ export default function WorkflowApiExample() {
             <div className="space-y-4">
               <div>
                 <label className="text-sm font-medium text-gray-700">Name:</label>
-                <p className="text-gray-900">{selectedWorkflowData.name || selectedWorkflowName}</p>
+                <p className="text-gray-900">{selectedWorkflowName}</p>
               </div>
               
-              {selectedWorkflowData.description && (
+              {selectedWorkflowData.extra && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Description:</label>
-                  <p className="text-gray-900">{selectedWorkflowData.description}</p>
+                  <label className="text-sm font-medium text-gray-700">Frontend Version:</label>
+                  <p className="text-gray-900">{selectedWorkflowData.extra.frontendVersion}</p>
                 </div>
               )}
               
-              {selectedWorkflowData.version && (
-                <div>
-                  <label className="text-sm font-medium text-gray-700">Version:</label>
-                  <p className="text-gray-900">{selectedWorkflowData.version}</p>
-                </div>
-              )}
+              <div>
+                <label className="text-sm font-medium text-gray-700">Version:</label>
+                <p className="text-gray-900">{selectedWorkflowData.version}</p>
+              </div>
               
               {selectedWorkflowData.nodes && (
                 <div>
@@ -87,11 +85,11 @@ export default function WorkflowApiExample() {
                 </div>
               )}
               
-              {selectedWorkflowData.metadata && (
+              {selectedWorkflowData.extra && Object.keys(selectedWorkflowData.extra).length > 0 && (
                 <div>
-                  <label className="text-sm font-medium text-gray-700">Metadata:</label>
+                  <label className="text-sm font-medium text-gray-700">Extra Data:</label>
                   <pre className="text-xs bg-gray-100 p-2 rounded overflow-auto max-h-32">
-                    {JSON.stringify(selectedWorkflowData.metadata, null, 2)}
+                    {JSON.stringify(selectedWorkflowData.extra, null, 2)}
                   </pre>
                 </div>
               )}
