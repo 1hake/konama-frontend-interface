@@ -23,16 +23,31 @@ services:
                 order: stop-first
         labels:
             - 'traefik.enable=true'
-            # Rule for the root domain
+            
+            # HTTP to HTTPS redirect
+            - 'traefik.http.routers.konama-frontend-http.rule=Host(`studio.fuzdi.fr`)'
+            - 'traefik.http.routers.konama-frontend-http.entrypoints=web'
+            - 'traefik.http.routers.konama-frontend-http.middlewares=https-redirect'
+            
+            # HTTPS router for the root domain
             - 'traefik.http.routers.konama-frontend.rule=Host(`studio.fuzdi.fr`)'
             - 'traefik.http.routers.konama-frontend.entrypoints=websecure'
             - 'traefik.http.routers.konama-frontend.tls.certresolver=letsencrypt'
 
-            # Rule for the www subdomain (if needed)
+            # HTTP to HTTPS redirect for www
+            - 'traefik.http.routers.konama-frontend-www-http.rule=Host(`www.studio.fuzdi.fr`)'
+            - 'traefik.http.routers.konama-frontend-www-http.entrypoints=web'
+            - 'traefik.http.routers.konama-frontend-www-http.middlewares=https-redirect'
+            
+            # HTTPS router for the www subdomain
             - 'traefik.http.routers.konama-frontend-www.rule=Host(`www.studio.fuzdi.fr`)'
             - 'traefik.http.routers.konama-frontend-www.entrypoints=websecure'
             - 'traefik.http.routers.konama-frontend-www.tls.certresolver=letsencrypt'
             - 'traefik.http.routers.konama-frontend-www.middlewares=redirect-to-root'
+            
+            # HTTPS redirect middleware
+            - 'traefik.http.middlewares.https-redirect.redirectscheme.scheme=https'
+            - 'traefik.http.middlewares.https-redirect.redirectscheme.permanent=true'
 
             # Redirect middleware from www to root domain
             - 'traefik.http.middlewares.redirect-to-root.redirectregex.regex=^https?://www\.studio\.fuzdi\.fr/(.*)'
