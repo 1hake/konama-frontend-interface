@@ -12,11 +12,11 @@ interface PromptBuilderActionsProps {
 
 export const PromptBuilderActions: React.FC<PromptBuilderActionsProps> = ({
     isGenerating,
-    isEnhancing,
+    // isEnhancing,
     hasContent,
     hasSuggestions,
     error,
-    onEnhancePrompt,
+    // onEnhancePrompt,
     onClearAll,
 }) => {
     return (
@@ -24,8 +24,8 @@ export const PromptBuilderActions: React.FC<PromptBuilderActionsProps> = ({
             {/* Actions */}
             <div className="mt-3 flex items-center justify-end">
                 <div className="flex items-center gap-2">
-                    {/* Enhance Prompt Button - Simplified */}
-                    <button
+                    Enhance Prompt Button - Simplified
+                    {/* <button
                         type="button"
                         onClick={onEnhancePrompt}
                         disabled={isGenerating || isEnhancing}
@@ -61,7 +61,7 @@ export const PromptBuilderActions: React.FC<PromptBuilderActionsProps> = ({
                                 <span>Améliorer</span>
                             </>
                         )}
-                    </button>
+                    </button> */}
 
                     {hasContent && (
                         <button

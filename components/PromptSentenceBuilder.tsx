@@ -2,7 +2,7 @@
 
 import { useRef, useState, useEffect } from 'react';
 import { InlineToken } from './InlineToken';
-import { TechnicalParameters } from './TechnicalParameters';
+// import { TechnicalParameters } from './TechnicalParameters';
 import { ImageDropzone } from './ImageDropzone';
 import { WorkflowMetadata } from '../types';
 
@@ -58,7 +58,7 @@ interface PromptSentenceBuilderProps {
 
 export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
     fields,
-    technicalFields,
+    // technicalFields,
     onFieldChange,
     isGenerating,
     isEnhancing,
@@ -67,7 +67,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
     hasSuggestions,
     onNavigate,
     onGenerate,
-    onEnhancePrompt,
+    // onEnhancePrompt,
     onOpenWorkflowModal,
     selectedWorkflow,
     availableWorkflows = [],
@@ -79,7 +79,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
     onImageRemove,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [showParameters, setShowParameters] = useState(false);
+    // const [showParameters, setShowParameters] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const lastScrollYRef = useRef(0);
 
@@ -243,7 +243,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                 </div>
 
                 {/* Enhance Button */}
-                <button
+                {/* <button
                     type="button"
                     onClick={onEnhancePrompt}
                     disabled={isGenerating || isEnhancing}
@@ -279,7 +279,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                             {isExpanded && <span>Améliorer</span>}
                         </>
                     )}
-                </button>
+                </button> */}
 
                 {/* Generate Button */}
                 <button
@@ -432,44 +432,7 @@ export const PromptSentenceBuilder: React.FC<PromptSentenceBuilderProps> = ({
                     </div>
                 )}
 
-                {/* Technical Parameters - Collapsible */}
-                <div className="space-y-2 relative z-10 mt-4">
-                    <button
-                        type="button"
-                        onClick={() => setShowParameters(!showParameters)}
-                        className="flex items-center gap-2 text-xs font-medium text-gray-400 hover:text-blue-300 transition-colors"
-                    >
-                        <svg
-                            className={`w-3 h-3 transition-transform duration-300 ${showParameters ? 'rotate-90' : ''}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 5l7 7-7 7"
-                            />
-                        </svg>
-                        <span>⚙️ Paramètres techniques</span>
-                    </button>
-
-                    {showParameters && (
-                        <TechnicalParameters
-                            parametres={fields.parametres}
-                            steps={technicalFields.steps}
-                            guidance={technicalFields.guidance}
-                            aspectRatio={technicalFields.aspectRatio}
-                            loraName={technicalFields.loraName}
-                            loraStrength={technicalFields.loraStrength}
-                            negatifs={technicalFields.negatifs}
-                            onFieldChange={onFieldChange}
-                            isGenerating={isGenerating}
-                        />
-                    )}
-                </div>
-
+              
                 {/* Clear Button */}
                 {hasContent && (
                     <div className="flex items-center justify-start mt-4 relative z-10">

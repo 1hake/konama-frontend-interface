@@ -1,7 +1,7 @@
 'use client';
 
-import { Popover, Transition } from '@headlessui/react';
-import { Fragment } from 'react';
+
+// import { Fragment } from 'react';
 
 interface PromptField {
     name: string;
@@ -112,62 +112,7 @@ export const UnifiedPromptBuilder: React.FC<UnifiedPromptBuilderProps> = ({
                                 <span>{field.label}</span>
                             </label>
 
-                            {/* Tooltip with Example */}
-                            <Popover className="relative">
-                                {({ open }) => (
-                                    <>
-                                        <Popover.Button
-                                            className={`
-                                                p-1 rounded-md transition-colors
-                                                ${open ? 'bg-purple-600 text-white' : 'text-gray-400 hover:text-purple-400 hover:bg-gray-700'}
-                                            `}
-                                        >
-                                            <svg
-                                                className="w-4 h-4"
-                                                fill="currentColor"
-                                                viewBox="0 0 20 20"
-                                            >
-                                                <path
-                                                    fillRule="evenodd"
-                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z"
-                                                    clipRule="evenodd"
-                                                />
-                                            </svg>
-                                        </Popover.Button>
 
-                                        <Transition
-                                            as={Fragment}
-                                            enter="transition ease-out duration-200"
-                                            enterFrom="opacity-0 translate-y-1"
-                                            enterTo="opacity-100 translate-y-0"
-                                            leave="transition ease-in duration-150"
-                                            leaveFrom="opacity-100 translate-y-0"
-                                            leaveTo="opacity-0 translate-y-1"
-                                        >
-                                            <Popover.Panel className="absolute z-10 left-0 mt-2 w-72">
-                                                <div className="rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 bg-gray-900 border border-purple-500/30 p-3">
-                                                    <div className="mb-2">
-                                                        <p className="text-xs font-semibold text-purple-300 uppercase tracking-wide">
-                                                            Exemple
-                                                        </p>
-                                                    </div>
-                                                    <p className="text-sm text-gray-300 italic">
-                                                        &quot;{field.example}
-                                                        &quot;
-                                                    </p>
-                                                    <div className="mt-2 pt-2 border-t border-gray-700">
-                                                        <p className="text-xs text-gray-400">
-                                                            Utilisez des termes
-                                                            descriptifs séparés
-                                                            par des virgules
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </Popover.Panel>
-                                        </Transition>
-                                    </>
-                                )}
-                            </Popover>
                         </div>
 
                         <input

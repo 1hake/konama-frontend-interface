@@ -74,12 +74,22 @@ export function WebSocketDiagnostic() {
                         <h4 className="font-medium text-blue-700 mb-2">Dernier événement</h4>
                         <div className="text-sm text-blue-600">
                             <div><strong>Type:</strong> {lastEvent.type}</div>
-                            <div><strong>Statut:</strong> {lastEvent.data.status}</div>
-                            <div><strong>Tâche:</strong> {lastEvent.data.taskId}</div>
-                            <div><strong>Timestamp:</strong> {new Date(lastEvent.timestamp).toLocaleString()}</div>
-                            {lastEvent.data.files && (
-                                <div><strong>Fichiers:</strong> {lastEvent.data.files.length}</div>
+                            {lastEvent.data ? (
+                                <>
+                                    {lastEvent.data.status && (
+                                        <div><strong>Statut:</strong> {lastEvent.data.status}</div>
+                                    )}
+                                    {lastEvent.data.taskId && (
+                                        <div><strong>Tâche:</strong> {lastEvent.data.taskId}</div>
+                                    )}
+                                    {lastEvent.data.files && (
+                                        <div><strong>Fichiers:</strong> {lastEvent.data.files.length}</div>
+                                    )}
+                                </>
+                            ) : (
+                                <div><strong>Message:</strong> {typeof lastEvent === 'object' ? JSON.stringify(lastEvent) : String(lastEvent)}</div>
                             )}
+                            <div><strong>Timestamp:</strong> {lastEvent.timestamp ? new Date(lastEvent.timestamp).toLocaleString() : 'Non disponible'}</div>
                         </div>
                     </div>
                 )}

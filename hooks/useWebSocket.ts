@@ -25,8 +25,9 @@ export interface TaskEventData {
 }
 
 export interface WebSocketEvent {
-    type: 'task.updated' | 'task.files.uploaded';
-    data: TaskEventData;
+    type: 'task.updated' | 'task.files.uploaded' | 'connected' | 'auth' | string;
+    data?: TaskEventData;
+    message?: string;
     timestamp: string;
 }
 
@@ -126,6 +127,7 @@ export function useWebSocket(): UseWebSocketReturn {
 
         // Si c'est une tâche en statut SUCCESS avec des fichiers
         if (
+            event.data && 
             event.data.status === 'SUCCESS' && 
             event.data.files && 
             event.data.files.length > 0
@@ -201,10 +203,30 @@ export function useWebSocket(): UseWebSocketReturn {
             wsRef.current.onmessage = (messageEvent) => {
                 try {
                     console.log('📨 Message WebSocket reçu:', messageEvent.data);
-                    const event: WebSocketEvent = JSON.parse(messageEvent.data);
+                    
+                    // Essayer de parser le message comme JSON
+                    let parsedMessage;
+                    try {
+                        parsedMessage = JSON.parse(messageEvent.data);
+                    } catch (parseError) {
+                        console.warn('⚠️ Message WebSocket non-JSON reçu:', messageEvent.data);
+                        // Créer un événement générique pour les messages non-JSON
+                        parsedMessage = {
+                            type: 'raw_message',
+                            message: messageEvent.data,
+                            timestamp: new Date().toISOString()
+                        };
+                    }
+
+                    // Assurer que l'événement a un timestamp
+                    if (!parsedMessage.timestamp) {
+                        parsedMessage.timestamp = new Date().toISOString();
+                    }
+
+                    const event: WebSocketEvent = parsedMessage;
                     handleWebSocketEvent(event);
                 } catch (error) {
-                    console.error('❌ Erreur lors du parsing du message WebSocket:', error);
+                    console.error('❌ Erreur lors du traitement du message WebSocket:', error);
                     console.error('📄 Message reçu:', messageEvent.data);
                 }
             };

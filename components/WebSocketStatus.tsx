@@ -90,12 +90,17 @@ export function WebSocketStatus({ className = '', showDetails = false }: WebSock
                             <div>
                                 <strong>Dernier événement:</strong> {lastEvent.type}
                             </div>
-                            <div>
-                                Statut: {lastEvent.data.status} | 
-                                Tâche: {lastEvent.data.taskId.substring(0, 8)}...
-                            </div>
+                            {lastEvent.data ? (
+                                <div>
+                                    {lastEvent.data.status && `Statut: ${lastEvent.data.status}`}
+                                    {lastEvent.data.status && lastEvent.data.taskId && ' | '}
+                                    {lastEvent.data.taskId && `Tâche: ${lastEvent.data.taskId.substring(0, 8)}...`}
+                                </div>
+                            ) : lastEvent.message && (
+                                <div>Message: {lastEvent.message}</div>
+                            )}
                             <div className="text-gray-600 mt-1">
-                                {new Date(lastEvent.timestamp).toLocaleString()}
+                                {lastEvent.timestamp ? new Date(lastEvent.timestamp).toLocaleString() : 'Maintenant'}
                             </div>
                         </div>
                     )}

@@ -31,13 +31,13 @@ body {
     }
 
     .glass {
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
+        background: rgba(1, 4, 20, 0.599);
+        backdrop-filter: blur(70px) saturate(180%);
+        -webkit-backdrop-filter: blur(7px) saturate(180%);
     }
 
     .glass-light {
-        background: rgba(255, 255, 255, 0.1);
+        background: rgba(0, 0, 0, 0.1);
         backdrop-filter: blur(40px) saturate(200%);
         -webkit-backdrop-filter: blur(40px) saturate(200%);
     }
@@ -66,6 +66,37 @@ html {
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: rgba(255, 255, 255, 0.3);
+}
+
+/* Hide scrollbar for horizontal gallery */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;  /* Safari and Chrome */
+}
+
+/* Custom horizontal scrollbar for gallery */
+.gallery-scrollbar::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+}
+
+.gallery-scrollbar::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+}
+
+.gallery-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    transition: background 0.2s ease;
+}
+
+.gallery-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.5);
 }
 
 /* Smooth transitions for all interactive elements */

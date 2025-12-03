@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+// import { usePathname } from 'next/navigation';
 
 interface AuthenticatedLayoutProps {
     children: ReactNode;
@@ -17,7 +17,6 @@ export default function AuthenticatedLayout({
     children,
 }: AuthenticatedLayoutProps) {
     const { logout, user } = useAuth();
-    const pathname = usePathname();
 
     const handleLogout = async () => {
         try {
@@ -27,13 +26,13 @@ export default function AuthenticatedLayout({
         }
     };
 
-    // Navigation items
-    const navItems = [
-        { href: '/', label: 'Studio', icon: '🎨' },
-        { href: '/images', label: 'Images', icon: '🖼️' },
-        { href: '/workflow-api-example', label: 'API', icon: '⚡' },
-        { href: '/diagnostic', label: 'Diagnostic', icon: '🔍' },
-    ];
+    // Navigation items (currently unused but kept for future reference)
+    // const navItems = [
+    //     { href: '/', label: 'Studio', icon: '🎨' },
+    //     { href: '/images', label: 'Images', icon: '🖼️' },
+    //     { href: '/workflow-api-example', label: 'API', icon: '⚡' },
+    //     { href: '/diagnostic', label: 'Diagnostic', icon: '🔍' },
+    // ];
 
     return (
         <ProtectedRoute>
@@ -57,23 +56,7 @@ export default function AuthenticatedLayout({
                             </Link>
                         </div>
 
-                        {/* Navigation Menu */}
-                        <nav className="hidden md:flex items-center space-x-6">
-                            {navItems.map((item) => (
-                                <Link
-                                    key={item.href}
-                                    href={item.href}
-                                    className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-                                        pathname === item.href
-                                            ? 'bg-blue-600/20 text-blue-300 border border-blue-600/30'
-                                            : 'text-gray-300 hover:text-white hover:bg-gray-700/50'
-                                    }`}
-                                >
-                                    <span>{item.icon}</span>
-                                    <span>{item.label}</span>
-                                </Link>
-                            ))}
-                        </nav>
+                     
 
                         {/* User Info and Logout */}
                         <div className="flex items-center gap-4">
@@ -87,22 +70,33 @@ export default function AuthenticatedLayout({
                             )}
                             <button
                                 onClick={handleLogout}
-                                className="flex items-center gap-2 px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-300 hover:text-red-200 border border-red-600/30 hover:border-red-500/50 rounded-lg transition-all duration-200"
+                                className="group relative inline-flex items-center gap-2.5 px-5 py-2.5 bg-white/5 hover:bg-white/10 text-gray-200 hover:text-white backdrop-blur-xl border border-white/10 hover:border-white/20 rounded-full transition-all duration-300 ease-out hover:scale-[1.02] hover:shadow-lg hover:shadow-white/5 active:scale-[0.98] overflow-hidden"
                             >
+                                {/* Subtle gradient overlay */}
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                                
+                                {/* Icon */}
                                 <svg
-                                    className="w-4 h-4"
+                                    className="w-4 h-4 relative z-10 transition-transform duration-200 group-hover:rotate-12"
                                     fill="none"
                                     stroke="currentColor"
                                     viewBox="0 0 24 24"
+                                    strokeWidth={2}
                                 >
                                     <path
                                         strokeLinecap="round"
                                         strokeLinejoin="round"
-                                        strokeWidth={2}
                                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                                     />
                                 </svg>
-                                Logout
+                                
+                                {/* Text */}
+                                <span className="relative z-10 font-medium text-sm tracking-wide">
+                                    Logout
+                                </span>
+                                
+                                {/* Highlight shine effect */}
+                                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                             </button>
                         </div>
                     </div>

@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { PromptSentenceBuilder } from './PromptSentenceBuilder';
 import { WorkflowSelectorModal } from './WorkflowSelectorModal';
 import { usePromptEnhancement } from '../hooks/usePromptEnhancement';
+import { useWebSocket } from '../hooks/useWebSocket';
 import { WorkflowMetadata } from '../types';
 
 interface InlinePromptBuilderProps {
@@ -112,6 +113,7 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
     onImageRemove,
 }) => {
     const [isWorkflowModalOpen, setIsWorkflowModalOpen] = useState(false);
+    const { connectionStatus, generatedImages, lastEvent, error: wsError } = useWebSocket();
 
     const hasContent = Object.values(fields).some(v => v.trim() !== '');
     const {
@@ -122,6 +124,54 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
         clearSuggestions,
         error: enhancementError,
     } = usePromptEnhancement();
+
+    // Get WebSocket status styling
+    const getWebSocketStyling = () => {
+        switch (connectionStatus) {
+            case 'connected':
+                return {
+                    borderClass: 'border-green-400/60 shadow-green-400/20',
+                    pulseClass: 'animate-pulse',
+                    statusDot: '🟢',
+                    statusText: 'Connecté',
+                    statusColor: 'text-green-400'
+                };
+            case 'connecting':
+                return {
+                    borderClass: 'border-yellow-400/60 shadow-yellow-400/20',
+                    pulseClass: 'animate-pulse',
+                    statusDot: '🟡',
+                    statusText: 'Connexion...',
+                    statusColor: 'text-yellow-400'
+                };
+            case 'disconnected':
+                return {
+                    borderClass: 'border-gray-400/40 shadow-gray-400/10',
+                    pulseClass: '',
+                    statusDot: '🔴',
+                    statusText: 'Déconnecté',
+                    statusColor: 'text-gray-400'
+                };
+            case 'error':
+                return {
+                    borderClass: 'border-red-400/60 shadow-red-400/20',
+                    pulseClass: 'animate-pulse',
+                    statusDot: '⚠️',
+                    statusText: 'Erreur',
+                    statusColor: 'text-red-400'
+                };
+            default:
+                return {
+                    borderClass: 'border-gray-400/30 shadow-gray-400/10',
+                    pulseClass: '',
+                    statusDot: '⚫',
+                    statusText: 'Inconnu',
+                    statusColor: 'text-gray-400'
+                };
+        }
+    };
+
+    const wsStyle = getWebSocketStyling();
 
     const handleNavigate = useCallback(
         (currentIndex: number, direction: 'prev' | 'next') => {
@@ -165,38 +215,76 @@ export const InlinePromptBuilder: React.FC<InlinePromptBuilderProps> = ({
                 />
             )}
 
-            {/* Prompt Sentence Builder */}
-            <PromptSentenceBuilder
-                fields={fields}
-                technicalFields={technicalFields}
-                onFieldChange={onFieldChange}
-                isGenerating={isGenerating}
-                isEnhancing={isEnhancing}
-                inlineFields={inlineFields}
-                getSuggestionsForField={getSuggestionsForField}
-                hasSuggestions={hasSuggestions}
-                onNavigate={handleNavigate}
-                onGenerate={onGenerate}
-                onEnhancePrompt={handleEnhancePrompt}
-                onOpenWorkflowModal={() => setIsWorkflowModalOpen(true)}
-                selectedWorkflow={selectedWorkflow}
-                availableWorkflows={availableWorkflows}
-                error={formError}
-                onClearAll={handleClearAll}
-                hasContent={hasContent}
-                uploadedImage={uploadedImage}
-                onImageUpload={onImageUpload}
-                onImageRemove={onImageRemove}
-            />
+            {/* WebSocket Status Indicator */}
+            <div className={`  border-2 ${wsStyle.borderClass} ${wsStyle.pulseClass} rounded-3xl p-4 shadow-lg transition-all duration-300`}>
+                {/* Status Header */}
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2">
+                            <span className="text-sm">{wsStyle.statusDot}</span>
+                            <span className={`text-sm font-medium ${wsStyle.statusColor} tracking-tight`}>
+                                {wsStyle.statusText}
+                            </span>
+                        </div>
+                        {generatedImages.length > 0 && (
+                            <div className="bg-white/10 backdrop-blur-sm px-2 py-1 rounded-full">
+                                <span className="text-xs text-white/80 font-medium">
+                                    {generatedImages.length} image{generatedImages.length > 1 ? 's' : ''}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+                    
+                    {lastEvent && (
+                        <div className="text-xs text-white/60 bg-white/5 px-2 py-1 rounded-lg font-mono">
+                            {lastEvent.type}
+                        </div>
+                    )}
+                </div>
+
+                {/* Prompt Sentence Builder */}
+                <PromptSentenceBuilder
+                    fields={fields}
+                    technicalFields={technicalFields}
+                    onFieldChange={onFieldChange}
+                    isGenerating={isGenerating}
+                    isEnhancing={isEnhancing}
+                    inlineFields={inlineFields}
+                    getSuggestionsForField={getSuggestionsForField}
+                    hasSuggestions={hasSuggestions}
+                    onNavigate={handleNavigate}
+                    onGenerate={onGenerate}
+                    onEnhancePrompt={handleEnhancePrompt}
+                    onOpenWorkflowModal={() => setIsWorkflowModalOpen(true)}
+                    selectedWorkflow={selectedWorkflow}
+                    availableWorkflows={availableWorkflows}
+                    error={formError}
+                    onClearAll={handleClearAll}
+                    hasContent={hasContent}
+                    uploadedImage={uploadedImage}
+                    onImageUpload={onImageUpload}
+                    onImageRemove={onImageRemove}
+                />
+            </div>
+
+            {/* WebSocket Error Display */}
+            {wsError && (
+                <div className="p-3 glass border border-red-400/30 rounded-2xl">
+                    <div className="text-red-300 text-xs flex items-center gap-2">
+                        <span className="text-red-400">⚠️</span>
+                        Erreur WebSocket: {wsError}
+                    </div>
+                </div>
+            )}
 
             {/* Enhancement Status Messages */}
-            {enhancementError && (
+            {enhancementError ? (
                 <div className="p-3 glass border border-red-400/30 rounded-2xl">
                     <div className="text-red-300 text-xs">
                         Erreur lors de l&apos;amélioration: {enhancementError}
                     </div>
                 </div>
-            )}
+            ) : null}
 
             {hasSuggestions && (
                 <div className="p-3 glass border border-blue-400/30 rounded-2xl">

@@ -14,7 +14,7 @@ export { WorkflowList } from './WorkflowApiList';
 export { UnifiedPromptBuilder } from './UnifiedPromptBuilder';
 export { InlinePromptBuilder } from './InlinePromptBuilder';
 export { VoiceRecorder } from './VoiceRecorder';
-export { SuggestionTooltip } from './SuggestionTooltip';
+
 export { InlineToken } from './InlineToken';
 export { PromptBuilderHeader } from './PromptBuilderHeader';
 export { PromptSentenceBuilder } from './PromptSentenceBuilder';
@@ -26,6 +26,7 @@ export { WebSocketStatus } from './WebSocketStatus';
 export { WebSocketDiagnostic } from './WebSocketDiagnostic';
 export { WebSocketTester } from './WebSocketTester';
 export { ImageNotification } from './ImageNotification';
+export { SiriOrb } from './SiriOrb';
 
 // Authentication components
 export { default as ProtectedRoute } from './ProtectedRoute';

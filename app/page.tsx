@@ -1,6 +1,6 @@
 'use client';
 
-import { WorkflowPromptForm, LiveImageGenerator, WebSocketStatus, ImageNotification } from '@/components';
+import { WorkflowPromptForm, LiveImageGenerator, ImageNotification } from '@/components';
 import AuthenticatedLayout from '@/components/AuthenticatedLayout';
 
 export default function Home() {
@@ -20,7 +20,7 @@ export default function Home() {
 
         {/* Statut WebSocket - Position fixe en haut à droite */}
         <div className="fixed top-4 right-4 z-40">
-          <WebSocketStatus showDetails={false} />
+          {/* <WebSocketStatus showDetails={false} /> */}
         </div>
 
         {/* Fixed Floating Prompt Builder - Bottom Dock Style */}

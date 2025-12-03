@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { SuggestionTooltip } from './SuggestionTooltip';
 
 interface InlineField {
     name: string;
@@ -33,8 +32,7 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
     hasSuggestions = false,
 }) => {
     const [isEditing, setIsEditing] = useState(false);
-    const [showTooltip, setShowTooltip] = useState(false);
-    const [showSuggestions, setShowSuggestions] = useState(false);
+    // const [showSuggestions] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -47,11 +45,9 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
     const handleClick = () => {
         if (!isGenerating) {
             if (hasSuggestions && suggestions.length > 0) {
-                setShowSuggestions(true);
-                setShowTooltip(false);
+                // setShowSuggestions(true); // Temporarily disabled
             } else {
                 setIsEditing(true);
-                setShowTooltip(false);
             }
         }
     };
@@ -59,8 +55,7 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
     const handleEdit = () => {
         if (!isGenerating) {
             setIsEditing(true);
-            setShowSuggestions(false);
-            setShowTooltip(false);
+            // setShowSuggestions(false); // Temporarily disabled
         }
     };
 
@@ -99,10 +94,10 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
         }
     };
 
-    const handleSuggestionSelect = (selectedValue: string) => {
-        onChange(selectedValue);
-        setShowSuggestions(false);
-    };
+    // const handleSuggestionSelect = (selectedValue: string) => {
+    //     onChange(selectedValue);
+    //     setShowSuggestions(false);
+    // };
 
     const displayValue = value || field.placeholder;
     const isEmpty = !value;
@@ -141,8 +136,6 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
                 ref={buttonRef}
                 type="button"
                 onClick={handleClick}
-                onMouseEnter={() => !hasAISuggestions && setShowTooltip(true)}
-                onMouseLeave={() => !hasAISuggestions && setShowTooltip(false)}
                 disabled={isGenerating}
                 data-field-index={fieldIndex}
                 className={`
@@ -186,36 +179,9 @@ export const InlineToken: React.FC<InlineTokenProps> = ({
                 )}
             </button>
 
-            {/* AI Suggestions Tooltip */}
-            {hasAISuggestions && (
-                <SuggestionTooltip
-                    suggestions={suggestions}
-                    currentValue={value}
-                    example={field.example}
-                    onSelect={handleSuggestionSelect}
-                    isVisible={showSuggestions}
-                    onClose={() => setShowSuggestions(false)}
-                    fieldLabel={field.label}
-                />
-            )}
 
-            {/* Simple Example Tooltip */}
-            {!hasAISuggestions && showTooltip && !isEditing && (
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 z-30 animate-in fade-in-0 zoom-in-95 slide-in-from-top-1 duration-200">
-                    <div className="glass-light text-white px-5 py-3 rounded-2xl shadow-xl border border-white/10 min-w-[320px] max-w-md">
-                        <div className="text-xs font-medium text-gray-400 mb-2">
-                            Exemple:
-                        </div>
-                        <div className="text-sm italic text-gray-100 leading-relaxed font-light">
-                            &quot;{field.example}&quot;
-                        </div>
-                        {/* Arrow */}
-                        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2">
-                            <div className="border-4 border-transparent border-b-gray-900/95"></div>
-                        </div>
-                    </div>
-                </div>
-            )}
+
+
 
             {/* Edit Button for AI Suggestions */}
             {hasAISuggestions && (

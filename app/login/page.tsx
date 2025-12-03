@@ -37,7 +37,7 @@ export default function LoginPage() {
             // Redirect will happen automatically via useEffect
         } catch (error) {
             // Error is handled by the auth context
-            console.error('Login failed:', error);
+            console.error('Échec de la connexion:', error);
         } finally {
             setIsSubmitting(false);
         }
@@ -48,7 +48,7 @@ export default function LoginPage() {
             <div className="min-h-screen flex items-center justify-center bg-gray-900">
                 <div className="text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
-                    <p className="text-gray-400">Initializing...</p>
+                    <p className="text-gray-400">Initialisation...</p>
                 </div>
             </div>
         );
@@ -58,7 +58,7 @@ export default function LoginPage() {
         <div className="min-h-screen flex items-center justify-center bg-gray-900">
             <div className="bg-gray-800 p-8 rounded-xl shadow-2xl w-full max-w-md border border-gray-700">
                 <div className="text-center mb-8">
-                    <div className="mb-6 flex justify-center">
+                    <div className="flex justify-center items-center mb-4 space-x-4">
                         <Image
                             src="/images/fuzdi_white.png"
                             alt="Konama Logo"
@@ -66,13 +66,9 @@ export default function LoginPage() {
                             height={60}
                             className="object-contain"
                         />
+                        <h1 className='text-4xl'>STUDIO</h1>
                     </div>
-                    <h1 className="text-2xl font-bold text-white mb-2">
-                        Welcome Back
-                    </h1>
-                    <p className="text-gray-400">
-                        Sign in to your Konama account
-                    </p>
+                    
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -87,7 +83,7 @@ export default function LoginPage() {
                             htmlFor="email"
                             className="block text-sm font-medium text-gray-300 mb-2"
                         >
-                            Email Address
+                            Adresse e-mail
                         </label>
                         <input
                             id="email"
@@ -95,7 +91,7 @@ export default function LoginPage() {
                             value={email}
                             onChange={e => setEmail(e.target.value)}
                             className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                            placeholder="Enter your email"
+                            placeholder="Entrez votre adresse e-mail"
                             disabled={isSubmitting}
                             required
                         />
@@ -106,7 +102,7 @@ export default function LoginPage() {
                             htmlFor="password"
                             className="block text-sm font-medium text-gray-300 mb-2"
                         >
-                            Password
+                            Mot de passe
                         </label>
                         <div className="relative">
                             <input
@@ -115,7 +111,7 @@ export default function LoginPage() {
                                 value={password}
                                 onChange={e => setPassword(e.target.value)}
                                 className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent pr-10"
-                                placeholder="Enter your password"
+                                placeholder="Entrez votre mot de passe"
                                 disabled={isSubmitting}
                                 required
                             />
@@ -172,16 +168,16 @@ export default function LoginPage() {
                         {isSubmitting ? (
                             <span className="flex items-center justify-center">
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                                Signing in...
+                                Connexion en cours...
                             </span>
                         ) : (
-                            'Sign in'
+                            'Se connecter'
                         )}
                     </button>
                 </form>
 
                 <div className="mt-6 text-center text-sm text-gray-400">
-                    <p>Don&apos;t have an account? Contact your administrator</p>
+                    <p>Vous n&apos;avez pas de compte ? Contactez votre administrateur</p>
                 </div>
             </div>
         </div>

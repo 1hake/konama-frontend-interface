@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useWebSocket, GeneratedImage } from '@/hooks/useWebSocket';
+import { SiriOrb } from './SiriOrb';
 import Image from 'next/image';
 
 interface LiveImageGeneratorProps {
@@ -50,10 +51,10 @@ export function LiveImageGenerator({
     const statusDisplay = getConnectionStatusDisplay();
 
     return (
-        <div className={`space-y-6 ${className}`}>
+        <div className={`space-y-6 ${className} p-8`}>
             {/* En-tête avec statut de connexion */}
             {showConnectionStatus && (
-                <div className="bg-white rounded-lg shadow-md p-4">
+                <div className="bg-white rounded-lg  p-8">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-3">
                             <h2 className="text-lg font-semibold text-gray-800">
@@ -103,57 +104,96 @@ export function LiveImageGenerator({
                     {lastEvent && (
                         <div className="mt-3 p-3 bg-gray-50 rounded-md">
                             <div className="text-xs text-gray-600">
-                                <strong>Dernier événement:</strong> {lastEvent.type} - 
-                                Statut: {lastEvent.data.status} - 
-                                Tâche: {lastEvent.data.taskId.substring(0, 8)}...
-                                {lastEvent.data.files && ` (${lastEvent.data.files.length} fichier(s))`}
+                                <strong>Dernier événement:</strong> {lastEvent.type}
+                                {lastEvent.data && (
+                                    <>
+                                        {lastEvent.data.status && ` - Statut: ${lastEvent.data.status}`}
+                                        {lastEvent.data.taskId && ` - Tâche: ${lastEvent.data.taskId.substring(0, 8)}...`}
+                                        {lastEvent.data.files && ` (${lastEvent.data.files.length} fichier(s))`}
+                                    </>
+                                )}
+                                {lastEvent.message && ` - ${lastEvent.message}`}
                             </div>
                             <div className="text-xs text-gray-500 mt-1">
-                                {new Date(lastEvent.timestamp).toLocaleString()}
+                                {lastEvent.timestamp ? new Date(lastEvent.timestamp).toLocaleString() : 'Maintenant'}
                             </div>
                         </div>
                     )}
                 </div>
             )}
 
-            {/* Grille des images */}
+            {/* Galerie horizontale avec défilement pour toutes les images */}
             {displayedImages.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                    {displayedImages.map((image, index) => (
-                        <div 
-                            key={image.taskId}
-                            className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
-                            onClick={() => setSelectedImage(image)}
-                        >
-                            <div className="relative aspect-square">
-                                <Image
-                                    src={image.imageUrl}
-                                    alt={image.filename}
-                                    fill
-                                    className="object-cover"
-                                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                                />
-                                <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white text-xs px-2 py-1 rounded">
-                                    #{index + 1}
+                <div className="relative">
+                    <h3 className="text-lg font-medium text-gray-700 mb-6 text-center">
+                        Images générées ({displayedImages.length})
+                    </h3>
+                    <div className="overflow-x-auto gallery-scrollbar">
+                        <div className="flex space-x-6 pb-4 px-4" style={{ width: 'max-content' }}>
+                            {displayedImages.map((image, index) => (
+                                <div 
+                                    key={image.taskId}
+                                    className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transform hover:scale-105 transition-all duration-200 cursor-pointer flex-shrink-0"
+                                    onClick={() => setSelectedImage(image)}
+                                    style={{ width: '400px' }}
+                                >
+                                    <div className="relative w-full" style={{ height: '50vh', minHeight: '400px', maxHeight: '600px' }}>
+                                        <Image
+                                            src={image.imageUrl}
+                                            alt={image.filename}
+                                            fill
+                                            className="object-contain"
+                                            sizes="400px"
+                                            priority={index === 0}
+                                        />
+                                        <div className={`absolute top-4 left-4 text-white text-sm px-3 py-1 rounded-full font-medium ${
+                                            index === 0 
+                                                ? 'bg-blue-500' 
+                                                : 'bg-black bg-opacity-60'
+                                        }`}>
+                                            {index === 0 ? 'Dernière' : `#${index + 1}`}
+                                        </div>
+                                    </div>
+                                    <div className="p-4">
+                                        <div className="text-sm font-medium text-gray-800 truncate">
+                                            {image.filename}
+                                        </div>
+                                        <div className="text-xs text-gray-500 mt-1">
+                                            {new Date(image.timestamp).toLocaleString()}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div className="p-3">
-                                <div className="text-sm font-medium text-gray-800 truncate">
-                                    {image.filename}
-                                </div>
-                                <div className="text-xs text-gray-500 mt-1">
-                                    {new Date(image.timestamp).toLocaleString()}
-                                </div>
-                                <div className="text-xs text-gray-400 mt-1 truncate">
-                                    Tâche: {image.taskId.substring(0, 8)}...
-                                </div>
-                            </div>
+                            ))}
                         </div>
-                    ))}
+                    </div>
+                    
+                    {/* Indicateurs de défilement */}
+                    {displayedImages.length > 2 && (
+                        <>
+                            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-70 text-white px-3 py-2 rounded-lg text-xs animate-pulse pointer-events-none">
+                                <div className="flex items-center space-x-1">
+                                    <span className="animate-bounce">←</span>
+                                    <span>Défilez</span>
+                                </div>
+                            </div>
+                            <div className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gray-800 bg-opacity-70 text-white px-3 py-2 rounded-lg text-xs animate-pulse pointer-events-none">
+                                <div className="flex items-center space-x-1">
+                                    <span>Défilez</span>
+                                    <span className="animate-bounce">→</span>
+                                </div>
+                            </div>
+                        </>
+                    )}
                 </div>
             ) : (
-                <div className="bg-white rounded-lg shadow-md p-8 text-center">
-                    <div className="text-gray-400 text-6xl mb-4">🖼️</div>
+                <div className="rounded-lg shadow-md p-8 text-center">
+                    <div className="flex justify-center mb-6 mt-12">
+                        <SiriOrb 
+                            size={440} 
+                            isActive={isConnected}
+                            className="animate-pulse"
+                        />
+                    </div>
                     <h3 className="text-lg font-medium text-gray-600 mb-2">
                         Aucune image générée
                     </h3>
