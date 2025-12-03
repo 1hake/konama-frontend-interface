@@ -21,6 +21,11 @@ export { PromptSentenceBuilder } from './PromptSentenceBuilder';
 export { PromptBuilderActions } from './PromptBuilderActions';
 export { ImageDropzone } from './ImageDropzone';
 export { WorkflowPromptForm } from './WorkflowPromptForm';
+export { LiveImageGenerator } from './LiveImageGenerator';
+export { WebSocketStatus } from './WebSocketStatus';
+export { WebSocketDiagnostic } from './WebSocketDiagnostic';
+export { WebSocketTester } from './WebSocketTester';
+export { ImageNotification } from './ImageNotification';
 
 // Authentication components
 export { default as ProtectedRoute } from './ProtectedRoute';

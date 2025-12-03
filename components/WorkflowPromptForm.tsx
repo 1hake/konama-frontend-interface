@@ -64,7 +64,7 @@ export function WorkflowPromptForm() {
   // Set default workflow when workflows load
   useEffect(() => {
     if (workflows.length > 0 && !selectedWorkflowId) {
-      setSelectedWorkflowId(workflows[0].name);
+      setSelectedWorkflowId(workflows[0].id);
     }
   }, [workflows, selectedWorkflowId]);
   
@@ -136,7 +136,7 @@ export function WorkflowPromptForm() {
       return;
     }
 
-    const selectedWorkflow = workflows.find((w) => w.name === selectedWorkflowId);
+    const selectedWorkflow = workflows.find((w) => w.id === selectedWorkflowId);
     if (!selectedWorkflow) {
       alert('Selected workflow not found');
       return;

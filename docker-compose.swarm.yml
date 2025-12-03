@@ -26,12 +26,12 @@ services:
             # Rule for the root domain
             - 'traefik.http.routers.konama-frontend.rule=Host(`studio.fuzdi.fr`)'
             - 'traefik.http.routers.konama-frontend.entrypoints=websecure'
-            - 'traefik.http.routers.konama-frontend.tls.certresolver=letsencrypt'
+            - 'traefik.http.routers.konama-frontend.tls.certresolver=myresolver'
 
             # Rule for the www subdomain (if needed)
             - 'traefik.http.routers.konama-frontend-www.rule=Host(`www.studio.fuzdi.fr`)'
             - 'traefik.http.routers.konama-frontend-www.entrypoints=websecure'
-            - 'traefik.http.routers.konama-frontend-www.tls.certresolver=letsencrypt'
+            - 'traefik.http.routers.konama-frontend-www.tls.certresolver=myresolver'
             - 'traefik.http.routers.konama-frontend-www.middlewares=redirect-to-root'
 
             # Redirect middleware from www to root domain
